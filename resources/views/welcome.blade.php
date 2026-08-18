@@ -12,25 +12,65 @@
 
 <body>
 
-    <nav class="navbar container navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm">
+        <div class="container">
+
+            {{-- Logo / Brand --}}
+            <a class="navbar-brand fw-bold text-primary" href="#">
+                My Form Task
+            </a>
+
+
+            {{-- Mobile Toggle Button --}}
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+
                 <span class="navbar-toggler-icon"></span>
+
             </button>
-            <div class="collapse navbar-collapse justify-content-center " id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto  mb-2 mb-lg-0">
+
+
+            {{-- Navbar Links --}}
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                {{-- Left Side --}}
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
                     <li class="nav-item">
-                        <a class="nav-link active btn btn-outline-success" aria-current="page"
-                            href="{{ Route('allUsers') }}">All Users</a>
+                        <a class="nav-link" href="#">
+                            Home
+                        </a>
                     </li>
-                    <li class="mx-3 nav-item">
-                        <a class="nav-link active btn btn-info" href="{{ Route('addUsersForm') }}">Add User</a>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            About
+                        </a>
                     </li>
 
                 </ul>
 
+
+                {{-- Right Side --}}
+                <div class="d-flex gap-2">
+
+                    <a href="{{ route('allUsers') }}" class="btn btn-outline-primary">
+
+                        All Users
+
+                    </a>
+
+                    <a href="{{ route('addUsersForm') }}" class="btn btn-primary">
+
+                        Add User
+
+                    </a>
+
+                </div>
+
             </div>
+
         </div>
     </nav>
 
@@ -39,6 +79,30 @@
     <main class="container">
         @yield('content')
     </main>
+
+    <style>
+        .navbar {
+            padding: 12px 0;
+        }
+
+        .navbar-brand {
+            font-size: 22px;
+        }
+
+        .nav-link {
+            margin: 0 5px;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: #0d6efd;
+        }
+
+        .btn {
+            border-radius: 6px;
+            padding: 7px 16px;
+        }
+    </style>
 
 </body>
 

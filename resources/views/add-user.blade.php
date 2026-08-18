@@ -1,47 +1,104 @@
 @extends('welcome')
 
 @section('content')
-    <div class="add__form">
-        <h1>User Form</h1>
+    <div class="container py-5">
 
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
+        <div class="add__form mx-auto">
 
-        <form action="{{ Route('addUser') }}" method="post">
-            @csrf
+            <h2 class="text-center mb-4">Add New User</h2>
 
-            <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" name="name" class="form-control" id="name">
-            </div>
-            <div class="mb-3">
-                <label for="exampleInputEmail" class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" id="exampleInputEmail">
-            </div>
-            <div class="mb-3">
-                <label for="exampleInputPhone" class="form-label">Phone</label>
-                <input type="text" name="phone" class="form-control" id="exampleInputphone">
-            </div>
+            {{-- Success Message --}}
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-            <div class="mb-3">
-                <label for="exampleInputclass" class="form-label">Class</label>
-                <input type="text" name="class" class="form-control" id="exampleInputclass">
-            </div>
+            <form action="{{ route('addUser') }}" method="POST">
+                @csrf
+
+                {{-- Name --}}
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+
+                    <input type="text" name="name" id="name" value="{{ old('name') }}"
+                        class="form-control @error('name') is-invalid @enderror" placeholder="Enter your name">
+
+                    @error('name')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
 
 
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-        <!-- If you do not have a consistent goal in life, you can not live it in a consistent way. - Marcus Aurelius -->
+                {{-- Email --}}
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+
+                    <input type="email" name="email" id="email" value="{{ old('email') }}"
+                        class="form-control @error('email') is-invalid @enderror" placeholder="Enter your email">
+
+                    @error('email')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+
+
+                {{-- Phone --}}
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+
+                    <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
+                        class="form-control @error('phone') is-invalid @enderror" placeholder="03XXXXXXXXX">
+
+                    @error('phone')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+
+
+                {{-- Class --}}
+                <div class="mb-3">
+                    <label for="class" class="form-label">Class</label>
+
+                    <input type="text" name="class" id="class" value="{{ old('class') }}"
+                        class="form-control @error('class') is-invalid @enderror" placeholder="Enter your class">
+
+                    @error('class')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+
+
+                <button type="submit" class="btn btn-primary w-100">
+                    Add User
+                </button>
+
+            </form>
+
+        </div>
+
     </div>
 @endsection
 
 
 <style>
     .add__form {
-        margin-left: 350px;
-        width: 400px;
+        max-width: 500px;
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .add__form h2 {
+        font-weight: 600;
     }
 </style>

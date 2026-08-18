@@ -18,29 +18,15 @@ class UserController extends Controller
 
     function addUser(Request $request)
     {
-
         $validated = $request->validate([
-
-            'name' => 'required|string|max:10',
-            'email' => 'required|email',
-            'phone' => 'required|number|max:11|min:11',
-            'class' => 'required|string|max:10|min:2',
-
+            'name'  => 'required|string',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'required|digits:11',
+            'class' => 'required|string|min:2|max:10',
         ]);
 
-        $user = User::create($validated);
+        User::create($validated);
 
-        // dd($request->input());
-        // $user = User::create([
-        //     'name' => $validated->name,
-        //     'email' => $validated->email,
-        //     'phone' => $validated->phone,
-        //     'class' => $validated->class,
-        // ]);
-
-        if ($user) {
-            session()->flash('success', 'Product and image saved successfully!');
-            return redirect('add-user');
-        }
+        return redirect()->back()->with('success', 'User added successfully!');
     }
 }
