@@ -5,8 +5,6 @@
 
         <div class="table__content">
 
-
-            {{-- Users Card --}}
             <div class="card shadow-sm border-0">
 
                 <div class="card-header bg-primary text-white">
@@ -14,11 +12,8 @@
                 </div>
 
                 <div class="card-body">
-
                     <div class="table-responsive">
-
                         <table class="table table-hover table-bordered align-middle mb-0">
-
                             <thead class="table-light">
                                 <tr>
                                     <th scope="col">#</th>
@@ -30,25 +25,20 @@
                             </thead>
 
                             <tbody>
-
                                 @foreach ($users as $user)
                                     <tr>
                                         <th scope="row">
                                             {{ $user->id }}
                                         </th>
-
                                         <td class="fw-semibold">
                                             {{ $user->name }}
                                         </td>
-
                                         <td>
                                             {{ $user->email }}
                                         </td>
-
                                         <td>
                                             {{ $user->phone }}
                                         </td>
-
                                         <td>
                                             <span class="badge bg-primary">
                                                 {{ $user->class }}
@@ -56,15 +46,10 @@
                                         </td>
                                     </tr>
                                 @endforeach
-
                             </tbody>
-
                         </table>
-
                     </div>
-
                 </div>
-
             </div>
 
         </div>

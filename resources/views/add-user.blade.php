@@ -7,7 +7,6 @@
 
             <h2 class="text-center mb-4">Add New User</h2>
 
-            {{-- Success Message --}}
             @if (session('success'))
                 <div class="alert alert-success">
                     {{ session('success') }}
@@ -17,7 +16,6 @@
             <form action="{{ route('addUser') }}" method="POST">
                 @csrf
 
-                {{-- Name --}}
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
 
@@ -31,8 +29,6 @@
                     @enderror
                 </div>
 
-
-                {{-- Email --}}
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
 
@@ -46,8 +42,6 @@
                     @enderror
                 </div>
 
-
-                {{-- Phone --}}
                 <div class="mb-3">
                     <label for="phone" class="form-label">Phone</label>
 
@@ -61,8 +55,6 @@
                     @enderror
                 </div>
 
-
-                {{-- Class --}}
                 <div class="mb-3">
                     <label for="class" class="form-label">Class</label>
 
@@ -76,13 +68,11 @@
                     @enderror
                 </div>
 
-
                 <button type="submit" class="btn btn-primary w-100">
                     Add User
                 </button>
 
             </form>
-
         </div>
 
     </div>

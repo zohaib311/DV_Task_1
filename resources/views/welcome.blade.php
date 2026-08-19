@@ -15,13 +15,10 @@
     <nav class="navbar navbar-expand-lg bg-white shadow-sm">
         <div class="container">
 
-            {{-- Logo / Brand --}}
-            <a class="navbar-brand fw-bold text-primary" href="#">
+            <a class="navbar-brand fw-bold text-primary" href="{{ Route('allUsers') }}">
                 My Form Task
             </a>
 
-
-            {{-- Mobile Toggle Button --}}
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -30,52 +27,35 @@
 
             </button>
 
-
-            {{-- Navbar Links --}}
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
-                {{-- Left Side --}}
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
                     <li class="nav-item">
                         <a class="nav-link" href="#">
                             Home
                         </a>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link" href="#">
                             About
                         </a>
                     </li>
-
                 </ul>
 
-
-                {{-- Right Side --}}
                 <div class="d-flex gap-2">
-
                     <a href="{{ route('allUsers') }}" class="btn btn-outline-primary">
-
                         All Users
-
                     </a>
 
                     <a href="{{ route('addUsersForm') }}" class="btn btn-primary">
-
                         Add User
-
                     </a>
-
                 </div>
-
             </div>
 
         </div>
     </nav>
 
 
-    <!-- Main Content Area -->
     <main class="container">
         @yield('content')
     </main>
