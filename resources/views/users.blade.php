@@ -13,10 +13,13 @@
 
                 <div class="card-body">
                     <div class="table-responsive">
+
                         <table class="table table-hover table-bordered align-middle mb-0">
+
                             <thead class="table-light">
                                 <tr>
                                     <th scope="col">#</th>
+                                    <th scope="col">Image</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Phone</th>
@@ -30,33 +33,45 @@
                                         <th scope="row">
                                             {{ $user->id }}
                                         </th>
+
+                                        <td>
+                                            <img src="{{ asset('storage/images/' . $user->image) }}"
+                                                alt="{{ $user->name }}" class="user-image">
+                                        </td>
+
                                         <td class="fw-semibold">
                                             {{ $user->name }}
                                         </td>
+
                                         <td>
                                             {{ $user->email }}
                                         </td>
+
                                         <td>
                                             {{ $user->phone }}
                                         </td>
+
                                         <td>
                                             <span class="badge bg-primary">
                                                 {{ $user->class }}
                                             </span>
                                         </td>
+
                                     </tr>
                                 @endforeach
                             </tbody>
+
                         </table>
+
                     </div>
                 </div>
+
             </div>
 
         </div>
 
     </div>
 @endsection
-
 
 <style>
     .table__content {
@@ -76,5 +91,13 @@
     .table th,
     .table td {
         padding: 12px;
+    }
+
+    .user-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 2px solid #0d6efd;
     }
 </style>

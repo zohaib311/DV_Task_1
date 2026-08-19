@@ -1,7 +1,7 @@
 @extends('welcome')
 
 @section('content')
-    <div class="container py-5">
+    <div class="container add__form_cont py-5">
 
         <div class="add__form mx-auto">
 
@@ -13,7 +13,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('addUser') }}" method="POST">
+            <form action="{{ route('addUser') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3">
@@ -68,6 +68,19 @@
                     @enderror
                 </div>
 
+                <div class="mb-3">
+                    <label for="image" class="form-label">User Image</label>
+
+                    <input type="file" name="image" id="image"
+                        class="form-control @error('image') is-invalid @enderror">
+
+                    @error('image')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+
                 <button type="submit" class="btn btn-primary w-100">
                     Add User
                 </button>
@@ -85,8 +98,12 @@
         background: #fff;
         padding: 30px;
         border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); */
+        box-shadow: 0 4px 15px #838af0;
+
     }
+
+
 
     .add__form h2 {
         font-weight: 600;
