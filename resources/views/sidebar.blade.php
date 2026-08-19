@@ -2,7 +2,6 @@
 
     <div class="sidebar-header">
         <h4 class="mb-0">
-            <i class="bi bi-grid-fill me-2"></i>
             Dashboard
         </h4>
     </div>
@@ -10,19 +9,15 @@
     <ul class="nav nav-pills flex-column gap-2 px-3">
 
         <li class="nav-item">
-            <a href="{{ route('allUsers') }}"
-                class="sidebar-link nav-link {{ request()->routeIs('allUsers') ? 'active' : '' }}">
+            <a href="{{ route('allUsers') }}" class="sidebar-link nav-link ">
 
-                <i class="bi bi-people-fill"></i>
                 <span>All Users</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a href="{{ route('addUser') }}"
-                class="sidebar-link nav-link {{ request()->routeIs('addUser') ? 'active' : '' }}">
+            <a href="{{ route('addUser') }}" class="sidebar-link nav-link  ">
 
-                <i class="bi bi-person-plus-fill"></i>
                 <span>Add User</span>
             </a>
         </li>
@@ -67,9 +62,9 @@
     }
 
     .sidebar-link {
-        color: #6c757d !important;
+        color: #ffffff !important;
         padding: 12px 15px !important;
-        border-radius: 8px;
+        background-color: #3f8cff;
         display: flex !important;
         align-items: center;
         gap: 12px;
@@ -82,8 +77,8 @@
     }
 
     .sidebar-link:hover {
-        background-color: #f1f5f9;
-        color: #0d6efd !important;
+        background-color: rgb(1, 120, 238);
+        /* color: #262b34 !important; */
     }
 
     .sidebar-link.active {
