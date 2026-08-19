@@ -18,5 +18,6 @@ class User extends Authenticatable
         'email',
         'phone',
         'class',
+        'image',
     ];
 }
