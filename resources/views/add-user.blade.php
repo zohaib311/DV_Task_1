@@ -1,7 +1,11 @@
 @extends('welcome')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/adduser.css') }}">
+@endsection
+
 @section('content')
-    <div class="container add__form_cont py-5">
+    <div class="container add__form_cont py-5 ">
 
         <div class="add__form mx-auto">
 
@@ -16,96 +20,67 @@
             <form action="{{ route('addUser') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
+                <div class="row">
 
-                    <input type="text" name="name" id="name" value="{{ old('name') }}"
-                        class="form-control @error('name') is-invalid @enderror" placeholder="Enter your name">
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" name="name" id="name" value="{{ old('name') }}"
+                            class="form-control @error('name') is-invalid @enderror" placeholder="Enter your name">
 
-                    @error('name')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
+                        @error('name')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" name="email" id="email" value="{{ old('email') }}"
+                            class="form-control @error('email') is-invalid @enderror" placeholder="Enter your email">
+
+                        @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
+                            class="form-control @error('phone') is-invalid @enderror" placeholder="03XXXXXXXXX">
+
+                        @error('phone')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="class" class="form-label">Class</label>
+                        <input type="text" name="class" id="class" value="{{ old('class') }}"
+                            class="form-control @error('class') is-invalid @enderror" placeholder="Enter your class">
+
+                        @error('class')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="image" class="form-label">User Image</label>
+                        <input type="file" name="image" id="image"
+                            class="form-control @error('image') is-invalid @enderror">
+
+                        @error('image')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            Add User
+                        </button>
+                    </div>
+
                 </div>
-
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-
-                    <input type="email" name="email" id="email" value="{{ old('email') }}"
-                        class="form-control @error('email') is-invalid @enderror" placeholder="Enter your email">
-
-                    @error('email')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Phone</label>
-
-                    <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
-                        class="form-control @error('phone') is-invalid @enderror" placeholder="03XXXXXXXXX">
-
-                    @error('phone')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="class" class="form-label">Class</label>
-
-                    <input type="text" name="class" id="class" value="{{ old('class') }}"
-                        class="form-control @error('class') is-invalid @enderror" placeholder="Enter your class">
-
-                    @error('class')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="image" class="form-label">User Image</label>
-
-                    <input type="file" name="image" id="image"
-                        class="form-control @error('image') is-invalid @enderror">
-
-                    @error('image')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100">
-                    Add User
-                </button>
-
             </form>
         </div>
 
     </div>
 @endsection
-
-
-<style>
-    .add__form {
-        max-width: 500px;
-        background: #fff;
-        padding: 30px;
-        border-radius: 10px;
-        /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); */
-        box-shadow: 0 4px 15px #838af0;
-
-    }
-
-
-
-    .add__form h2 {
-        font-weight: 600;
-    }
-</style>

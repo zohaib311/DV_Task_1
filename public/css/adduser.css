@@ -1,0 +1,18 @@
+.add__form_cont {
+    padding-top: 40px;
+    margin-top: 40px;
+}
+
+.add__form {
+    width: 100%;
+    max-width: 850px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px #838af0;
+}
+
+
+.add__form h2 {
+    font-weight: 600;
+}

@@ -9,7 +9,14 @@
 
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
+    @yield('styles')
+
     <style>
+        body {
+            /* height: 100%; */
+            /* overflow: hidden; */
+        }
+
         .sidebar {
             width: 250px;
             height: calc(100vh - 64px);
@@ -21,9 +28,9 @@
         }
 
         .main-content {
-            margin-left: 250px;
-            margin-top: 64px;
-            padding: 30px 20px;
+            margin-left: 200px;
+            margin-top: 14px;
+            padding: 20px 5px;
             min-height: calc(100vh - 64px);
         }
 
@@ -63,12 +70,12 @@
                 </ul>
 
                 <div class="d-flex gap-2">
-                    <a href="{{ route('allUsers') }}" class="btn btn-outline-primary">
-                        All Users
-                    </a>
+                    {{-- <a href="{{ route('login') }}" class="btn btn-outline-primary">
+                        Login
+                    </a> --}}
 
-                    <a href="{{ route('addUsersForm') }}" class="btn btn-primary">
-                        Add User
+                    <a href="{{ route('signup') }}" class="btn btn-primary">
+                        SignUp
                     </a>
                 </div>
 
