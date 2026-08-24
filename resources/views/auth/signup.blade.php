@@ -18,7 +18,7 @@
                 </div>
             @endif
 
-            <form action="#" method="POST">
+            <form action="{{ route('signup.submit') }}" method="POST">
                 @csrf
 
                 <div class="mb-3">
@@ -50,7 +50,7 @@
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
 
-                    <input type="text" name="password" id="password" value="{{ old('password') }}"
+                    <input type="password" name="password" id="password"
                         class="form-control @error('password') is-invalid @enderror" placeholder="Password">
 
                     @error('password')
@@ -75,9 +75,14 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">
-                    Add User
+                <button type="submit" class="btn btn-primary w-100 mb-3">
+                    SignUp
                 </button>
+
+                <div class="text-center">
+                    <span class="text-muted">Already have an account?</span>
+                    <a href="{{ route('login') }}" class="text-primary fw-semibold text-decoration-none">Login here</a>
+                </div>
 
             </form>
         </div>

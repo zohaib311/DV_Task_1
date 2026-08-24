@@ -7,11 +7,13 @@ use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
-    //
+    function create()
+    {
+        return view('add-user');
+    }
 
     function allUsers(Request $request)
     {
-
         $user = Student::all();
         return view('users', ['users' => $user]);
     }
@@ -20,7 +22,7 @@ class StudentController extends Controller
     {
         $validated = $request->validate([
             'name'  => 'required|string',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:students,email',
             'phone' => 'required|digits:11',
             'class' => 'required|string|min:2|max:10',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',

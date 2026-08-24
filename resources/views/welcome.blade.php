@@ -28,7 +28,7 @@
         }
 
         .main-content {
-            margin-left: 200px;
+            margin-left: @auth 250px @else 0 @endauth;
             margin-top: 14px;
             padding: 20px 5px;
             min-height: calc(100vh - 64px);
@@ -47,7 +47,7 @@
     <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
         <div class="container-fluid px-4">
 
-            <a class="navbar-brand fw-bold text-primary" href="{{ route('allUsers') }}">
+            <a class="navbar-brand fw-bold text-primary" href="{{ url('/') }}">
                 My Form Task
             </a>
 
@@ -69,14 +69,25 @@
                     </li>
                 </ul>
 
-                <div class="d-flex gap-2">
-                    {{-- <a href="{{ route('login') }}" class="btn btn-outline-primary">
-                        Login
-                    </a> --}}
-
-                    <a href="{{ route('signup') }}" class="btn btn-primary">
-                        SignUp
-                    </a>
+                <div class="d-flex align-items-center gap-3">
+                    @auth
+                        <span class="text-dark fw-semibold d-none d-sm-inline">
+                            Welcome, {{ auth()->user()->name }}
+                        </span>
+                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-danger">
+                                Logout
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="btn btn-outline-primary">
+                            Login
+                        </a>
+                        <a href="{{ route('signup') }}" class="btn btn-primary">
+                            SignUp
+                        </a>
+                    @endauth
                 </div>
 
             </div>
@@ -84,7 +95,9 @@
     </nav>
 
 
-    @include('sidebar')
+    @auth
+        @include('sidebar')
+    @endauth
 
 
     <main class="main-content">

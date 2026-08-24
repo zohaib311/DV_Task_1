@@ -4,17 +4,16 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('allUsers');
+    }
+    return redirect()->route('signup');
+});
 
-// // Route::view('/show', 'allUsers')->name('allUsers');
-
-// Route::view('/add', 'add-user')->name('addUsersForm');
-// Route::post('/add', [StudentController::class, 'addUser'])->name('addUser');
-// Route::get('/login', [AuthController::class, 'login'])->name('login');
-// Route::get('/signup', [AuthController::class, 'signup'])->name('signup');
-// Route::get('/show', [StudentController::class, 'allUsers'])->name('allUsers');
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
 
 Route::controller(AuthController::class)

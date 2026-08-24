@@ -16,7 +16,7 @@
         </li>
 
         <li class="nav-item">
-            <a href="{{ route('addUser') }}" class="sidebar-link nav-link  ">
+            <a href="{{ route('addUsersForm') }}" class="sidebar-link nav-link  ">
 
                 <span>Add User</span>
             </a>
