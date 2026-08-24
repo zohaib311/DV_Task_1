@@ -61,13 +61,14 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="cpassword" class="form-label">ConfirmPassword</label>
+                    <label for="password_confirmation" class="form-label">ConfirmPassword</label>
 
-                    <input type="text" name="cpassword" id="cpassword" value="{{ old('cpassword') }}"
-                        class="form-control @error('cpassword') is-invalid @enderror"
+                    <input type="password" name="password_confirmation" id="password_confirmation"
+                        value="{{ old('password_confirmation') }}"
+                        class="form-control @error('password_confirmation') is-invalid @enderror"
                         placeholder="Enter your Password Again">
 
-                    @error('cpassword')
+                    @error('password_confirmation')
                         <div class="invalid-feedback">
                             {{ $message }}
                         </div>
