@@ -28,84 +28,88 @@
         }
 
         .main-content {
-            margin-left: @auth 250px @else 0 @endauth;
+            margin-left: @auth 250px
+            @else
+                0
+            @endauth
+            ;
             margin-top: 14px;
             padding: 20px 5px;
             min-height: calc(100vh - 64px);
-        }
+            }
 
-        .navbar {
-            height: 64px;
-            z-index: 1060;
-        }
-    </style>
+            .navbar {
+                height: 64px;
+                z-index: 1060;
+            }
+        </style>
 
-</head>
+    </head>
 
-<body>
+    <body>
 
-    <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
-        <div class="container-fluid px-4">
+        <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
+            <div class="container-fluid px-4">
 
-            <a class="navbar-brand fw-bold text-primary" href="{{ url('/') }}">
-                My Form Task
-            </a>
+                <a class="navbar-brand fw-bold text-primary" href="{{ url('/') }}">
+                    My Form Task
+                </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent">
 
-                <span class="navbar-toggler-icon"></span>
-            </button>
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Home</a>
-                    </li>
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Home</a>
+                        </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                </ul>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                    </ul>
 
-                <div class="d-flex align-items-center gap-3">
-                    @auth
-                        <span class="text-dark fw-semibold d-none d-sm-inline">
-                            Welcome, {{ auth()->user()->name }}
-                        </span>
-                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-danger">
-                                Logout
-                            </button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}" class="btn btn-outline-primary">
-                            Login
-                        </a>
-                        <a href="{{ route('signup') }}" class="btn btn-primary">
-                            SignUp
-                        </a>
-                    @endauth
+                    <div class="d-flex align-items-center gap-3">
+                        @auth
+                            <span class="text-dark fw-semibold d-none d-sm-inline">
+                                Welcome, {{ auth()->user()->name }}
+                            </span>
+                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="mt-3 btn btn-outline-danger">
+                                    Logout
+                                </button>
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-outline-primary">
+                                Login
+                            </a>
+                            <a href="{{ route('signup') }}" class="btn btn-primary">
+                                SignUp
+                            </a>
+                        @endauth
+                    </div>
+
                 </div>
-
             </div>
-        </div>
-    </nav>
+        </nav>
 
 
-    @auth
-        @include('sidebar')
-    @endauth
+        @auth
+            @include('sidebar')
+        @endauth
 
 
-    <main class="main-content">
-        <div class="container">
-            @yield('content')
-        </div>
-    </main>
+        <main class="main-content">
+            <div class="container">
+                @yield('content')
+            </div>
+        </main>
 
-</body>
+    </body>
 
-</html>
+    </html>
