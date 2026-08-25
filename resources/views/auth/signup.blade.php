@@ -1,7 +1,7 @@
 @extends('welcome')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/signup.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 @endsection
 
 

@@ -12,8 +12,22 @@
 
 
 :root {
-    --color-primary: #92003A;
-    --color-secondary: #F62477;
-    --color-background: #FFADEE;
-    --color-outline: #FFE185;
+    --color-primary: #6C63FF;
+    --color-secondary: #8B5CF6;
+    --color-background: #F5F3FF;
+    --color-outline: #DDD6FE;
+
+    --gradient-primary: linear-gradient(135deg,
+            #6C63FF,
+            #8B5CF6);
+
+    --gradient-background: linear-gradient(135deg,
+            #F5F3FF,
+            #EDE9FE,
+            #FDF4FF);
+}
+
+body {
+    /* min-height: 100vh; */
+    background: var(--gradient-background);
 }

@@ -1,5 +1,9 @@
 @extends('welcome')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/students.css') }}">
+@endsection
+
 @section('content')
     <div class="container py-5">
 
@@ -78,57 +82,3 @@
 
     </div>
 @endsection
-
-<style>
-    .table__content {
-        max-width: 900px;
-        margin: 0 auto;
-    }
-
-    .card {
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .card-header {
-        padding: 15px 20px;
-        display: flex;
-        align-content: center;
-        align-items: center;
-        align-items: center;
-        justify-content: space-between
-    }
-
-    .table th,
-    .table td {
-        padding: 12px;
-    }
-
-    .user-image {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-        border-radius: 50%;
-        border: 2px solid #0d6efd;
-    }
-
-    .add__user__btn a {
-        padding: 12px;
-        border: 2px solid #f6ff00;
-        border-radius: 30px;
-        border-radius: 30px;
-        background-color: #504af9;
-        color: #0e0e0e padding: 12px 15px !important;
-        display: flex !important;
-        align-items: center;
-        gap: 12px;
-        transition: 0.3s;
-        font-weight: 500;
-
-    }
-
-    .add__user__btn a:hover {
-        padding: 12px;
-        background-color: #0d06df;
-    }
-</style>

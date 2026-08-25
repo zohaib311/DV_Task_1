@@ -17,25 +17,23 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
 
-Route::controller(AuthController::class)
-    ->middleware('guest')
-    ->group(function () {
+Route::controller(AuthController::class)->middleware('guest')->group(function () {
 
-        Route::get('/login', 'login')->name('login');
-        Route::post('/login', 'loginSubmit')->name('login.submit');
+    Route::get('/login', 'login')->name('login');
+    Route::post('/login', 'loginSubmit')->name('login.submit');
 
-        Route::get('/signup', 'signup')->name('signup');
-        Route::post('/signup', 'signupSubmit')->name('signup.submit');
-    });
+    Route::get('/signup', 'signup')->name('signup');
+    Route::post('/signup', 'signupSubmit')->name('signup.submit');
+});
 
 
-Route::controller(StudentController::class)
-    ->middleware('auth')
-    ->group(function () {
+Route::controller(StudentController::class)->middleware('auth')->group(function () {
 
-        Route::get('/add', 'create')->name('addUsersForm');
+    Route::get('/add', 'create')->name('addUsersForm');
 
-        Route::post('/add', 'addUser')->name('addUser');
+    Route::post('/add', 'addUser')->name('addUser');
 
-        Route::get('/show', 'allUsers')->name('allUsers');
-    });
+    Route::get('/show', 'allUsers')->name('allUsers');
+
+    // Route::get('/add/teacher', 'allUsers')->name('allUsers');
+});

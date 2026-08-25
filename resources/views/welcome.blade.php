@@ -7,7 +7,10 @@
     <title>@yield('title', 'My Form Task')</title>
 
 
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @vite(['resources/sass/app.scss', 'resources/css/app.css', 'resources/js/app.js'])
+
+    <link rel="stylesheet" href="{{ asset('css/welcome.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
 
     @yield('styles')
 
@@ -78,19 +81,24 @@
                             <span class="text-dark fw-semibold d-none d-sm-inline">
                                 Welcome, {{ auth()->user()->name }}
                             </span>
+
                             <form action="{{ route('logout') }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="mt-3 btn btn-outline-danger">
+
+                                <button type="submit" class="btn__logout">
                                     Logout
                                 </button>
                             </form>
                         @else
-                            <a href="{{ route('login') }}" class="btn btn-outline-primary">
-                                Login
-                            </a>
-                            <a href="{{ route('signup') }}" class="btn btn-primary">
-                                SignUp
-                            </a>
+                            <div class="login__btns">
+                                <a href="{{ route('login') }}" class="btn__login">
+                                    Login
+                                </a>
+
+                                <a href="{{ route('signup') }}" class="btn__signup">
+                                    SignUp
+                                </a>
+                            </div>
                         @endauth
                     </div>
 

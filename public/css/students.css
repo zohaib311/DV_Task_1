@@ -1,0 +1,192 @@
+/* ================================
+   Students Table Container
+================================ */
+
+.table__content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+
+/* ================================
+   Card
+================================ */
+
+.table__content .card {
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    background: rgba(255, 255, 255, 0.85);
+
+    backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255, 255, 255, 0.6);
+
+    box-shadow: 0 15px 40px rgba(108, 99, 255, 0.12);
+}
+
+
+/* ================================
+   Card Header
+================================ */
+
+.table__content .card-header {
+    padding: 18px 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: var(--gradient-primary) !important;
+
+    color: #fff;
+
+    border: none;
+}
+
+.table__content .card-header h4 {
+    font-weight: 700;
+}
+
+
+/* ================================
+   Add Student Button
+================================ */
+
+.add__user__btn a {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+
+    padding: 9px 18px;
+
+    background: rgba(255, 255, 255, 0.2);
+
+    color: #fff !important;
+
+    border: 1px solid rgba(255, 255, 255, 0.6);
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+    transition: all 0.35s ease;
+}
+
+.add__user__btn a:hover {
+    background: #fff;
+
+    color: var(--color-primary) !important;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+
+/* ================================
+   Table
+================================ */
+
+.table__content .card-body {
+    padding: 0;
+}
+
+.table__content .table {
+    margin: 0;
+
+    color: #374151;
+}
+
+.table__content .table th,
+.table__content .table td {
+    padding: 15px;
+
+    vertical-align: middle;
+}
+
+
+/* ================================
+   Table Header
+================================ */
+
+.table__content thead th {
+    background: #F5F3FF;
+
+    color: var(--color-primary);
+
+    font-weight: 700;
+
+    border-bottom: 1px solid var(--color-outline);
+}
+
+
+/* ================================
+   Table Rows
+================================ */
+
+.table__content tbody tr {
+    transition: background 0.3s ease;
+}
+
+.table__content tbody tr:hover {
+    background: rgba(108, 99, 255, 0.05);
+}
+
+
+/* ================================
+   User Image
+================================ */
+
+.user-image {
+    width: 52px;
+
+    height: 52px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 3px solid var(--color-outline);
+
+    padding: 2px;
+}
+
+
+/* ================================
+   Class Badge
+================================ */
+
+.table__content .badge {
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    background: var(--gradient-primary) !important;
+
+    font-weight: 500;
+}
+
+
+/* ================================
+   Responsive
+================================ */
+
+@media (max-width: 768px) {
+
+    .table__content .card-header {
+        gap: 15px;
+    }
+
+    .table__content .card-header h4 {
+        font-size: 18px;
+    }
+
+    .add__user__btn a {
+        padding: 8px 14px;
+        font-size: 14px;
+    }
+}

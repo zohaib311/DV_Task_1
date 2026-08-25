@@ -9,7 +9,7 @@ class StudentController extends Controller
 {
     function create()
     {
-        return view('add-user');
+        return view('add-student');
     }
 
     function allUsers(Request $request)

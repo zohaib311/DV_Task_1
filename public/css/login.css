@@ -1,4 +1,4 @@
-/* .add__form_cont {
+.add__form_cont {
     min-height: calc(100vh - 64px);
     display: flex;
     align-items: center;
@@ -103,4 +103,4 @@
         padding: 25px 20px;
         border-radius: 15px;
     }
-} */
+}

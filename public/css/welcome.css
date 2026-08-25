@@ -1,21 +1,152 @@
-.sidebar {
-    width: 250px;
-    height: calc(100vh - 64px);
-    position: fixed;
-    top: 64px;
-    left: 0;
-    z-index: 1040;
-    overflow-y: auto;
-}
-
-.main-content {
-    margin-left: 250px;
-    margin-top: 64px;
-    padding: 30px 20px;
-    min-height: calc(100vh - 64px);
-}
+/* ================================
+   Navbar
+================================ */
 
 .navbar {
     height: 64px;
     z-index: 1060;
+
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(10px);
+
+    border-bottom: 1px solid var(--color-outline);
+}
+
+
+/* ================================
+   Brand
+================================ */
+
+.navbar-brand {
+    color: var(--color-primary) !important;
+    font-size: 22px;
+}
+
+
+/* ================================
+   Navigation Links
+================================ */
+
+.navbar .nav-link {
+    color: var(--color-primary);
+    font-weight: 500;
+    position: relative;
+}
+
+.navbar .nav-link:hover {
+    color: var(--color-secondary);
+}
+
+
+/* ================================
+   Login / Signup Buttons
+================================ */
+
+.login__btns {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.login__btns a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 18px;
+    border-radius: 8px;
+
+    text-decoration: none;
+    font-weight: 500;
+
+    transition: all 0.3s ease;
+}
+
+.btn__login {
+    background: var(--gradient-primary);
+    color: #fff;
+    border: 2px solid transparent;
+}
+
+.btn__login:hover {
+    background: var(--gradient-primary);
+    color: #fff;
+
+    border-color: transparent;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 15px rgba(108, 99, 255, 0.25);
+}
+
+.btn__signup {
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+}
+
+.btn__signup:hover {
+
+    border-color: transparent;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 15px rgba(108, 99, 255, 0.25);
+}
+
+
+/* ================================
+   Logout Button
+================================ */
+
+.btn__logout {
+    padding: 8px 18px;
+
+    background: transparent;
+    color: var(--color-primary);
+
+    border: 2px solid var(--color-primary);
+    border-radius: 8px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+.btn__logout:hover {
+    background: var(--gradient-primary);
+    color: #fff;
+
+    border-color: transparent;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 15px rgba(108, 99, 255, 0.25);
+}
+
+
+/* ================================
+   Responsive Navbar
+================================ */
+
+@media (max-width: 991px) {
+
+    .navbar {
+        height: auto;
+        min-height: 64px;
+    }
+
+    .navbar-collapse {
+        padding: 15px 0;
+    }
+
+    .login__btns {
+        margin-top: 10px;
+    }
+
+    .d-flex.align-items-center.gap-3 {
+        align-items: flex-start !important;
+    }
 }
