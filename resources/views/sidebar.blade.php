@@ -11,14 +11,21 @@
         <li class="nav-item">
             <a href="{{ route('allUsers') }}" class="sidebar-link nav-link ">
 
-                <span>All Users</span>
+                <span>All Students</span>
             </a>
         </li>
 
         <li class="nav-item">
             <a href="{{ route('addUsersForm') }}" class="sidebar-link nav-link  ">
 
-                <span>Add User</span>
+                <span>Add Student</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ route('addUsersForm') }}" class="sidebar-link nav-link  ">
+
+                <span>Add Teacher</span>
             </a>
         </li>
 

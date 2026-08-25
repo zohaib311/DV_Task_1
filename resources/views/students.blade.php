@@ -7,8 +7,14 @@
 
             <div class="card shadow-sm border-0">
 
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Users List</h4>
+                <div class="card-header flex-auto bg-primary text-white">
+                    <h4 class="mb-0">Students List</h4>
+                    <div class=" add__user__btn">
+                        <a href="{{ route('addUsersForm') }}" class="   nav-link  ">
+
+                            <span>Add Student</span>
+                        </a>
+                    </div>
                 </div>
 
                 <div class="card-body">
@@ -28,32 +34,32 @@
                             </thead>
 
                             <tbody>
-                                @foreach ($users as $user)
+                                @foreach ($students as $student)
                                     <tr>
                                         <th scope="row">
-                                            {{ $user->id }}
+                                            {{ $student->id }}
                                         </th>
 
                                         <td>
-                                            <img src="{{ asset('storage/images/' . $user->image) }}"
-                                                alt="{{ $user->name }}" class="user-image">
+                                            <img src="{{ asset('storage/images/' . $student->image) }}"
+                                                alt="{{ $student->name }}" class="user-image">
                                         </td>
 
                                         <td class="fw-semibold">
-                                            {{ $user->name }}
+                                            {{ $student->name }}
                                         </td>
 
                                         <td>
-                                            {{ $user->email }}
+                                            {{ $student->email }}
                                         </td>
 
                                         <td>
-                                            {{ $user->phone }}
+                                            {{ $student->phone }}
                                         </td>
 
                                         <td>
                                             <span class="badge bg-primary">
-                                                {{ $user->class }}
+                                                {{ $student->class }}
                                             </span>
                                         </td>
 
@@ -86,6 +92,11 @@
 
     .card-header {
         padding: 15px 20px;
+        display: flex;
+        align-content: center;
+        align-items: center;
+        align-items: center;
+        justify-content: space-between
     }
 
     .table th,
@@ -99,5 +110,25 @@
         object-fit: cover;
         border-radius: 50%;
         border: 2px solid #0d6efd;
+    }
+
+    .add__user__btn a {
+        padding: 12px;
+        border: 2px solid #f6ff00;
+        border-radius: 30px;
+        border-radius: 30px;
+        background-color: #504af9;
+        color: #0e0e0e padding: 12px 15px !important;
+        display: flex !important;
+        align-items: center;
+        gap: 12px;
+        transition: 0.3s;
+        font-weight: 500;
+
+    }
+
+    .add__user__btn a:hover {
+        padding: 12px;
+        background-color: #0d06df;
     }
 </style>

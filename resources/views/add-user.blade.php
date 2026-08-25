@@ -1,7 +1,7 @@
 @extends('welcome')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/adduser.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/addstudent.css') }}">
 @endsection
 
 @section('content')
@@ -9,7 +9,7 @@
 
         <div class="add__form mx-auto">
 
-            <h2 class="text-center mb-4">Add New User</h2>
+            <h2 class="text-center mb-4">Add New Student</h2>
 
             @if (session('success'))
                 <div class="alert alert-success">
@@ -63,7 +63,7 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label for="image" class="form-label">User Image</label>
+                        <label for="image" class="form-label">Student Image</label>
                         <input type="file" name="image" id="image"
                             class="form-control @error('image') is-invalid @enderror">
 
@@ -74,7 +74,7 @@
 
                     <div class="col-md-6 mb-3 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary w-100">
-                            Add User
+                            Add Student
                         </button>
                     </div>
 

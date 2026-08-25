@@ -14,8 +14,8 @@ class StudentController extends Controller
 
     function allUsers(Request $request)
     {
-        $user = Student::all();
-        return view('users', ['users' => $user]);
+        $student = Student::all();
+        return view('students', ['students' => $student]);
     }
 
     function addUser(Request $request)
