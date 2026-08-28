@@ -15,8 +15,8 @@
         </li>
 
         <li class="nav-item">
-            <a href="{{ route('addUsersForm') }}" class="sidebar-link nav-link">
-                <span>Add Teacher</span>
+            <a href="{{ route('allTeachers') }}" class="sidebar-link nav-link">
+                <span>All Teachers</span>
             </a>
         </li>
 

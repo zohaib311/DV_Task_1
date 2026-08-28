@@ -1,11 +1,11 @@
 @extends('welcome')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/addteacher.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/addstudent.css') }}">
 @endsection
 
 @section('content')
-    <div class="container add__form_cont py-5 ">
+    <div class="container add__form_cont py-5">
 
         <div class="add__form mx-auto">
 
@@ -17,58 +17,75 @@
                 </div>
             @endif
 
-            <form action="{{ route('addUser') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('addTeacher') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="row">
 
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label">Name</label>
+
                         <input type="text" name="name" id="name" value="{{ old('name') }}"
-                            class="form-control @error('name') is-invalid @enderror" placeholder="Enter your name">
+                            class="form-control @error('name') is-invalid @enderror" placeholder="Enter teacher name">
 
                         @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
                         @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="email" class="form-label">Email</label>
+
                         <input type="email" name="email" id="email" value="{{ old('email') }}"
-                            class="form-control @error('email') is-invalid @enderror" placeholder="Enter your email">
+                            class="form-control @error('email') is-invalid @enderror" placeholder="Enter teacher email">
 
                         @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
                         @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="phone" class="form-label">Phone</label>
+
                         <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
                             class="form-control @error('phone') is-invalid @enderror" placeholder="03XXXXXXXXX">
 
                         @error('phone')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
                         @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label for="class" class="form-label">Class</label>
-                        <input type="text" name="class" id="class" value="{{ old('class') }}"
-                            class="form-control @error('class') is-invalid @enderror" placeholder="Enter your class">
+                        <label for="course" class="form-label">Course</label>
 
-                        @error('class')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                        <input type="text" name="course" id="course" value="{{ old('course') }}"
+                            class="form-control @error('course') is-invalid @enderror" placeholder="Enter course">
+
+                        @error('course')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
                         @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label for="image" class="form-label">Student Image</label>
+                        <label for="image" class="form-label">
+                            Teacher Image
+                        </label>
+
                         <input type="file" name="image" id="image"
                             class="form-control @error('image') is-invalid @enderror">
 
                         @error('image')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
                         @enderror
                     </div>
 
@@ -80,6 +97,7 @@
 
                 </div>
             </form>
+
         </div>
 
     </div>

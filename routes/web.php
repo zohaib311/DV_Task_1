@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -27,7 +28,7 @@ Route::controller(AuthController::class)->middleware('guest')->group(function ()
 });
 
 
-Route::controller(StudentController::class)->middleware('auth')->group(function () {
+Route::prefix('student')->controller(StudentController::class)->middleware('auth')->group(function () {
 
     Route::get('/add', 'create')->name('addUsersForm');
 
@@ -36,4 +37,13 @@ Route::controller(StudentController::class)->middleware('auth')->group(function 
     Route::get('/show', 'allUsers')->name('allUsers');
 
     // Route::get('/add/teacher', 'allUsers')->name('allUsers');
+});
+
+Route::prefix('teacher')->controller(TeacherController::class)->middleware('auth')->group(function () {
+
+    Route::get('/add', 'create')->name('addTeacherForm');
+
+    Route::post('/add', 'addTeacher')->name('addTeacher');
+
+    Route::get('/show', 'allTeachers')->name('allTeachers');
 });
