@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Course\CourseController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Auth;
@@ -46,4 +47,13 @@ Route::prefix('teacher')->controller(TeacherController::class)->middleware('auth
     Route::post('/add', 'addTeacher')->name('addTeacher');
 
     Route::get('/show', 'allTeachers')->name('allTeachers');
+});
+
+Route::prefix('course')->controller(CourseController::class)->middleware('auth')->group(function () {
+
+    Route::get('/add', 'create')->name('addCourseForm');
+
+    Route::post('/add', 'addCourse')->name('addCourse');
+
+    Route::get('/show', 'allCourses')->name('allCourses');
 });

@@ -20,6 +20,12 @@
             </a>
         </li>
 
+        <li class="nav-item">
+            <a href="{{ route('allCourses') }}" class="sidebar-link nav-link">
+                <span>All Courses</span>
+            </a>
+        </li>
+
     </ul>
 
     <div class="sidebar-footer mt-auto p-3">
