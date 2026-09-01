@@ -1,7 +1,3 @@
-/* ================================
-   Navbar
-================================ */
-
 .navbar {
     height: 64px;
     z-index: 1060;
@@ -13,19 +9,12 @@
 }
 
 
-/* ================================
-   Brand
-================================ */
 
 .navbar-brand {
     color: var(--color-primary) !important;
     font-size: 22px;
 }
 
-
-/* ================================
-   Navigation Links
-================================ */
 
 .navbar .nav-link {
     color: var(--color-primary);
@@ -37,10 +26,6 @@
     color: var(--color-secondary);
 }
 
-
-/* ================================
-   Login / Signup Buttons
-================================ */
 
 .login__btns {
     display: flex;
@@ -95,9 +80,6 @@
 }
 
 
-/* ================================
-   Logout Button
-================================ */
 
 .btn__logout {
     padding: 8px 18px;
@@ -126,10 +108,6 @@
     box-shadow: 0 5px 15px rgba(108, 99, 255, 0.25);
 }
 
-
-/* ================================
-   Responsive Navbar
-================================ */
 
 @media (max-width: 991px) {
 

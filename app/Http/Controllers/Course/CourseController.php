@@ -8,14 +8,12 @@ use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-    // Show Add Course Form
     function create()
     {
         return view('course.add-course');
     }
 
 
-    // Store Course
     function addCourse(Request $request)
     {
         $request->validate([
@@ -38,7 +36,6 @@ class CourseController extends Controller
     }
 
 
-    // Show All Courses
     function allCourses()
     {
         $courses = Course::all();
