@@ -13,11 +13,11 @@
 
                 <div class="card-header flex-auto bg-primary text-white">
 
-                    <h4 class="mb-0">Courses List</h4>
+                    <h4 class="mb-0">Events List</h4>
 
                     <div class="add__user__btn">
-                        <a href="{{ route('addCourseForm') }}" class="nav-link">
-                            <span>Add Course</span>
+                        <a href="{{ route('addEventForm') }}" class="nav-link">
+                            <span>Add Event</span>
                         </a>
                     </div>
 
@@ -38,32 +38,48 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>#</th>
-                                    <th>Code</th>
-                                    <th>Name</th>
+                                    <th>Event Name</th>
+                                    <th>Time</th>
+                                    <th>Day</th>
+                                    <th>Date</th>
                                     <th>Description</th>
                                 </tr>
                             </thead>
 
-                            <tbody>
+                            {{-- <tbody>
 
-                                @forelse ($courses as $course)
+                                @forelse ($events as $event)
                                     <tr>
 
                                         <th>
-                                            {{ $course->id }}
+                                            {{ $event->id }}
                                         </th>
+
+
+                                        <td class="fw-semibold">
+                                            {{ $event->event_name }}
+                                        </td>
+
+
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($event->time)->format('h:i A') }}
+                                        </td>
+
 
                                         <td>
                                             <span class="badge bg-primary">
-                                                {{ $course->code }}
+                                                {{ $event->day }}
                                             </span>
                                         </td>
-                                        <td class="fw-semibold">
-                                            {{ $course->name }}
-                                        </td>
+
 
                                         <td>
-                                            {{ $course->description }}
+                                            {{ \Carbon\Carbon::parse($event->date)->format('d M Y') }}
+                                        </td>
+
+
+                                        <td class="text-wrap">
+                                            {{ $event->description }}
                                         </td>
 
                                     </tr>
@@ -71,13 +87,13 @@
                                 @empty
 
                                     <tr>
-                                        <td colspan="4" class="text-center py-4">
-                                            No courses found.
+                                        <td colspan="6" class="text-center py-4">
+                                            No events found.
                                         </td>
                                     </tr>
                                 @endforelse
 
-                            </tbody>
+                            </tbody> --}}
 
                         </table>
 

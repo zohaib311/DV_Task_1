@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Course\CourseController;
+use App\Http\Controllers\Event\EventController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
@@ -57,6 +58,15 @@ Route::prefix('course')->controller(CourseController::class)->middleware('auth')
     Route::post('/add', 'addCourse')->name('addCourse');
 
     Route::get('/show', 'allCourses')->name('allCourses');
+});
+
+Route::prefix('event')->controller(EventController::class)->middleware('auth')->group(function () {
+
+    Route::get('/add', 'eventForm')->name('addEventForm');
+
+    Route::post('/add', 'addEvent')->name('addEvent');
+
+    Route::get('/show', 'allEvents')->name('allEvents');
 });
 
 Route::prefix('profile')->controller(UserController::class)->middleware('auth')->group(function () {
