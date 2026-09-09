@@ -99,7 +99,7 @@
                                     <ul class="dropdown-menu dropdown-menu-end user-nav-dropdown">
 
                                         <li>
-                                            <a href="{{ route('profile.settings') }}" class="dropdown-item">
+                                            <a href="{{ route('profile.settings.form') }}" class="dropdown-item">
                                                 <i class="bi bi-person-gear"></i>
                                                 Profile Settings
                                             </a>

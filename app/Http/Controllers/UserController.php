@@ -56,4 +56,9 @@ class UserController extends Controller
             ->route('allUsers')
             ->with('success', 'User Added successfully.');
     }
+
+    function userSettingForm()
+    {
+        return view('users.profile-setting');
+    }
 }

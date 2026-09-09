@@ -78,7 +78,7 @@ Route::prefix('users')->controller(UserController::class)->middleware('auth')->g
 
 Route::prefix('user/profile')->controller(UserController::class)->middleware('auth')->group(function () {
 
-    Route::get('/add', 'create')->name('profile.settings');
+    Route::get('/add', 'userSettingForm')->name('profile.settings.form');
 
     Route::post('/add', 'addCourse')->name('addCourse');
 
