@@ -30,7 +30,7 @@
                 }, 2000);
             </script>
 
-            <form action="{{ route('signup.submit') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('addUser') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="row">

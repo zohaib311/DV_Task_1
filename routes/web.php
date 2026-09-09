@@ -38,8 +38,6 @@ Route::prefix('student')->controller(StudentController::class)->middleware('auth
     Route::post('/add', 'addStudent')->name('addStudent');
 
     Route::get('/show', 'allStudents')->name('allStudents');
-
-    // Route::get('/add/teacher', 'allUsers')->name('allUsers');
 });
 
 Route::prefix('teacher')->controller(TeacherController::class)->middleware('auth')->group(function () {
