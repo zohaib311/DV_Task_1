@@ -14,7 +14,7 @@
                 <div class="card-header flex-auto bg-primary text-white">
                     <h4 class="mb-0">Students List</h4>
                     <div class=" add__user__btn">
-                        <a href="{{ route('addUsersForm') }}" class="   nav-link  ">
+                        <a href="{{ route('addStudentForm') }}" class="   nav-link  ">
 
                             <span>Add Student</span>
                         </a>

@@ -17,7 +17,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('addUser') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('addStudent') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="row">

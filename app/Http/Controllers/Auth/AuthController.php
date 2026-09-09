@@ -26,13 +26,31 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:4|confirmed',
+            'phone' => 'required|size:11',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+
         ]);
+
+        if ($request->hasFile('image')) {
+
+            $path = $request->file('image')->store('images', 'public');
+
+            $fileName = basename($path);
+        } else {
+
+            $fileName = 'default-user.png';
+        }
+
 
         User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'phone' => $validated['phone'],
+            'image' => $validated['image'] = $fileName,
         ]);
+
+
 
         return redirect()
             ->route('login')
@@ -49,7 +67,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('allUsers'))->with('success', 'Logged in successfully!');
+            return redirect()->intended(route('allStudents'))->with('success', 'Logged in successfully!');
         }
 
         return back()->withErrors([

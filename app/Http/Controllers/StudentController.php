@@ -12,13 +12,13 @@ class StudentController extends Controller
         return view('add-student');
     }
 
-    function allUsers(Request $request)
+    function allstudents(Request $request)
     {
         $student = Student::all();
         return view('students', ['students' => $student]);
     }
 
-    function addUser(Request $request)
+    function addStudent(Request $request)
     {
         $validated = $request->validate([
             'name'  => 'required|string',

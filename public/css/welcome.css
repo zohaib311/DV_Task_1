@@ -128,3 +128,147 @@
         align-items: flex-start !important;
     }
 }
+
+
+.user-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 5px 10px 5px 6px;
+
+    background: transparent;
+    color: var(--color-primary);
+
+    border: 2px solid var(--color-primary);
+    border-radius: 30px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+
+.user-nav-btn:hover {
+    background: var(--gradient-primary);
+    color: #fff;
+
+    border-color: transparent;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 15px rgba(108, 99, 255, 0.25);
+}
+
+
+/* User Profile Image */
+
+.user-nav-image {
+    width: 38px;
+    height: 38px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 2px solid var(--color-primary);
+}
+
+
+/* Arrow */
+
+.user-nav-arrow {
+    font-size: 10px;
+
+    margin-left: 2px;
+
+    transition: transform 0.3s ease;
+}
+
+
+.user-nav-btn[aria-expanded="true"] .user-nav-arrow {
+    transform: rotate(180deg);
+}
+
+
+/* =================================
+   Dropdown
+================================= */
+
+.user-nav-dropdown {
+    min-width: 210px;
+
+    margin-top: 8px !important;
+
+    padding: 7px;
+
+    border: 1px solid var(--color-outline);
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.95);
+
+    backdrop-filter: blur(12px);
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+
+
+.user-nav-dropdown .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 12px;
+
+    border-radius: 8px;
+
+    color: var(--color-primary);
+
+    font-weight: 500;
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+.user-nav-dropdown .dropdown-item:hover {
+    background: var(--gradient-primary);
+
+    color: #fff;
+
+    transform: translateX(2px);
+}
+
+
+
+.user-nav-dropdown .logout-item {
+    width: 100%;
+
+    color: #dc3545;
+
+    background: transparent;
+
+    border: none;
+
+    text-align: left;
+}
+
+
+.user-nav-dropdown .logout-item:hover {
+    background: #dc3545;
+
+    color: #fff;
+}
+
+
+
+.user-nav-dropdown .dropdown-divider {
+    border-color: var(--color-outline);
+
+    margin: 5px 0;
+}

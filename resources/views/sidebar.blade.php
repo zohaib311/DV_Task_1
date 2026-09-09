@@ -9,7 +9,7 @@
     <ul class="nav nav-pills flex-column gap-2 px-3">
 
         <li class="nav-item">
-            <a href="{{ route('allUsers') }}" class="sidebar-link nav-link">
+            <a href="{{ route('allStudents') }}" class="sidebar-link nav-link">
                 <span>All Students</span>
             </a>
         </li>
@@ -25,6 +25,18 @@
                 <span>All Courses</span>
             </a>
         </li>
+
+        {{-- <li class="nav-item">
+            <a href="{{ route('allEvents') }}" class="sidebar-link nav-link">
+                <span>All Events</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ route('allUsers') }}" class="sidebar-link nav-link">
+                <span>All Users</span>
+            </a>
+        </li> --}}
 
     </ul>
 

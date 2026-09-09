@@ -51,61 +51,101 @@
 
     <body>
 
-        <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
-            <div class="container-fluid px-4">
+        @auth
+            <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
+                <div class="container-fluid px-4">
 
-                <a class="navbar-brand fw-bold text-primary" href="{{ url('/') }}">
-                    My Form Task
-                </a>
+                    <a class="navbar-brand fw-bold text-primary" href="{{ url('/') }}">
+                        My Form Task
+                    </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent">
 
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Home</a>
-                        </li>
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Home</a>
+                            </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">About</a>
-                        </li>
-                    </ul>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">About</a>
+                            </li>
+                        </ul>
 
-                    <div class="d-flex align-items-center gap-3">
-                        @auth
-                            <span class="text-dark fw-semibold d-none d-sm-inline">
-                                Welcome, {{ auth()->user()->name }}
-                            </span>
+                        <div class="d-flex align-items-center gap-3">
 
-                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                                @csrf
+                            @auth
 
-                                <button type="submit" class="btn__logout">
-                                    Logout
-                                </button>
-                            </form>
-                        @else
-                            <div class="login__btns">
-                                <a href="{{ route('login') }}" class="btn__login">
-                                    Login
-                                </a>
+                                <div class="dropdown">
 
-                                <a href="{{ route('signup') }}" class="btn__signup">
-                                    SignUp
-                                </a>
-                            </div>
-                        @endauth
+                                    <button class="user-nav-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+                                        <img src="{{ asset('storage/images/' . auth()->user()->image) }}"
+                                            alt="{{ auth()->user()->name }}" class="user-nav-image">
+                                        <span class="d-none d-sm-inline">
+                                            {{ auth()->user()->name }}
+                                        </span>
+
+                                        <i class="bi bi-chevron-down user-nav-arrow"></i>
+
+                                    </button>
+
+
+                                    <ul class="dropdown-menu dropdown-menu-end user-nav-dropdown">
+
+                                        <li>
+                                            <a href="{{ route('profile.settings') }}" class="dropdown-item">
+                                                <i class="bi bi-person-gear"></i>
+                                                Profile Settings
+                                            </a>
+                                        </li>
+
+
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+
+
+                                        <li>
+                                            <form action="{{ route('logout') }}" method="POST">
+                                                @csrf
+
+                                                <button type="submit" class="dropdown-item logout-item">
+                                                    <i class="bi bi-box-arrow-right"></i>
+                                                    Logout
+                                                </button>
+                                            </form>
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+                            @else
+                                <div class="login__btns">
+
+                                    <a href="{{ route('login') }}" class="btn__login">
+                                        Login
+                                    </a>
+
+                                    <a href="{{ route('signup') }}" class="btn__signup">
+                                        SignUp
+                                    </a>
+
+                                </div>
+
+                            @endauth
+
+                        </div>
+
                     </div>
-
                 </div>
-            </div>
-        </nav>
-
+            </nav>
+        @endauth
 
         @auth
             @include('sidebar')
