@@ -9,13 +9,13 @@ class StudentController extends Controller
 {
     function create()
     {
-        return view('add-student');
+        return view('students.add-student');
     }
 
     function allstudents(Request $request)
     {
         $student = Student::all();
-        return view('students', ['students' => $student]);
+        return view('students.students', ['students' => $student]);
     }
 
     function addStudent(Request $request)
@@ -23,7 +23,7 @@ class StudentController extends Controller
         $validated = $request->validate([
             'name'  => 'required|string',
             'email' => 'required|email|unique:students,email',
-            'phone' => 'required|digits:11',
+            'phone' => 'required|size:11',
             'class' => 'required|string|min:2|max:10',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -44,6 +44,6 @@ class StudentController extends Controller
 
         Student::create($validated);
 
-        return redirect()->back()->with('success', 'User added successfully!');
+        return redirect()->route('allStudents')->with('success', 'User added successfully!');
     }
 }

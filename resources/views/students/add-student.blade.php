@@ -11,11 +11,6 @@
 
             <h2 class="text-center mb-4">Add New Student</h2>
 
-            @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
 
             <form action="{{ route('addStudent') }}" method="POST" enctype="multipart/form-data">
                 @csrf

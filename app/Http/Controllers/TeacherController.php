@@ -9,14 +9,14 @@ class TeacherController extends Controller
 {
     function create()
     {
-        return view('add-teacher');
+        return view('teachers.add-teacher');
     }
 
     function allTeachers()
     {
         $teachers = Teacher::all();
 
-        return view('teachers', [
+        return view('teachers.teachers', [
             'teachers' => $teachers
         ]);
     }

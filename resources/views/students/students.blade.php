@@ -13,6 +13,26 @@
 
                 <div class="card-header flex-auto bg-primary text-white">
                     <h4 class="mb-0">Students List</h4>
+
+                    @if (session('success'))
+                        <div class="alert alert-success" id="success-message">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    <script>
+                        setTimeout(function() {
+                            const message = document.getElementById('success-message');
+
+                            if (message) {
+                                message.style.transition = 'opacity 0.5s ease';
+                                message.style.opacity = '0';
+
+                                setTimeout(() => message.remove(), 500);
+                            }
+                        }, 2000);
+                    </script>
+
                     <div class=" add__user__btn">
                         <a href="{{ route('addStudentForm') }}" class="   nav-link  ">
 

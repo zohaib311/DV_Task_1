@@ -71,7 +71,7 @@ Route::prefix('event')->controller(EventController::class)->middleware('auth')->
 
 Route::prefix('users')->controller(UserController::class)->middleware('auth')->group(function () {
 
-    Route::get('/add', 'create')->name('addUserForm');
+    Route::get('/add', 'addUserForm')->name('addUserForm');
 
     Route::post('/add', 'addUser')->name('addUser');
 
