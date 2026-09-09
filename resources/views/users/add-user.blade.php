@@ -9,7 +9,7 @@
 
         <div class="add__form mx-auto">
 
-            <h2 class="text-center mb-4">Add New Course</h2>
+            <h2 class="text-center mb-4">Add New User</h2>
 
             @if (session('success'))
                 <div class="alert alert-success">
@@ -17,7 +17,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('addCourse') }}" method="POST">
+            <form action="{{ route('addUser') }}" method="POST">
                 @csrf
 
                 <div class="row">

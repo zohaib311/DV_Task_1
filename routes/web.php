@@ -69,7 +69,16 @@ Route::prefix('event')->controller(EventController::class)->middleware('auth')->
     Route::get('/show', 'allEvents')->name('allEvents');
 });
 
-Route::prefix('profile')->controller(UserController::class)->middleware('auth')->group(function () {
+Route::prefix('users')->controller(UserController::class)->middleware('auth')->group(function () {
+
+    Route::get('/add', 'create')->name('addUserForm');
+
+    Route::post('/add', 'addUser')->name('addUser');
+
+    Route::get('/show', 'allUsers')->name('allUsers');
+});
+
+Route::prefix('user/profile')->controller(UserController::class)->middleware('auth')->group(function () {
 
     Route::get('/add', 'create')->name('profile.settings');
 

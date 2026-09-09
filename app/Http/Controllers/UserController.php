@@ -8,4 +8,10 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     //
+    function allUsers()
+    {
+        //
+        $users = User::all();
+        return view('users.users', ['users' => $users]);
+    }
 }

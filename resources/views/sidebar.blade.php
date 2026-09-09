@@ -31,12 +31,12 @@
                 <span>All Events</span>
             </a>
         </li>
-        {{--
+
         <li class="nav-item">
             <a href="{{ route('allUsers') }}" class="sidebar-link nav-link">
                 <span>All Users</span>
             </a>
-        </li> --}}
+        </li>
 
     </ul>
 

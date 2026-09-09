@@ -13,11 +13,11 @@
 
                 <div class="card-header flex-auto bg-primary text-white">
 
-                    <h4 class="mb-0">Courses List</h4>
+                    <h4 class="mb-0">Users List</h4>
 
                     <div class="add__user__btn">
-                        <a href="{{ route('addCourseForm') }}" class="nav-link">
-                            <span>Add Course</span>
+                        <a href="{{ route('addUserForm') }}" class="nav-link">
+                            <span>Add User</span>
                         </a>
                     </div>
 
@@ -38,32 +38,40 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>#</th>
-                                    <th>Code</th>
+                                    <th>image</th>
                                     <th>Name</th>
-                                    <th>Description</th>
+                                    <th>Email</th>
+                                    <th>phone</th>
                                 </tr>
                             </thead>
 
                             <tbody>
 
-                                @forelse ($courses as $course)
+                                @forelse ($users as $user)
                                     <tr>
 
                                         <th>
-                                            {{ $course->id }}
+                                            {{ $user->id }}
                                         </th>
 
                                         <td>
-                                            <span class="badge bg-primary">
-                                                {{ $course->code }}
-                                            </span>
+                                            <img src="{{ asset('storage/images/' . $user->image) }}"
+                                                alt="{{ $user->name }}" class="user-image">
                                         </td>
-                                        <td class="fw-semibold">
-                                            {{ $course->name }}
+
+                                        <td class="">
+                                            {{ $user->name }}
                                         </td>
 
                                         <td>
-                                            {{ $course->description }}
+                                            <span class="">
+                                                {{ $user->email }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="">
+                                                {{ $user->phone }}
+                                            </span>
                                         </td>
 
                                     </tr>
@@ -72,7 +80,7 @@
 
                                     <tr>
                                         <td colspan="4" class="text-center py-4">
-                                            No courses found.
+                                            No users found.
                                         </td>
                                     </tr>
                                 @endforelse
