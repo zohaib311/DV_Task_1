@@ -37,6 +37,10 @@ Route::prefix('student')->controller(StudentController::class)->middleware('auth
 
     Route::post('/add', 'addStudent')->name('addStudent');
 
+    Route::get('/edit/{id}', 'editStudentForm')->name('editStudentForm');
+
+    Route::put('/update/{id}', 'updateStudent')->name('updateStudent');
+
     Route::get('/show', 'allStudents')->name('allStudents');
 });
 

@@ -1,0 +1,334 @@
+.action__buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+
+.action__btn {
+    width: 38px;
+    height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-size: 17px;
+
+    transition: all 0.3s ease;
+}
+
+
+/* Edit */
+
+.action__edit {
+    color: var(--color-primary);
+
+    background: rgba(108, 99, 255, 0.10);
+
+    border: 1px solid rgba(108, 99, 255, 0.20);
+}
+
+.action__edit:hover {
+    color: #fff;
+
+    background: var(--color-primary);
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 12px rgba(108, 99, 255, 0.25);
+}
+
+
+/* Delete */
+
+.action__delete {
+    color: #dc3545;
+
+    background: rgba(220, 53, 69, 0.08);
+
+    border: 1px solid rgba(220, 53, 69, 0.18);
+}
+
+.action__delete:hover {
+    color: #fff;
+
+    background: #dc3545;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 12px rgba(220, 53, 69, 0.25);
+}
+
+.user-image {
+    width: 85px;
+    height: 85px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    border: 3px solid #ffffff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+    background: #f5f6ff;
+    padding: 2px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-image:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.16);
+}
+
+/* =========================================
+   IMAGE SECTION
+========================================= */
+
+.image__section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 5px;
+}
+
+
+/* Both image boxes */
+
+.current__image__box,
+.change__image__box {
+    min-height: 190px;
+    padding: 20px;
+    border-radius: 15px;
+    background: #fafaff;
+    border: 1px solid rgba(108, 99, 255, 0.13);
+    transition: all 0.25s ease;
+}
+
+.current__image__box:hover,
+.change__image__box:hover {
+    border-color: rgba(108, 99, 255, 0.28);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+
+/* Section heading */
+
+.image__section__title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.image__section__icon {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: var(--color-primary);
+    background: rgba(108, 99, 255, 0.10);
+    font-size: 17px;
+}
+
+.image__section__title h6 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #333;
+}
+
+.image__section__title small {
+    display: block;
+    margin-top: 3px;
+    color: #888;
+    font-size: 12px;
+}
+
+
+/* Current image preview */
+
+.current__image__preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 95px;
+}
+
+
+/* Image */
+
+.user-image {
+    width: 88px;
+    height: 88px;
+    object-fit: cover;
+    border-radius: 50%;
+    padding: 3px;
+    background: #fff;
+    border: 2px solid rgba(108, 99, 255, 0.20);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.10);
+    transition: all 0.3s ease;
+}
+
+.user-image:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+}
+
+
+/* =========================================
+   CHANGE IMAGE / UPLOAD
+========================================= */
+
+.upload__box {
+    min-height: 82px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 15px;
+    border: 1px dashed rgba(108, 99, 255, 0.35);
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.upload__box:hover {
+    border-color: var(--color-primary);
+    background: rgba(108, 99, 255, 0.04);
+    transform: translateY(-1px);
+}
+
+.upload__icon {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(108, 99, 255, 0.10);
+    color: var(--color-primary);
+    font-size: 18px;
+}
+
+.upload__text span {
+    display: block;
+    color: #444;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.upload__text small {
+    display: block;
+    margin-top: 4px;
+    color: #999;
+    font-size: 11px;
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.form__actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 5px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.cancel__btn,
+.update__btn {
+    min-height: 44px;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+
+/* Back button */
+
+.cancel__btn {
+    color: #666;
+    background: #f5f5f5;
+    border: 1px solid #e5e5e5;
+}
+
+.cancel__btn:hover {
+    color: #333;
+    background: #eeeeee;
+    transform: translateY(-1px);
+}
+
+
+/* Update button */
+
+.update__btn {
+    border: none;
+    color: #fff;
+    background: var(--color-primary);
+    box-shadow: 0 5px 14px rgba(108, 99, 255, 0.20);
+}
+
+.update__btn:hover {
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px rgba(108, 99, 255, 0.28);
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 767px) {
+
+    .edit__header {
+        margin-bottom: 22px;
+    }
+
+    .edit__header h2 {
+        font-size: 23px;
+    }
+
+    .edit__header p {
+        font-size: 12px;
+    }
+
+    .edit__icon {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+    }
+
+    .image__section {
+        grid-template-columns: 1fr;
+    }
+
+    .current__image__box,
+    .change__image__box {
+        min-height: auto;
+    }
+
+    .form__actions {
+        flex-direction: column-reverse;
+    }
+
+    .cancel__btn,
+    .update__btn {
+        width: 100%;
+        text-align: center;
+    }
+}

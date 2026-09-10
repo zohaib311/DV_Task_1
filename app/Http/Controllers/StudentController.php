@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
@@ -45,5 +46,40 @@ class StudentController extends Controller
         Student::create($validated);
 
         return redirect()->route('allStudents')->with('success', 'User added successfully!');
+    }
+
+    function editStudentForm($id)
+    {
+        $student = Student::findOrFail($id);
+
+        return view('students.edit-student', [
+            'student' => $student
+        ]);
+    }
+
+    function updateStudent(Request $request, $id)
+    {
+        $student = Student::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:students,email,' . $student->id,
+            'phone' => 'required|digits:11',
+            'class' => 'required|string|min:2|max:10',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+
+            $path = $request->file('image')->store('images', 'public');
+
+            $validated['image'] = basename($path);
+        }
+
+        $student->update($validated);
+
+        return redirect()
+            ->route('allStudents')
+            ->with('success', 'Student updated successfully!');
     }
 }

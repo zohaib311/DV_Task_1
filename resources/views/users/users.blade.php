@@ -67,7 +67,7 @@
                                             {{ $user->id }}
                                         </th>
 
-                                        <td>
+                                        <td class="user__image">
                                             <img src="{{ asset('storage/images/' . $user->image) }}"
                                                 alt="{{ $user->name }}" class="user-image">
                                         </td>
