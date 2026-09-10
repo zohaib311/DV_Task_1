@@ -57,28 +57,19 @@ class CourseController extends Controller
 
     function updateCourse(Request $request, $id)
     {
-        $student = Course::findOrFail($id);
+        $course = Course::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email|unique:students,email,' . $student->id,
-            'phone' => 'required|digits:11',
-            'class' => 'required|string|min:2|max:10',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'code' => 'required|string|max:50',
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:1000',
         ]);
 
-        if ($request->hasFile('image')) {
-
-            $path = $request->file('image')->store('images', 'public');
-
-            $validated['image'] = basename($path);
-        }
-
-        $student->update($validated);
+        $course->update($validated);
 
         return redirect()
             ->route('allCourses')
-            ->with('success', 'Student updated successfully!');
+            ->with('success', 'course updated successfully!');
     }
 
     function deleteCourse($id)

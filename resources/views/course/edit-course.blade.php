@@ -14,8 +14,7 @@
 
             <div class="edit__header">
                 <div>
-                    <h2>Update Student</h2>
-                    <p>Edit student information and update the profile.</p>
+                    <h2>Update Course</h2>
                 </div>
 
             </div>
@@ -45,148 +44,62 @@
             @endif
 
 
-            <form action="{{ route('updateStudent', $student->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('updateCourse', $course->id) }}" method="POST" enctype="multipart/form-data">
 
                 @csrf
                 @method('PUT')
 
                 <div class="row g-4">
 
-                    <div class="col-md-6">
 
-                        <label for="name" class="form-label">
-                            Name
+                    <div class="col-md-6 mb-3">
+                        <label for="code" class="form-label">
+                            Course Code
                         </label>
 
-                        <input type="text" name="name" id="name" value="{{ old('name', $student->name) }}"
-                            class="form-control @error('name') is-invalid @enderror" placeholder="Enter student name">
+                        <input type="text" name="code" id="code" value="{{ old('code', $course->code) }}"
+                            class="form-control @error('code') is-invalid @enderror" placeholder="e.g. CS101">
+
+                        @error('code')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label">
+                            Course Name
+                        </label>
+
+                        <input type="text" name="name" id="name" value="{{ old('name', $course->name) }}"
+                            class="form-control @error('name') is-invalid @enderror" placeholder="Enter course name">
 
                         @error('name')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
-
                     </div>
 
 
-                    <div class="col-md-6">
-
-                        <label for="email" class="form-label">
-                            Email
+                    <div class="col-12 mb-3">
+                        <label for="description" class="form-label">
+                            Course Description
                         </label>
 
-                        <input type="email" name="email" id="email" value="{{ old('email', $student->email) }}"
-                            class="form-control @error('email') is-invalid @enderror" placeholder="Enter student email">
+                        <textarea name="description" id="description" rows="5"
+                            class="form-control @error('description') is-invalid @enderror"
+                            placeholder="Enter course description (maximum 100 words)">{{ old('description', $course->description) }}</textarea>
 
-                        @error('email')
+                        @error('description')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
-
                     </div>
 
-                    <div class="col-md-6">
-
-                        <label for="class" class="form-label">
-                            Class
-                        </label>
-
-                        <input type="text" name="class" id="class" value="{{ old('class', $student->class) }}"
-                            class="form-control @error('class') is-invalid @enderror" placeholder="Enter class">
-
-                        @error('class')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <label for="phone" class="form-label">
-                            Phone
-                        </label>
-
-                        <input type="text" name="phone" id="phone" value="{{ old('phone', $student->phone) }}"
-                            class="form-control @error('phone') is-invalid @enderror" placeholder="03XXXXXXXXX">
-
-                        @error('phone')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-
-                    </div>
-
-
-                    <div class="col-12">
-
-                        <div class="image__section">
-
-                            <div class="current__image__box">
-
-                                <div class="image__section__title">
-                                    <div class="image__section__icon">
-                                        <i class="bi bi-image"></i>
-                                    </div>
-
-                                    <div>
-                                        <h6>Current Image</h6>
-                                        <small>Your current profile image</small>
-                                    </div>
-                                </div>
-
-                                <div class="current__image__preview">
-                                    <img src="{{ asset('storage/images/' . $student->image) }}" alt="{{ $student->name }}"
-                                        class="user-image">
-                                </div>
-
-                            </div>
-
-
-                            <div class="change__image__box">
-
-                                <div class="image__section__title">
-                                    <div class="image__section__icon">
-                                        <i class="bi bi-cloud-arrow-up"></i>
-                                    </div>
-
-                                    <div>
-                                        <h6>Change Image</h6>
-                                        <small>Upload a new profile image</small>
-                                    </div>
-                                </div>
-
-                                <label for="image" class="upload__box">
-
-                                    <div class="upload__icon">
-                                        <i class="bi bi-upload"></i>
-                                    </div>
-
-                                    <div class="upload__text">
-                                        <span>Choose a new image</span>
-                                        <small>JPG, JPEG or PNG • Max 2MB</small>
-                                    </div>
-
-                                </label>
-
-                                <input type="file" name="image" id="image" class="d-none">
-
-                                @error('image')
-                                    <div class="text-danger small mt-2">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-
-                            </div>
-
-                        </div>
-
-                    </div>
 
 
                     <div class="col-12">
@@ -200,7 +113,7 @@
 
                             <button type="submit" class="update__btn">
                                 <i class="bi bi-check2-circle me-1"></i>
-                                Update Student
+                                Update Course
                             </button>
 
                         </div>
