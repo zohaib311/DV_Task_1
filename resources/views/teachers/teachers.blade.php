@@ -2,6 +2,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/students.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/universal/action-buttons.css') }}">
 @endsection
 
 @section('content')
@@ -89,6 +90,24 @@
                                             <span class="badge bg-primary">
                                                 {{ $teacher->course }}
                                             </span>
+
+                                        </td>
+
+                                        <td>
+                                            <div class="action__buttons">
+
+                                                <a href="{{ route('editTeacherForm', $teacher->id) }}"
+                                                    class="action__btn action__edit" title="Edit Student">
+
+                                                    <i class="bi bi-pencil-square"></i>
+
+                                                </a>
+
+                                                <a href="#" class="action__btn action__delete" title="Delete Student">
+                                                    <i class="bi bi-trash3"></i>
+                                                </a>
+
+                                            </div>
                                         </td>
 
                                     </tr>

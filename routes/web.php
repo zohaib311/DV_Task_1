@@ -50,6 +50,10 @@ Route::prefix('teacher')->controller(TeacherController::class)->middleware('auth
 
     Route::post('/add', 'addTeacher')->name('addTeacher');
 
+    Route::get('/edit/{id}', 'editTeacherForm')->name('editTeacherForm');
+
+    Route::put('/update/{id}', 'updateTeacher')->name('updateTeacher');
+
     Route::get('/show', 'allTeachers')->name('allTeachers');
 });
 
