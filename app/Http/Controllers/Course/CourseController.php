@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Course;
 use App\Http\Controllers\Controller;
 use App\Models\Course\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CourseController extends Controller
 {
@@ -43,5 +44,57 @@ class CourseController extends Controller
         return view('course.courses', [
             'courses' => $courses
         ]);
+    }
+
+    function editCourseForm($id)
+    {
+        $course = Course::findOrFail($id);
+
+        return view('course.edit-course', [
+            'course' => $course
+        ]);
+    }
+
+    function updateCourse(Request $request, $id)
+    {
+        $student = Course::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:students,email,' . $student->id,
+            'phone' => 'required|digits:11',
+            'class' => 'required|string|min:2|max:10',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+
+            $path = $request->file('image')->store('images', 'public');
+
+            $validated['image'] = basename($path);
+        }
+
+        $student->update($validated);
+
+        return redirect()
+            ->route('allCourses')
+            ->with('success', 'Student updated successfully!');
+    }
+
+    function deleteCourse($id)
+    {
+        $course = Course::findOrFail($id);
+
+        // Delete image from storage
+        if ($course->image && $course->image !== 'default-user.png') {
+            Storage::disk('public')->delete('images/' . $course->image);
+        }
+
+        // Delete course from database
+        $course->delete();
+
+        return redirect()
+            ->route('allCourses')
+            ->with('success', 'Course deleted successfully!');
     }
 }

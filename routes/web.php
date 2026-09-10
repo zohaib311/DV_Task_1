@@ -67,6 +67,12 @@ Route::prefix('course')->controller(CourseController::class)->middleware('auth')
 
     Route::post('/add', 'addCourse')->name('addCourse');
 
+    Route::get('/edit/{id}', 'editCourseForm')->name('editCourseForm');
+
+    Route::put('/update/{id}', 'updateCourse')->name('updateCourse');
+
+    Route::delete('/delete/{id}', 'deleteCourse')->name('deleteCourse');
+
     Route::get('/show', 'allCourses')->name('allCourses');
 });
 
