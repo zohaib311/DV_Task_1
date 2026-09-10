@@ -56,6 +56,8 @@ Route::prefix('teacher')->controller(TeacherController::class)->middleware('auth
 
     Route::put('/update/{id}', 'updateTeacher')->name('updateTeacher');
 
+    Route::delete('/delete/{id}', 'deleteTeacher')->name('deleteTeacher');
+
     Route::get('/show', 'allTeachers')->name('allTeachers');
 });
 

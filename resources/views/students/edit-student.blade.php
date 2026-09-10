@@ -2,6 +2,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/addstudent.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/universal/edit.css') }}">
     <link rel="stylesheet" href="{{ asset('css/universal/action-buttons.css') }}">
 @endsection
 

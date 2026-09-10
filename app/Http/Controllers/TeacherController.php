@@ -89,13 +89,10 @@ class TeacherController extends Controller
     function deleteTeacher($id)
     {
         $teacher = Teacher::findOrFail($id);
-
-        // Delete image from storage
         if ($teacher->image && $teacher->image !== 'default-user.png') {
             Storage::disk('public')->delete('images/' . $teacher->image);
         }
 
-        // Delete teacher from database
         $teacher->delete();
 
         return redirect()
