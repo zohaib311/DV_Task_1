@@ -61,4 +61,41 @@ class UserController extends Controller
     {
         return view('users.profile-setting');
     }
+
+
+    function editUserForm($id)
+    {
+        $user = User::findOrFail($id);
+
+        return view('users.edit-user', [
+            'user' => $user
+        ]);
+    }
+
+    function updateuser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:4',
+            'phone' => 'required|digits:11|unique:users,phone',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+
+            $path = $request->file('image')->store('images', 'public');
+
+            $validated['image'] = basename($path);
+        }
+
+
+        $user->update($validated);
+
+        return redirect()
+            ->route('allUsers')
+            ->with('success', 'User updated successfully!');
+    }
 }

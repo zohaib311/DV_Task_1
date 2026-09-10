@@ -2,6 +2,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/students.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/universal/action-buttons.css') }}">
 @endsection
 
 @section('content')
@@ -55,6 +56,7 @@
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>phone</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
 
@@ -85,6 +87,24 @@
                                             <span class="">
                                                 {{ $user->phone }}
                                             </span>
+                                        </td>
+
+                                        <td>
+                                            <div class="action__buttons">
+
+                                                <a href="{{ route('editUserForm', $user->id) }}"
+                                                    class="action__btn action__edit" title="Edit Course">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+
+                                                <button type="button" class="action__btn action__delete"
+                                                    title="Delete Course" data-bs-toggle="modal"
+                                                    data-bs-target="#deleteModal{{ $user->id }}">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+
+                                            </div>
+
                                         </td>
 
                                     </tr>

@@ -106,7 +106,7 @@
 
                         <div class="form__actions">
 
-                            <a href="{{ route('allStudents') }}" class="cancel__btn">
+                            <a href="{{ route('allCourses') }}" class="cancel__btn">
                                 <i class="bi bi-arrow-left me-1"></i>
                                 Back
                             </a>

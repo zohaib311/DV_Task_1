@@ -91,6 +91,12 @@ Route::prefix('users')->controller(UserController::class)->middleware('auth')->g
 
     Route::post('/add', 'addUser')->name('addUser');
 
+    Route::get('/edit/{id}', 'editUserForm')->name('editUserForm');
+
+    Route::put('/update/{id}', 'updateUser')->name('updateUser');
+
+    Route::delete('/delete/{id}', 'deleteUser')->name('deleteUser');
+
     Route::get('/show', 'allUsers')->name('allUsers');
 });
 
