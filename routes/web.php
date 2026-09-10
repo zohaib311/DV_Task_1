@@ -41,6 +41,8 @@ Route::prefix('student')->controller(StudentController::class)->middleware('auth
 
     Route::put('/update/{id}', 'updateStudent')->name('updateStudent');
 
+    Route::delete('/delete/{id}', 'deleteStudent')->name('deleteStudent');
+
     Route::get('/show', 'allStudents')->name('allStudents');
 });
 

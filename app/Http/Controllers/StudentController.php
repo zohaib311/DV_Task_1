@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
@@ -81,5 +82,22 @@ class StudentController extends Controller
         return redirect()
             ->route('allStudents')
             ->with('success', 'Student updated successfully!');
+    }
+
+    function deleteStudent($id)
+    {
+        $student = Student::findOrFail($id);
+
+        // Delete image from storage
+        if ($student->image && $student->image !== 'default-user.png') {
+            Storage::disk('public')->delete('images/' . $student->image);
+        }
+
+        // Delete student from database
+        $student->delete();
+
+        return redirect()
+            ->route('allStudents')
+            ->with('success', 'Student deleted successfully!');
     }
 }

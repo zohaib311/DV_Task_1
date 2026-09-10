@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Teacher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TeacherController extends Controller
 {
@@ -83,5 +84,22 @@ class TeacherController extends Controller
         return redirect()
             ->route('allTeachers')
             ->with('success', 'Teacher updated successfully!');
+    }
+
+    function deleteTeacher($id)
+    {
+        $teacher = Teacher::findOrFail($id);
+
+        // Delete image from storage
+        if ($teacher->image && $teacher->image !== 'default-user.png') {
+            Storage::disk('public')->delete('images/' . $teacher->image);
+        }
+
+        // Delete teacher from database
+        $teacher->delete();
+
+        return redirect()
+            ->route('allTeachers')
+            ->with('success', 'teacher deleted successfully!');
     }
 }
