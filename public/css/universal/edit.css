@@ -78,9 +78,9 @@
 
 /* Image */
 
-.user-image {
+.current__image__preview .user-image {
     width: 88px;
-    /* height: 88px; */
+    height: 88px;
     object-fit: cover;
     border-radius: 50%;
     padding: 3px;

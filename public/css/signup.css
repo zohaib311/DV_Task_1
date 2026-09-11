@@ -1,254 +1,196 @@
+/* ===================================================
+   SIGNUP PAGE STYLING (FULLY RESPONSIVE)
+=================================================== */
+
 .signup__page {
     width: 100%;
-    min-height: calc(100vh - 64px);
-
+    min-height: 100vh;
     position: relative;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
-    padding: 50px 30px;
-
+    padding: 40px 20px;
     background-image: url("../images/punjab-university-1.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-attachment: fixed;
 }
-
 
 .signup__overlay {
     position: absolute;
-
     inset: 0;
-
-    background:
-        linear-gradient(135deg,
-            rgba(25, 25, 55, 0.68),
-            rgba(70, 50, 120, 0.48));
+    background: linear-gradient(135deg,
+        rgba(15, 23, 42, 0.75) 0%,
+        rgba(30, 27, 75, 0.70) 50%,
+        rgba(108, 99, 255, 0.50) 100%);
+    backdrop-filter: blur(4px);
+    z-index: 1;
 }
-
 
 .signup__content {
     width: 100%;
-    max-width: 900px;
-
+    max-width: 840px;
     position: relative;
     z-index: 2;
+    margin: auto;
 }
-
 
 .signup__form {
     width: 100%;
-
     padding: 40px 45px;
-
-    background: rgba(255, 255, 255, 0.93);
-
-    border: 1px solid rgba(255, 255, 255, 0.7);
-
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 20px;
-
-    box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.22);
-
-    backdrop-filter: blur(14px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(16px);
 }
-
 
 .signup__heading {
     text-align: center;
-
-    margin-bottom: 30px;
+    margin-bottom: 28px;
 }
-
 
 .signup__heading h2 {
-    margin: 0 0 8px;
-
-    color: var(--color-primary);
-
-    font-size: 32px;
-
-    font-weight: 700;
+    margin: 0 0 6px;
+    color: var(--color-primary, #6c63ff);
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
-
 
 .signup__heading p {
     margin: 0;
-
-    color: #777;
-
+    color: #64748b;
     font-size: 14px;
 }
 
-
 .signup__form .alert {
-    border-radius: 10px;
-
+    border-radius: 12px;
     font-size: 14px;
-
     margin-bottom: 20px;
 }
 
-
 .signup__form .form-label {
-    margin-bottom: 8px;
-
-    color: var(--color-primary);
-
-    font-size: 14px;
-
+    margin-bottom: 6px;
+    color: #334155;
+    font-size: 13px;
     font-weight: 600;
 }
 
-
 .signup__form .form-control {
     height: 48px;
-
-    padding: 11px 14px;
-
-    border: 1px solid var(--color-outline);
-
-    border-radius: 9px;
-
-    background: rgba(255, 255, 255, 0.95);
-
+    padding: 10px 14px;
+    border: 1.5px solid var(--color-outline, #e2e8f0);
+    border-radius: 10px;
+    background: #f8fafc;
     font-size: 14px;
-
-    transition: all 0.3s ease;
+    color: #1e293b;
+    transition: all 0.25s ease;
 }
 
-
 .signup__form .form-control:focus {
-    border-color: var(--color-secondary);
-
-    background: #fff;
-
-    box-shadow:
-        0 0 0 4px rgba(139, 92, 246, 0.10);
-
+    background: #ffffff;
+    border-color: var(--color-primary, #6c63ff);
+    box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.12);
     outline: none;
 }
 
-
 .signup__form .form-control::placeholder {
-    color: #aaa;
+    color: #94a3b8;
 }
 
+.signup__form input[type="file"]::file-selector-button {
+    padding: 6px 12px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 6px;
+    background: var(--gradient-primary, linear-gradient(135deg, #6c63ff, #8b5cf6));
+    color: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
 
 .signup__button {
     width: 100%;
     height: 50px;
-
-    margin-top: 8px;
-
+    margin-top: 10px;
     border: none;
-    border-radius: 10px;
-
-    background: var(--gradient-primary);
-
+    border-radius: 12px;
+    background: var(--gradient-primary, linear-gradient(135deg, #6c63ff, #8b5cf6));
     color: #fff;
-
     font-size: 15px;
-
     font-weight: 600;
-
     cursor: pointer;
-
     transition: all 0.3s ease;
+    box-shadow: 0 6px 18px rgba(108, 99, 255, 0.28);
 }
-
 
 .signup__button:hover {
     transform: translateY(-2px);
-
-    box-shadow:
-        0 9px 22px rgba(108, 99, 255, 0.28);
+    box-shadow: 0 9px 24px rgba(108, 99, 255, 0.38);
 }
-
 
 .signup__button:active {
     transform: translateY(0);
 }
 
-
 .signup__login {
     margin-top: 20px;
-
     text-align: center;
-
-    color: #777;
-
+    color: #64748b;
     font-size: 14px;
 }
 
-
 .signup__login a {
-    margin-left: 5px;
-
-    color: var(--color-secondary);
-
+    margin-left: 4px;
+    color: var(--color-primary, #6c63ff);
     font-weight: 600;
-
     text-decoration: none;
-
-    transition: color 0.3s ease;
+    transition: color 0.2s ease;
 }
-
 
 .signup__login a:hover {
-    color: var(--color-primary);
+    color: var(--color-secondary, #8b5cf6);
+    text-decoration: underline;
 }
 
+/* ===================================================
+   RESPONSIVENESS (TABLETS & MOBILE)
+=================================================== */
 
 @media (max-width: 768px) {
-
     .signup__page {
-        min-height: calc(100vh - 64px);
-
-        padding: 35px 20px;
+        padding: 30px 14px;
+        background-attachment: scroll;
     }
 
-
     .signup__form {
-        padding: 35px 25px;
-
+        padding: 28px 18px;
         border-radius: 16px;
     }
 
-
     .signup__heading h2 {
-        font-size: 28px;
+        font-size: 24px;
     }
-
 }
 
-
-@media (max-width: 576px) {
-
+@media (max-width: 480px) {
     .signup__page {
-        padding: 25px 15px;
+        padding: 20px 10px;
     }
-
 
     .signup__form {
-        padding: 30px 20px;
+        padding: 22px 14px;
     }
-
 
     .signup__heading {
-        margin-bottom: 25px;
+        margin-bottom: 20px;
     }
-
 
     .signup__heading h2 {
-        font-size: 25px;
+        font-size: 22px;
     }
-
-
-    .signup__form .form-control {
-        height: 46px;
-    }
-
 }

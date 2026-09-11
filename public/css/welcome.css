@@ -1,274 +1,234 @@
-.navbar {
-    height: 64px;
-    z-index: 1060;
-
-    background: rgba(255, 255, 255, 0.85) !important;
-    backdrop-filter: blur(10px);
-
-    border-bottom: 1px solid var(--color-outline);
+:root {
+    --color-primary: #6c63ff;
+    --color-secondary: #8b5cf6;
+    --color-outline: #e2e8f0;
+    --color-dark: #1e293b;
+    --color-light: #f8fafc;
+    --gradient-primary: linear-gradient(135deg, #6c63ff 0%, #8b5cf6 100%);
+    --navbar-height: 64px;
+    --sidebar-width: 260px;
 }
 
+* {
+    box-sizing: border-box;
+}
 
+body {
+    min-height: 100vh;
+    background-color: #f8fafc;
+    color: #334155;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+body.sidebar-open {
+    overflow: hidden;
+}
+
+/* ===================================================
+   NAVBAR STYLES
+=================================================== */
+
+.navbar {
+    height: var(--navbar-height);
+    z-index: 1060;
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-outline);
+    transition: all 0.3s ease;
+}
 
 .navbar-brand {
     color: var(--color-primary) !important;
-    font-size: 22px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    text-decoration: none;
 }
 
-
-.navbar .nav-link {
+/* Mobile Sidebar Toggle Hamburger Button */
+.sidebar-toggle-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1.5px solid var(--color-outline);
     color: var(--color-primary);
-    font-weight: 500;
-    position: relative;
-}
-
-.navbar .nav-link:hover {
-    color: var(--color-secondary);
-}
-
-
-.login__btns {
     display: flex;
     align-items: center;
-    gap: 10px;
-}
-
-.login__btns a {
-    display: inline-flex;
-    align-items: center;
     justify-content: center;
-
-    padding: 8px 18px;
-    border-radius: 8px;
-
-    text-decoration: none;
-    font-weight: 500;
-
-    transition: all 0.3s ease;
-}
-
-.btn__login {
-    background: var(--gradient-primary);
-    color: #fff;
-    border: 2px solid transparent;
-}
-
-.btn__login:hover {
-    background: var(--gradient-primary);
-    color: #fff;
-
-    border-color: transparent;
-
-    transform: translateY(-2px);
-
-    box-shadow: 0 5px 15px rgba(108, 99, 255, 0.25);
-}
-
-.btn__signup {
-    background-color: transparent;
-    color: var(--color-primary);
-    border: 2px solid var(--color-primary);
-}
-
-.btn__signup:hover {
-
-    border-color: transparent;
-
-    transform: translateY(-2px);
-
-    box-shadow: 0 5px 15px rgba(108, 99, 255, 0.25);
-}
-
-
-
-.btn__logout {
-    padding: 8px 18px;
-
-    background: transparent;
-    color: var(--color-primary);
-
-    border: 2px solid var(--color-primary);
-    border-radius: 8px;
-
-    font-weight: 500;
-
+    font-size: 20px;
     cursor: pointer;
-
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
-.btn__logout:hover {
-    background: var(--gradient-primary);
-    color: #fff;
-
-    border-color: transparent;
-
-    transform: translateY(-2px);
-
-    box-shadow: 0 5px 15px rgba(108, 99, 255, 0.25);
+.sidebar-toggle-btn:hover {
+    background: rgba(108, 99, 255, 0.08);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 }
 
-
-@media (max-width: 991px) {
-
-    .navbar {
-        height: auto;
-        min-height: 64px;
-    }
-
-    .navbar-collapse {
-        padding: 15px 0;
-    }
-
-    .login__btns {
-        margin-top: 10px;
-    }
-
-    .d-flex.align-items-center.gap-3 {
-        align-items: flex-start !important;
-    }
+.sidebar-toggle-btn:active {
+    transform: scale(0.95);
 }
 
+/* Backdrop Overlay for Mobile Drawer */
+.sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1065;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ===================================================
+   USER DROPDOWN IN NAVBAR
+=================================================== */
 
 .user-nav-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-
-    padding: 5px 10px 5px 6px;
-
-    background: transparent;
+    padding: 4px 12px 4px 5px;
+    background: #ffffff;
     color: var(--color-primary);
-
-    border: 2px solid var(--color-primary);
+    border: 1.5px solid var(--color-outline);
     border-radius: 30px;
-
     font-weight: 600;
-
+    font-size: 14px;
     cursor: pointer;
-
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
-
 
 .user-nav-btn:hover {
-    background: var(--gradient-primary);
-    color: #fff;
-
-    border-color: transparent;
-
-    transform: translateY(-2px);
-
-    box-shadow: 0 5px 15px rgba(108, 99, 255, 0.25);
+    border-color: var(--color-primary);
+    background: rgba(108, 99, 255, 0.04);
+    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.15);
 }
 
-
-/* User Profile Image */
-
 .user-nav-image {
-    width: 38px;
-    height: 38px;
-
+    width: 34px;
+    height: 34px;
     object-fit: cover;
-
     border-radius: 50%;
-
     border: 2px solid var(--color-primary);
 }
 
-
-/* Arrow */
-
-.user-nav-arrow {
-    font-size: 10px;
-
-    margin-left: 2px;
-
-    transition: transform 0.3s ease;
+.user-nav-name {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
+.user-nav-arrow {
+    font-size: 11px;
+    color: #64748b;
+    transition: transform 0.25s ease;
+}
 
 .user-nav-btn[aria-expanded="true"] .user-nav-arrow {
     transform: rotate(180deg);
 }
 
-
-/* =================================
-   Dropdown
-================================= */
-
 .user-nav-dropdown {
-    min-width: 210px;
-
+    min-width: 220px;
     margin-top: 8px !important;
-
-    padding: 7px;
-
+    padding: 8px;
     border: 1px solid var(--color-outline);
-    border-radius: 12px;
-
-    background: rgba(255, 255, 255, 0.95);
-
-    backdrop-filter: blur(12px);
-
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
 }
-
-
 
 .user-nav-dropdown .dropdown-item {
     display: flex;
     align-items: center;
     gap: 10px;
-
-    padding: 10px 12px;
-
-    border-radius: 8px;
-
-    color: var(--color-primary);
-
+    padding: 10px 14px;
+    border-radius: 10px;
+    color: #334155;
     font-weight: 500;
-
-    transition:
-        background 0.25s ease,
-        color 0.25s ease,
-        transform 0.25s ease;
+    font-size: 14px;
+    transition: all 0.2s ease;
 }
-
 
 .user-nav-dropdown .dropdown-item:hover {
     background: var(--gradient-primary);
-
-    color: #fff;
-
-    transform: translateX(2px);
+    color: #ffffff;
+    transform: translateX(3px);
 }
 
-
+.user-nav-dropdown .dropdown-item:hover i {
+    color: #ffffff;
+}
 
 .user-nav-dropdown .logout-item {
     width: 100%;
-
-    color: #dc3545;
-
+    color: #ef4444;
     background: transparent;
-
     border: none;
-
     text-align: left;
 }
 
-
 .user-nav-dropdown .logout-item:hover {
-    background: #dc3545;
-
-    color: #fff;
+    background: #ef4444 !important;
+    color: #ffffff !important;
 }
-
-
 
 .user-nav-dropdown .dropdown-divider {
     border-color: var(--color-outline);
+    margin: 6px 0;
+}
 
-    margin: 5px 0;
+/* ===================================================
+   MAIN CONTENT LAYOUT
+=================================================== */
+
+.main-content {
+    min-height: calc(100vh - var(--navbar-height));
+    margin-top: var(--navbar-height);
+    transition: margin-left 0.3s ease;
+}
+
+/* Desktop layout with sidebar */
+@media (min-width: 992px) {
+    body.has-sidebar .main-content {
+        margin-left: var(--sidebar-width);
+        padding: 24px 28px;
+    }
+}
+
+/* Mobile & Tablet layout with sidebar */
+@media (max-width: 991.98px) {
+    body.has-sidebar .main-content {
+        margin-left: 0;
+        padding: 18px 14px;
+    }
+}
+
+/* Guest (Login / Signup) layout */
+.main-content.guest-layout {
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh !important;
+    width: 100vw !important;
+    max-width: 100% !important;
+}
+
+.content-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
 }

@@ -1,154 +1,108 @@
-.add__form_cont {
-    min-height: calc(100vh - 64px);
+/* ===================================================
+   ADD / EDIT FORM CONTAINER & STYLING
+=================================================== */
 
+.add__form_cont {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    padding-top: 100px;
-    padding-bottom: 40px;
+    padding: 10px 0 30px;
 }
-
-
-
 
 .add__form {
     width: 100%;
-    max-width: 900px;
-
-    padding: 35px;
-
-    background: rgba(255, 255, 255, 0.85);
+    max-width: 860px;
+    padding: 35px 40px;
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
-
-    border: 1px solid rgba(255, 255, 255, 0.7);
-
+    border: 1px solid var(--color-outline, #e2e8f0);
     border-radius: 20px;
-
-    box-shadow: 0 15px 40px rgba(108, 99, 255, 0.12);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.04);
 }
-
-
 
 .add__form h2 {
-    color: var(--color-primary);
-
+    color: var(--color-primary, #6c63ff);
     font-weight: 700;
-
-    margin-bottom: 30px !important;
+    font-size: 26px;
+    margin-bottom: 24px;
 }
-
-
 
 .add__form .form-label {
-    color: var(--color-primary);
-
+    color: #334155;
     font-weight: 600;
-
-    margin-bottom: 8px;
+    font-size: 13.5px;
+    margin-bottom: 7px;
 }
-
 
 .add__form .form-control {
     min-height: 48px;
-
-    padding: 10px 15px;
-
-    border: 1px solid var(--color-outline);
-
+    padding: 10px 14px;
+    border: 1.5px solid var(--color-outline, #e2e8f0);
     border-radius: 10px;
-
-    background: rgba(255, 255, 255, 0.9);
-
-    transition:
-        border-color 0.3s ease,
-        box-shadow 0.3s ease;
+    background: #f8fafc;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.25s ease;
 }
 
-
 .add__form .form-control:focus {
-    border-color: var(--color-secondary);
-
-    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.15);
-
+    background: #ffffff;
+    border-color: var(--color-primary, #6c63ff);
+    box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.12);
     outline: none;
 }
 
-
-
-
-.add__form input[type="file"] {
-    cursor: pointer;
-}
-
 .add__form input[type="file"]::file-selector-button {
-    padding: 8px 14px;
-
+    padding: 6px 12px;
     margin-right: 12px;
-
     border: none;
-
-    border-radius: 7px;
-
-    background: var(--gradient-primary);
-
+    border-radius: 6px;
+    background: var(--gradient-primary, linear-gradient(135deg, #6c63ff, #8b5cf6));
     color: #fff;
-
     cursor: pointer;
-
-    transition: all 0.3s ease;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
-
-.add__form input[type="file"]::file-selector-button:hover {
-    transform: translateY(-1px);
-}
-
-
 
 .add__form .btn-primary {
     min-height: 48px;
-
     border: none;
-
     border-radius: 10px;
-
-    background: var(--gradient-primary);
-
+    background: var(--gradient-primary, linear-gradient(135deg, #6c63ff, #8b5cf6));
     font-weight: 600;
-
+    font-size: 15px;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(108, 99, 255, 0.25);
 }
-
 
 .add__form .btn-primary:hover {
     transform: translateY(-2px);
-
-    box-shadow: 0 8px 20px rgba(108, 99, 255, 0.25);
+    box-shadow: 0 7px 20px rgba(108, 99, 255, 0.35);
 }
 
-
-
 .add__form .is-invalid {
-    border-color: #dc3545;
+    border-color: #ef4444;
 }
 
 .add__form .invalid-feedback {
-    font-size: 13px;
+    font-size: 12.5px;
+    color: #ef4444;
 }
 
-
-
 @media (max-width: 768px) {
-
     .add__form_cont {
-        padding-top: 90px;
-        padding-left: 15px;
-        padding-right: 15px;
+        padding: 5px 0 20px;
     }
 
     .add__form {
-        padding: 25px 20px;
+        padding: 24px 18px;
+        border-radius: 16px;
+    }
 
-        border-radius: 15px;
+    .add__form h2 {
+        font-size: 22px;
+        margin-bottom: 18px;
     }
 }

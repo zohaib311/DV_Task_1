@@ -1,404 +1,269 @@
-.login__page {
-    width: 100vw;
-    height: calc(100vh - 64px);
-    min-height: calc(100vh - 64px);
+/* ===================================================
+   LOGIN PAGE STYLING (FULLY RESPONSIVE)
+=================================================== */
 
+.login__page {
+    width: 100%;
+    min-height: 100vh;
     margin: 0;
     padding: 0;
-
     display: flex;
-
-    overflow: hidden;
+    background: #f8fafc;
 }
-
 
 .login__container {
     width: 100%;
-    height: 100%;
-
+    min-height: 100vh;
     margin: 0;
     padding: 0;
-
     display: flex;
-
-    background: #fff;
-}
-
-
-.login__image {
-    width: 55%;
-    height: 100%;
-
-    position: relative;
-
-    background-image: url("../images/punjab-university-1.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-
-.login__image::after {
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
-
-    background: linear-gradient(180deg,
-            rgba(20, 20, 40, 0.05) 0%,
-            rgba(20, 20, 40, 0.15) 45%,
-            rgba(20, 20, 40, 0.85) 100%);
-}
-
-
-.login__image__overlay {
-    position: absolute;
-
-    inset: 0;
-
-    z-index: 1;
-
-    display: flex;
-    align-items: flex-end;
-
-    padding: 70px;
-}
-
-
-.login__image__content {
-    max-width: 550px;
-
-    color: #fff;
-}
-
-
-.login__image__content h1 {
-    margin: 0 0 15px;
-
-    font-size: clamp(40px, 4vw, 58px);
-    line-height: 1.1;
-
-    font-weight: 800;
-
-    letter-spacing: -1.5px;
-}
-
-
-.login__image__content p {
-    max-width: 480px;
-
-    margin: 0;
-
-    font-size: 16px;
-    line-height: 1.8;
-
-    color: rgba(255, 255, 255, 0.9);
-}
-
-
-.login__form__section {
-    width: 45%;
-    height: 100%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 50px 80px;
-
     background: #ffffff;
 }
 
+/* ===================================================
+   LEFT SIDE: HERO IMAGE SECTION
+=================================================== */
+
+.login__image {
+    width: 52%;
+    min-height: 100vh;
+    position: relative;
+    background-image: url("../images/punjab-university-1.jpg");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: flex-end;
+}
+
+.login__image::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, 
+        rgba(15, 23, 42, 0.3) 0%, 
+        rgba(30, 27, 75, 0.6) 50%, 
+        rgba(15, 23, 42, 0.92) 100%);
+    z-index: 1;
+}
+
+.login__image__overlay {
+    position: relative;
+    z-index: 2;
+    padding: 60px;
+    color: #ffffff;
+    width: 100%;
+}
+
+.login__image__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.login__image__content h1 {
+    font-size: clamp(32px, 3.5vw, 48px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    margin-bottom: 14px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.login__image__content p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 480px;
+    margin: 0;
+}
+
+/* ===================================================
+   RIGHT SIDE: LOGIN FORM SECTION
+=================================================== */
+
+.login__form__section {
+    width: 48%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 60px;
+    background: #ffffff;
+}
 
 .login__form {
     width: 100%;
-    max-width: 480px;
+    max-width: 440px;
 }
-
 
 .login__heading {
-    margin-bottom: 38px;
+    margin-bottom: 32px;
 }
-
 
 .login__heading h2 {
-    margin: 0 0 10px;
-
-    color: var(--color-primary);
-
-    font-size: 38px;
-    line-height: 1.2;
-
-    font-weight: 750;
-
-    letter-spacing: -0.8px;
+    font-size: 32px;
+    font-weight: 800;
+    color: #1e293b;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
 }
-
 
 .login__heading p {
-    margin: 0;
-
-    color: #777;
-
+    color: #64748b;
     font-size: 15px;
-
-    line-height: 1.6;
+    margin: 0;
 }
-
-
-.login__form .alert {
-    border: none;
-
-    border-radius: 10px;
-
-    font-size: 14px;
-
-    margin-bottom: 22px;
-}
-
 
 .login__form .form-label {
-    display: block;
-
-    margin-bottom: 9px;
-
-    color: #4d4d68;
-
     font-size: 14px;
-
     font-weight: 600;
+    color: #334155;
+    margin-bottom: 7px;
 }
-
 
 .login__form .form-control {
     width: 100%;
-    height: 54px;
-
-    padding: 13px 16px;
-
-    border: 1px solid #dedcf0;
-
-    border-radius: 10px;
-
-    background: #fafaff;
-
-    color: #333;
-
+    height: 50px;
+    padding: 12px 16px;
+    border: 1.5px solid var(--color-outline, #e2e8f0);
+    border-radius: 12px;
+    background: #f8fafc;
     font-size: 14px;
-
-    transition:
-        border-color 0.3s ease,
-        box-shadow 0.3s ease,
-        background 0.3s ease;
+    color: #1e293b;
+    transition: all 0.25s ease;
 }
-
-
-.login__form .form-control::placeholder {
-    color: #aaa;
-}
-
-
-.login__form .form-control:hover {
-    border-color: #c9c5ed;
-
-    background: #fff;
-}
-
 
 .login__form .form-control:focus {
-    border-color: var(--color-secondary);
-
-    background: #fff;
-
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.10);
-
+    background: #ffffff;
+    border-color: var(--color-primary, #6c63ff);
+    box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.12);
     outline: none;
 }
 
+.login__form .form-control::placeholder {
+    color: #94a3b8;
+}
 
 .login__button {
     width: 100%;
-    height: 54px;
-
-    margin-top: 4px;
-
+    height: 50px;
     border: none;
-
-    border-radius: 10px;
-
-    background: var(--gradient-primary);
-
-    color: #fff;
-
+    border-radius: 12px;
+    background: var(--gradient-primary, linear-gradient(135deg, #6c63ff 0%, #8b5cf6 100%));
+    color: #ffffff;
     font-size: 15px;
-
     font-weight: 600;
-
+    cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(108, 99, 255, 0.25);
 }
-
 
 .login__button:hover {
     transform: translateY(-2px);
-
-    box-shadow:
-        0 10px 25px rgba(108, 99, 255, 0.25);
+    box-shadow: 0 8px 22px rgba(108, 99, 255, 0.35);
 }
-
 
 .login__button:active {
     transform: translateY(0);
 }
 
-
 .login__signup {
-    margin-top: 25px;
-
+    margin-top: 24px;
     text-align: center;
-
     font-size: 14px;
-
-    color: #777;
+    color: #64748b;
 }
-
 
 .login__signup a {
-    margin-left: 5px;
-
-    color: var(--color-secondary);
-
+    color: var(--color-primary, #6c63ff);
     font-weight: 600;
-
     text-decoration: none;
-
-    transition: color 0.3s ease;
+    margin-left: 4px;
+    transition: color 0.2s ease;
 }
-
 
 .login__signup a:hover {
-    color: var(--color-primary);
+    color: var(--color-secondary, #8b5cf6);
+    text-decoration: underline;
 }
 
+/* ===================================================
+   RESPONSIVENESS (TABLETS & MOBILE)
+=================================================== */
 
-@media (max-width: 1100px) {
-
-    .login__image {
-        width: 50%;
-    }
-
-    .login__form__section {
-        width: 50%;
-
-        padding: 40px 50px;
-    }
-
-    .login__image__overlay {
-        padding: 50px;
-    }
-
-    .login__heading h2 {
-        font-size: 32px;
-    }
-
-}
-
-
-@media (max-width: 768px) {
-
-    .login__page {
-        width: 100%;
-
-        height: auto;
-        min-height: calc(100vh - 64px);
-
-        overflow: visible;
-    }
-
-
+@media (max-width: 991.98px) {
     .login__container {
-        height: auto;
-
         flex-direction: column;
+        min-height: auto;
     }
-
 
     .login__image {
         width: 100%;
-
-        height: 320px;
-        min-height: 320px;
+        min-height: 240px;
+        height: 260px;
+        border-radius: 0 0 24px 24px;
+        overflow: hidden;
     }
-
 
     .login__image__overlay {
-        padding: 35px 25px;
+        padding: 28px 24px;
     }
 
+    .login__image__badge {
+        margin-bottom: 10px;
+        padding: 4px 10px;
+        font-size: 12px;
+    }
 
     .login__image__content h1 {
-        font-size: 34px;
+        font-size: 26px;
+        margin-bottom: 6px;
     }
-
-
-    .login__image__content p {
-        font-size: 14px;
-    }
-
-
-    .login__form__section {
-        width: 100%;
-
-        height: auto;
-
-        min-height: 500px;
-
-        padding: 50px 25px;
-    }
-
-
-    .login__form {
-        max-width: 500px;
-    }
-
-}
-
-
-@media (max-width: 480px) {
-
-    .login__image {
-        height: 250px;
-        min-height: 250px;
-    }
-
-
-    .login__image__overlay {
-        padding: 25px 20px;
-    }
-
-
-    .login__image__content h1 {
-        font-size: 28px;
-    }
-
 
     .login__image__content p {
         font-size: 13px;
+        line-height: 1.4;
     }
-
 
     .login__form__section {
-        padding: 40px 20px;
+        width: 100%;
+        min-height: auto;
+        padding: 35px 24px 50px;
     }
-
 
     .login__heading {
-        margin-bottom: 30px;
+        margin-bottom: 24px;
     }
-
 
     .login__heading h2 {
-        font-size: 28px;
+        font-size: 26px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .login__image {
+        height: 200px;
+        min-height: 200px;
     }
 
+    .login__image__overlay {
+        padding: 20px 16px;
+    }
+
+    .login__image__content h1 {
+        font-size: 22px;
+    }
+
+    .login__form__section {
+        padding: 25px 16px 40px;
+    }
 }
