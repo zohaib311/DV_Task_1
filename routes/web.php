@@ -102,9 +102,7 @@ Route::prefix('users')->controller(UserController::class)->middleware('auth')->g
 
 Route::prefix('user/profile')->controller(UserController::class)->middleware('auth')->group(function () {
 
-    Route::get('/add', 'userSettingForm')->name('profile.settings.form');
+    Route::get('/settings', 'userSettingForm')->name('profile.settings.form');
 
-    Route::post('/add', 'addCourse')->name('addCourse');
-
-    Route::get('/show', 'allCourses')->name('allCourses');
+    Route::put('/update', 'updateProfile')->name('profile.settings.update');
 });
