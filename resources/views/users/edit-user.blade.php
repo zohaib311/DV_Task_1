@@ -79,10 +79,10 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label for="password" class="form-label">Password</label>
+                        <label for="password" class="form-label">Password <small class="text-muted">(Leave blank to keep current)</small></label>
 
-                        <input type="password" name="password" id="password" value="{{ old('email', $user->password) }}"
-                            class="form-control @error('password') is-invalid @enderror" placeholder="Password">
+                        <input type="password" name="password" id="password"
+                            class="form-control @error('password') is-invalid @enderror" placeholder="Enter new password (optional)">
 
                         @error('password')
                             <div class="invalid-feedback">
@@ -179,7 +179,7 @@
 
                                 <button type="submit" class="update__btn">
                                     <i class="bi bi-check2-circle me-1"></i>
-                                    Update Course
+                                    Update User
                                 </button>
 
                             </div>

@@ -93,12 +93,12 @@
                                             <div class="action__buttons">
 
                                                 <a href="{{ route('editUserForm', $user->id) }}"
-                                                    class="action__btn action__edit" title="Edit Course">
+                                                    class="action__btn action__edit" title="Edit User">
                                                     <i class="bi bi-pencil-square"></i>
                                                 </a>
 
                                                 <button type="button" class="action__btn action__delete"
-                                                    title="Delete Course" data-bs-toggle="modal"
+                                                    title="Delete User" data-bs-toggle="modal"
                                                     data-bs-target="#deleteModal{{ $user->id }}">
                                                     <i class="bi bi-trash3"></i>
                                                 </button>
@@ -112,7 +112,7 @@
                                 @empty
 
                                     <tr>
-                                        <td colspan="4" class="text-center py-4">
+                                        <td colspan="6" class="text-center py-4">
                                             No users found.
                                         </td>
                                     </tr>
@@ -131,4 +131,43 @@
         </div>
 
     </div>
+
+    @foreach ($users as $user)
+        <div class="modal fade" id="deleteModal{{ $user->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content delete__modal">
+                    <div class="modal-body text-center">
+                        <div class="delete__modal__icon">
+                            <i class="bi bi-trash3"></i>
+                        </div>
+
+                        <h4>Delete User?</h4>
+
+                        <p>
+                            Are you sure you want to delete
+                            <strong>{{ $user->name }}</strong>?
+                            <br>
+                            This action cannot be undone.
+                        </p>
+
+                        <div class="delete__modal__actions">
+                            <button type="button" class="delete__cancel" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+
+                            <form action="{{ route('deleteUser', $user->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit" class="delete__confirm">
+                                    <i class="bi bi-trash3 me-1"></i>
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 @endsection

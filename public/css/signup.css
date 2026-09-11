@@ -1,106 +1,254 @@
-.add__form_cont {
+.signup__page {
+    width: 100%;
     min-height: calc(100vh - 64px);
+
+    position: relative;
+
     display: flex;
     align-items: center;
     justify-content: center;
 
-    padding-top: 80px;
-    padding-bottom: 30px;
+    padding: 50px 30px;
+
+    background-image: url("../images/punjab-university-1.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 
+.signup__overlay {
+    position: absolute;
 
-.add__form {
+    inset: 0;
+
+    background:
+        linear-gradient(135deg,
+            rgba(25, 25, 55, 0.68),
+            rgba(70, 50, 120, 0.48));
+}
+
+
+.signup__content {
     width: 100%;
     max-width: 900px;
 
-    padding: 35px;
-
-    background: rgba(255, 255, 255, 0.82);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-
-    border-radius: 20px;
-
-    backdrop-filter: blur(12px);
-
-    box-shadow: 0 15px 40px rgba(108, 99, 255, 0.15);
+    position: relative;
+    z-index: 2;
 }
 
 
+.signup__form {
+    width: 100%;
 
-.add__form h2 {
+    padding: 40px 45px;
+
+    background: rgba(255, 255, 255, 0.93);
+
+    border: 1px solid rgba(255, 255, 255, 0.7);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.22);
+
+    backdrop-filter: blur(14px);
+}
+
+
+.signup__heading {
+    text-align: center;
+
+    margin-bottom: 30px;
+}
+
+
+.signup__heading h2 {
+    margin: 0 0 8px;
+
     color: var(--color-primary);
+
+    font-size: 32px;
+
     font-weight: 700;
 }
 
 
-.add__form .form-label {
+.signup__heading p {
+    margin: 0;
+
+    color: #777;
+
+    font-size: 14px;
+}
+
+
+.signup__form .alert {
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    margin-bottom: 20px;
+}
+
+
+.signup__form .form-label {
+    margin-bottom: 8px;
+
     color: var(--color-primary);
+
+    font-size: 14px;
+
     font-weight: 600;
 }
 
 
+.signup__form .form-control {
+    height: 48px;
 
-.add__form .form-control {
-    padding: 12px 15px;
+    padding: 11px 14px;
 
     border: 1px solid var(--color-outline);
-    border-radius: 10px;
 
-    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 9px;
+
+    background: rgba(255, 255, 255, 0.95);
+
+    font-size: 14px;
 
     transition: all 0.3s ease;
 }
 
-.add__form .form-control:focus {
+
+.signup__form .form-control:focus {
     border-color: var(--color-secondary);
 
-    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.15);
+    background: #fff;
+
+    box-shadow:
+        0 0 0 4px rgba(139, 92, 246, 0.10);
 
     outline: none;
 }
 
 
+.signup__form .form-control::placeholder {
+    color: #aaa;
+}
 
-.add__form .btn-primary {
-    padding: 12px;
 
-    background: var(--gradient-primary);
+.signup__button {
+    width: 100%;
+    height: 50px;
+
+    margin-top: 8px;
+
     border: none;
-
     border-radius: 10px;
 
+    background: var(--gradient-primary);
+
+    color: #fff;
+
+    font-size: 15px;
+
     font-weight: 600;
+
+    cursor: pointer;
 
     transition: all 0.3s ease;
 }
 
-.add__form .btn-primary:hover {
+
+.signup__button:hover {
     transform: translateY(-2px);
 
-    box-shadow: 0 8px 20px rgba(108, 99, 255, 0.25);
+    box-shadow:
+        0 9px 22px rgba(108, 99, 255, 0.28);
 }
 
 
-
-.add__form .text-primary {
-    color: var(--color-secondary) !important;
+.signup__button:active {
+    transform: translateY(0);
 }
 
-.add__form a:hover {
-    color: var(--color-primary) !important;
+
+.signup__login {
+    margin-top: 20px;
+
+    text-align: center;
+
+    color: #777;
+
+    font-size: 14px;
+}
+
+
+.signup__login a {
+    margin-left: 5px;
+
+    color: var(--color-secondary);
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition: color 0.3s ease;
+}
+
+
+.signup__login a:hover {
+    color: var(--color-primary);
+}
+
+
+@media (max-width: 768px) {
+
+    .signup__page {
+        min-height: calc(100vh - 64px);
+
+        padding: 35px 20px;
+    }
+
+
+    .signup__form {
+        padding: 35px 25px;
+
+        border-radius: 16px;
+    }
+
+
+    .signup__heading h2 {
+        font-size: 28px;
+    }
+
 }
 
 
 @media (max-width: 576px) {
-    .add__form_cont {
-        padding-top: 90px;
-        padding-left: 15px;
-        padding-right: 15px;
+
+    .signup__page {
+        padding: 25px 15px;
     }
 
-    .add__form {
-        padding: 25px 20px;
-        border-radius: 15px;
+
+    .signup__form {
+        padding: 30px 20px;
     }
+
+
+    .signup__heading {
+        margin-bottom: 25px;
+    }
+
+
+    .signup__heading h2 {
+        font-size: 25px;
+    }
+
+
+    .signup__form .form-control {
+        height: 46px;
+    }
+
 }

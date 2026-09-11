@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -72,30 +73,50 @@ class UserController extends Controller
         ]);
     }
 
-    function updateuser(Request $request, $id)
+    function updateUser(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:4',
-            'phone' => 'required|digits:11|unique:users,phone',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|min:4',
+            'phone' => 'required|digits:11|unique:users,phone,' . $user->id,
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
-
-            $path = $request->file('image')->store('images', 'public');
-
-            $validated['image'] = basename($path);
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
         }
 
+        if ($request->hasFile('image')) {
+            if ($user->image && $user->image !== 'default-user.png') {
+                Storage::disk('public')->delete('images/' . $user->image);
+            }
+            $path = $request->file('image')->store('images', 'public');
+            $validated['image'] = basename($path);
+        }
 
         $user->update($validated);
 
         return redirect()
             ->route('allUsers')
             ->with('success', 'User updated successfully!');
+    }
+
+    function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+        if ($user->image && $user->image !== 'default-user.png') {
+            Storage::disk('public')->delete('images/' . $user->image);
+        }
+
+        $user->delete();
+
+        return redirect()
+            ->route('allUsers')
+            ->with('success', 'User deleted successfully!');
     }
 }
