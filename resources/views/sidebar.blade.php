@@ -48,6 +48,14 @@
         </li>
 
         <li class="nav-item">
+            <a href="{{ route('allSections') }}"
+                class="sidebar-link nav-link {{ request()->is('section*') ? 'active' : '' }}">
+                <i class="bi-bar-chart-steps me-2 fs-5"></i>
+                <span>Sections</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
             <a href="{{ route('allUsers') }}"
                 class="sidebar-link nav-link {{ request()->is('users*') ? 'active' : '' }}">
                 <i class="bi bi-people me-2 fs-5"></i>

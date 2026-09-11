@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -60,7 +61,7 @@ class UserController extends Controller
 
     function userSettingForm()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         return view('users.profile-setting', [
             'user' => $user
         ]);
@@ -68,8 +69,7 @@ class UserController extends Controller
 
     function updateProfile(Request $request)
     {
-        /** @var \App\Models\User $user */
-        $user = auth()->user();
+        $user = Auth::user();
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -93,7 +93,7 @@ class UserController extends Controller
             $validated['image'] = basename($path);
         }
 
-        $user->update($validated);
+        User::where('id', $user->id)->update($validated);
 
         return redirect()
             ->route('profile.settings.form')
@@ -136,7 +136,7 @@ class UserController extends Controller
             $validated['image'] = basename($path);
         }
 
-        $user->update($validated);
+        User::where('id', $user->id)->update($validated);
 
         return redirect()
             ->route('allUsers')

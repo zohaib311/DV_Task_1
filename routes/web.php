@@ -91,6 +91,23 @@ Route::prefix('event')->controller(EventController::class)->middleware('auth')->
     Route::get('/show', 'allEvents')->name('allEvents');
 });
 
+use App\Http\Controllers\Section\SectionController;
+
+Route::prefix('section')->controller(SectionController::class)->middleware('auth')->group(function () {
+
+    Route::get('/add', 'create')->name('addSectionForm');
+
+    Route::post('/add', 'addSection')->name('addSection');
+
+    Route::get('/show', 'allSections')->name('allSections');
+
+    Route::get('/edit/{id}', 'editSectionForm')->name('editSectionForm');
+
+    Route::put('/update/{id}', 'updateSection')->name('updateSection');
+
+    Route::delete('/delete/{id}', 'deleteSection')->name('deleteSection');
+});
+
 Route::prefix('users')->controller(UserController::class)->middleware('auth')->group(function () {
 
     Route::get('/add', 'addUserForm')->name('addUserForm');
