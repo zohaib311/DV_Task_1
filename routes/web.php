@@ -82,6 +82,12 @@ Route::prefix('event')->controller(EventController::class)->middleware('auth')->
 
     Route::post('/add', 'addEvent')->name('addEvent');
 
+    Route::get('/edit/{id}', 'editEventForm')->name('editEventForm');
+
+    Route::put('/update/{id}', 'updateEvent')->name('updateEvent');
+
+    Route::delete('/delete/{id}', 'deleteEvent')->name('deleteEvent');
+
     Route::get('/show', 'allEvents')->name('allEvents');
 });
 

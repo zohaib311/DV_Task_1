@@ -9,11 +9,13 @@ use Illuminate\Notifications\Notifiable;
 class Event extends Model
 {
     use HasFactory, Notifiable;
+
     protected $fillable = [
         'event_name',
+        'start_time',
+        'end_time',
         'day',
         'date',
-        'time',
         'description',
     ];
 }
