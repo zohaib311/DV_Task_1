@@ -36,14 +36,19 @@
     align-items: flex-end;
 }
 
+.logo__image__preview {
+    width: 92px;
+    height: 92px;
+}
+
 .login__image::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, 
-        rgba(15, 23, 42, 0.3) 0%, 
-        rgba(30, 27, 75, 0.6) 50%, 
-        rgba(15, 23, 42, 0.92) 100%);
+    background: linear-gradient(180deg,
+            rgba(15, 23, 42, 0.3) 0%,
+            rgba(30, 27, 75, 0.6) 50%,
+            rgba(15, 23, 42, 0.92) 100%);
     z-index: 1;
 }
 

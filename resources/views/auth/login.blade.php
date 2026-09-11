@@ -39,6 +39,11 @@
                 <div class="login__form">
 
                     <div class="login__heading">
+
+                        <div class="logo__image__preview">
+                            <img src="{{ url('../images/logo.jfif') }}" class="user-image">
+                        </div>
+
                         <h2>User Login</h2>
                         <p>Please enter your credentials to access your account.</p>
                     </div>
