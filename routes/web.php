@@ -3,6 +3,8 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Course\CourseController;
 use App\Http\Controllers\Event\EventController;
+use App\Http\Controllers\Result\ResultController;
+use App\Http\Controllers\Section\SectionController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
@@ -91,7 +93,6 @@ Route::prefix('event')->controller(EventController::class)->middleware('auth')->
     Route::get('/show', 'allEvents')->name('allEvents');
 });
 
-use App\Http\Controllers\Section\SectionController;
 
 Route::prefix('section')->controller(SectionController::class)->middleware('auth')->group(function () {
 
@@ -107,6 +108,22 @@ Route::prefix('section')->controller(SectionController::class)->middleware('auth
 
     Route::delete('/delete/{id}', 'deleteSection')->name('deleteSection');
 });
+
+Route::prefix('result')->controller(ResultController::class)->middleware('auth')->group(function () {
+
+    Route::get('/add', 'create')->name('addResultForm');
+
+    Route::post('/add', 'addResult')->name('addResult');
+
+    // Route::get('/edit/{id}', 'editResultForm')->name('editResultForm');
+
+    // Route::put('/update/{id}', 'updateResult')->name('updateResult');
+
+    // Route::delete('/delete/{id}', 'deleteResult')->name('deleteResult');
+
+    Route::get('/show', 'allResults')->name('allResults');
+});
+
 
 Route::prefix('users')->controller(UserController::class)->middleware('auth')->group(function () {
 
