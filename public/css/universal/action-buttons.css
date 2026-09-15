@@ -55,10 +55,30 @@
     border: 1px solid rgba(220, 53, 69, 0.18);
 }
 
+
+
 .action__delete:hover {
     color: #fff;
 
     background: #dc3545;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 12px rgba(220, 53, 69, 0.25);
+}
+
+.action__info {
+    color: #0ad2ff;
+
+    background: rgba(53, 217, 239, 0.08);
+
+    border: 1px solid rgba(53, 198, 220, 0.18);
+}
+
+.action__info:hover {
+    color: #fff;
+
+    background: #35b8dc;
 
     transform: translateY(-2px);
 

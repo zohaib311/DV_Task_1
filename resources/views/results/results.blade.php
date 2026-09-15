@@ -33,9 +33,9 @@
                                     <th>Student</th>
                                     <th>Course</th>
                                     <th>Section / Dept</th>
-                                    <th>Percentage</th>
+                                    {{-- <th>Percentage</th>
                                     <th>GPA</th>
-                                    <th>CGPA</th>
+                                    <th>CGPA</th> --}}
                                     <th>Grade</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -49,9 +49,9 @@
                                         <td>{{ $result->course->name ?? 'N/A' }}</td>
                                         <td>{{ $result->section->name ?? '' }} ({{ $result->section->department ?? '' }})
                                         </td>
-                                        <td>{{ $result->percentage }}%</td>
+                                        {{-- <td>{{ $result->percentage }}%</td>
                                         <td>{{ $result->gpa }}</td>
-                                        <td>{{ $result->cgpa }}</td>
+                                        <td>{{ $result->cgpa }}</td> --}}
                                         <td><span class="badge bg-secondary">{{ $result->grade }}</span></td>
                                         <td>
                                             <span
@@ -59,19 +59,25 @@
                                                 {{ $result->status }}
                                             </span>
                                         </td>
-                                        {{-- <td>
+                                        <td>
                                             <div class="action__buttons">
-                                                <a href="{{ route('editResultForm', $result->id) }}"
+                                                {{-- <a href="{{ route('editResultForm', $result->id) }}"
                                                     class="action__btn action__edit" title="Edit">
                                                     <i class="bi bi-pencil-square"></i>
-                                                </a>
-                                                <button type="button" class="action__btn action__delete"
+                                                </a> --}}
+                                                {{-- <button type="button" class="action__btn action__delete"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#deleteResultModal{{ $result->id }}">
                                                     <i class="bi bi-trash3"></i>
+                                                </button> --}}
+
+                                                <button type="button" class="action__btn action__info"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#infoResultModal{{ $result->id }}">
+                                                    <i class="bi bi-info-circle "></i>
                                                 </button>
                                             </div>
-                                        </td> --}}
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -110,4 +116,136 @@
             </div>
         </div>
     @endforeach --}}
+
+    @foreach ($results as $result)
+        <div class="modal fade" id="infoResultModal{{ $result->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content delete__modal">
+
+                    <div class="modal-body">
+
+                        <h2 class="text-center mb-3">Result Full Detail</h2>
+
+
+
+                        <div class="table-responsive mb-4">
+
+                            <table class="table table-bordered align-middle mb-0">
+
+                                <tbody>
+
+                                    <tr>
+                                        <th width="30%">Result ID</th>
+                                        <td>{{ $result->id }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Student</th>
+                                        <td>
+                                            {{ $result->student->name ?? 'N/A' }}
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Course</th>
+                                        <td>
+                                            {{ $result->course->name ?? 'N/A' }}
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Section</th>
+                                        <td>
+                                            {{ $result->section->name ?? 'N/A' }}
+                                            @if ($result->section)
+                                                ({{ $result->section->department ?? 'N/A' }})
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Grade</th>
+                                        <td>
+                                            <span class="badge bg-secondary">
+                                                {{ $result->grade }}
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Percentage</th>
+                                        <td>
+                                            <span class="">
+                                                {{ $result->percentage }} %
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>GPA</th>
+                                        <td>
+                                            <span class="badge bg-info">
+                                                {{ $result->gpa }}
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>CGPA</th>
+                                        <td>
+                                            <span class="badge bg-secondary">
+                                                {{ $result->cgpa }}
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Status</th>
+                                        <td>
+                                            <span
+                                                class="badge {{ $result->status == 'Pass' ? 'bg-success' : 'bg-danger' }}">
+                                                {{ $result->status }}
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                        <p class="text-center mb-4 text-danger">
+                        </p>
+
+                        <div class="delete__modal__actions">
+
+                            <button type="button" class="delete__cancel" data-bs-dismiss="modal">
+
+                                Cancel
+
+                            </button>
+
+                            {{-- <form action="{{ route('deleteResult', $result->id) }}" method="POST">
+
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit" class="delete__confirm">
+
+                                    <i class="bi bi-trash3 me-1"></i>
+                                    Delete
+
+                                </button>
+
+                            </form> --}}
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    @endforeach
 @endsection
