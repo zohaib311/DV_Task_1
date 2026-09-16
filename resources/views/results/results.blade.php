@@ -17,6 +17,19 @@
                         </div>
                     @endif
 
+                    <script>
+                        setTimeout(function() {
+                            const message = document.getElementById('success-message');
+
+                            if (message) {
+                                message.style.transition = 'opacity 0.5s ease';
+                                message.style.opacity = '0';
+
+                                setTimeout(() => message.remove(), 500);
+                            }
+                        }, 2000);
+                    </script>
+
                     <div class="add__user__btn">
                         <a href="{{ route('addResultForm') }}" class="nav-link">
                             <span>Add Result</span>
@@ -33,9 +46,6 @@
                                     <th>Student</th>
                                     <th>Course</th>
                                     <th>Section / Dept</th>
-                                    {{-- <th>Percentage</th>
-                                    <th>GPA</th>
-                                    <th>CGPA</th> --}}
                                     <th>Grade</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -49,9 +59,6 @@
                                         <td>{{ $result->course->name ?? 'N/A' }}</td>
                                         <td>{{ $result->section->name ?? '' }} ({{ $result->section->department ?? '' }})
                                         </td>
-                                        {{-- <td>{{ $result->percentage }}%</td>
-                                        <td>{{ $result->gpa }}</td>
-                                        <td>{{ $result->cgpa }}</td> --}}
                                         <td><span class="badge bg-secondary">{{ $result->grade }}</span></td>
                                         <td>
                                             <span
@@ -61,15 +68,15 @@
                                         </td>
                                         <td>
                                             <div class="action__buttons">
-                                                {{-- <a href="{{ route('editResultForm', $result->id) }}"
+                                                <a href="{{ route('editResultForm', $result->id) }}"
                                                     class="action__btn action__edit" title="Edit">
                                                     <i class="bi bi-pencil-square"></i>
-                                                </a> --}}
-                                                {{-- <button type="button" class="action__btn action__delete"
+                                                </a>
+                                                <button type="button" class="action__btn action__delete"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#deleteResultModal{{ $result->id }}">
                                                     <i class="bi bi-trash3"></i>
-                                                </button> --}}
+                                                </button>
 
                                                 <button type="button" class="action__btn action__info"
                                                     data-bs-toggle="modal"
@@ -92,7 +99,7 @@
         </div>
     </div>
 
-    {{-- @foreach ($results as $result)
+    @foreach ($results as $result)
         <div class="modal fade" id="deleteResultModal{{ $result->id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content delete__modal">
@@ -115,7 +122,7 @@
                 </div>
             </div>
         </div>
-    @endforeach --}}
+    @endforeach
 
     @foreach ($results as $result)
         <div class="modal fade" id="infoResultModal{{ $result->id }}" tabindex="-1" aria-hidden="true">
@@ -222,23 +229,9 @@
 
                             <button type="button" class="delete__cancel" data-bs-dismiss="modal">
 
-                                Cancel
+                                Close
 
                             </button>
-
-                            {{-- <form action="{{ route('deleteResult', $result->id) }}" method="POST">
-
-                                @csrf
-                                @method('DELETE')
-
-                                <button type="submit" class="delete__confirm">
-
-                                    <i class="bi bi-trash3 me-1"></i>
-                                    Delete
-
-                                </button>
-
-                            </form> --}}
 
                         </div>
 

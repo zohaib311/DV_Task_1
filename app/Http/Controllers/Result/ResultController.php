@@ -48,45 +48,45 @@ class ResultController extends Controller
             ->with('success', 'Result added successfully!');
     }
 
-    // public function editResultForm($id)
-    // {
-    //     $result   = Result::findOrFail($id);
-    //     $students = Student::all();
-    //     $courses  = Course::all();
-    //     $sections = Section::all();
+    public function editResultForm($id)
+    {
+        $result   = Result::findOrFail($id);
+        $students = Student::all();
+        $courses  = Course::all();
+        $sections = Section::all();
 
-    //     return view('results.edit-result', compact('result', 'students', 'courses', 'sections'));
-    // }
+        return view('results.edit-result', compact('result', 'students', 'courses', 'sections'));
+    }
 
-    // public function updateResult(Request $request, $id)
-    // {
-    //     $result = Result::findOrFail($id);
+    public function updateResult(Request $request, $id)
+    {
+        $result = Result::findOrFail($id);
 
-    //     $validated = $request->validate([
-    //         'student_id' => 'required|exists:students,id',
-    //         'course_id'  => 'required|exists:courses,id',
-    //         'section_id' => 'required|exists:sections,id',
-    //         'percentage' => 'required|numeric|min:0|max:100',
-    //         'gpa'        => 'required|numeric|min:0|max:4.0',
-    //         'cgpa'       => 'required|numeric|min:0|max:4.0',
-    //         'grade'      => 'required|string|max:10',
-    //         'status'     => 'required|in:Pass,Fail',
-    //     ]);
+        $validated = $request->validate([
+            'student_id' => 'required|exists:students,id',
+            'course_id'  => 'required|exists:courses,id',
+            'section_id' => 'required|exists:sections,id',
+            'percentage' => 'required|numeric|min:0|max:100',
+            'gpa'        => 'required|numeric|min:0|max:4.0',
+            'cgpa'       => 'required|numeric|min:0|max:4.0',
+            'grade'      => 'required|string|max:10',
+            'status'     => 'required|in:Pass,Fail',
+        ]);
 
-    //     $result->update($validated);
+        $result->update($validated);
 
-    //     return redirect()
-    //         ->route('allResults')
-    //         ->with('success', 'Result updated successfully!');
-    // }
+        return redirect()
+            ->route('allResults')
+            ->with('success', 'Result updated successfully!');
+    }
 
-    // public function deleteResult($id)
-    // {
-    //     $result = Result::findOrFail($id);
-    //     $result->delete();
+    public function deleteResult($id)
+    {
+        $result = Result::findOrFail($id);
+        $result->delete();
 
-    //     return redirect()
-    //         ->route('allResults')
-    //         ->with('success', 'Result deleted successfully!');
-    // }
+        return redirect()
+            ->route('allResults')
+            ->with('success', 'Result deleted successfully!');
+    }
 }
