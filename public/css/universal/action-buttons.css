@@ -68,9 +68,9 @@
 }
 
 .action__info {
-    color: #0ad2ff;
+    color: #00d0ff;
 
-    background: rgba(53, 217, 239, 0.08);
+    background: rgba(33, 173, 192, 0.08);
 
     border: 1px solid rgba(53, 198, 220, 0.18);
 }

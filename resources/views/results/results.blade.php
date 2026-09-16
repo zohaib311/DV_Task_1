@@ -3,6 +3,7 @@
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/students.css') }}">
     <link rel="stylesheet" href="{{ asset('css/universal/action-buttons.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/result/result-model.css') }}">
 @endsection
 
 @section('content')
@@ -67,22 +68,26 @@
                                             </span>
                                         </td>
                                         <td>
+
                                             <div class="action__buttons">
-                                                <a href="{{ route('editResultForm', $result->id) }}"
-                                                    class="action__btn action__edit" title="Edit">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </a>
-                                                <button type="button" class="action__btn action__delete"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#deleteResultModal{{ $result->id }}">
-                                                    <i class="bi bi-trash3"></i>
-                                                </button>
 
                                                 <button type="button" class="action__btn action__info"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#infoResultModal{{ $result->id }}">
                                                     <i class="bi bi-info-circle "></i>
                                                 </button>
+
+                                                <a href="{{ route('editResultForm', $result->id) }}"
+                                                    class="action__btn action__edit" title="Edit">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+
+                                                <button type="button" class="action__btn action__delete"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteResultModal{{ $result->id }}">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+
                                             </div>
                                         </td>
                                     </tr>
@@ -125,116 +130,118 @@
     @endforeach
 
     @foreach ($results as $result)
-        <div class="modal fade" id="infoResultModal{{ $result->id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal fade result-detail-modal" id="infoResultModal{{ $result->id }}" tabindex="-1"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content delete__modal">
+                <div class="modal-content">
 
+                    {{-- Modal Header --}}
+                    <div class="modal-header">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-file-earmark-person-fill fs-5"></i>
+                            <h5 class="modal-title mb-0">Student Result Summary</h5>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+
+                    {{-- Modal Body --}}
                     <div class="modal-body">
 
-                        <h2 class="text-center mb-3">Result Full Detail</h2>
+                        {{-- 1. Student Profile Header (Top Section) --}}
+                        <div class="student-profile-card">
+                            <img src="{{ asset('storage/images/' . ($result->student->image ?? 'default-user.png')) }}"
+                                alt="{{ $result->student->name ?? 'Student' }}" class="student-modal-avatar">
 
+                            <div class="student-info-meta">
+                                <h4>{{ $result->student->name ?? 'N/A' }}</h4>
+                                <p><i class="bi bi-envelope me-1"></i> {{ $result->student->email ?? 'N/A' }}</p>
 
+                                <div class="student-meta-pills">
+                                    <span class="student-meta-pill">
+                                        <i class="bi bi-telephone me-1"></i> {{ $result->student->phone ?? 'N/A' }}
+                                    </span>
+                                    @if (!empty($result->student->class))
+                                        <span class="student-meta-pill">
+                                            <i class="bi bi-building me-1"></i> Class: {{ $result->student->class }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
 
-                        <div class="table-responsive mb-4">
+                        {{-- 2. Result Key Metrics Grid --}}
+                        <div class="result-metrics-grid">
+                            <div class="metric-card percentage-card">
+                                <label>Percentage</label>
+                                <div class="metric-value">{{ $result->percentage }}%</div>
+                            </div>
 
-                            <table class="table table-bordered align-middle mb-0">
+                            <div class="metric-card gpa-card">
+                                <label>GPA</label>
+                                <div class="metric-value">{{ $result->gpa }}</div>
+                            </div>
 
+                            <div class="metric-card cgpa-card">
+                                <label>CGPA</label>
+                                <div class="metric-value">{{ $result->cgpa }}</div>
+                            </div>
+
+                            <div class="metric-card grade-card">
+                                <label>Grade</label>
+                                <div class="metric-value">{{ $result->grade }}</div>
+                            </div>
+                        </div>
+
+                        {{-- 3. Detailed Course & Academic Record --}}
+                        <div class="result-details-box">
+                            <table class="table result-details-table align-middle">
                                 <tbody>
-
                                     <tr>
-                                        <th width="30%">Result ID</th>
-                                        <td>{{ $result->id }}</td>
+                                        <th>Result Record ID</th>
+                                        <td class="fw-semibold">#{{ $result->id }}</td>
                                     </tr>
-
                                     <tr>
-                                        <th>Student</th>
+                                        <th>Course Title</th>
                                         <td>
-                                            {{ $result->student->name ?? 'N/A' }}
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Course</th>
-                                        <td>
-                                            {{ $result->course->name ?? 'N/A' }}
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Section</th>
-                                        <td>
-                                            {{ $result->section->name ?? 'N/A' }}
-                                            @if ($result->section)
-                                                ({{ $result->section->department ?? 'N/A' }})
+                                            <span class="fw-semibold">{{ $result->course->name ?? 'N/A' }}</span>
+                                            @if (!empty($result->course->code))
+                                                <small class="text-muted">({{ $result->course->code }})</small>
                                             @endif
                                         </td>
                                     </tr>
-
                                     <tr>
-                                        <th>Grade</th>
+                                        <th>Section / Department</th>
                                         <td>
-                                            <span class="badge bg-secondary">
-                                                {{ $result->grade }}
-                                            </span>
+                                            {{ $result->section->name ?? 'N/A' }}
+                                            @if ($result->section && !empty($result->section->department))
+                                                <span class="text-muted">({{ $result->section->department }})</span>
+                                            @endif
                                         </td>
                                     </tr>
-
                                     <tr>
-                                        <th>Percentage</th>
-                                        <td>
-                                            <span class="">
-                                                {{ $result->percentage }} %
-                                            </span>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>GPA</th>
-                                        <td>
-                                            <span class="badge bg-info">
-                                                {{ $result->gpa }}
-                                            </span>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>CGPA</th>
-                                        <td>
-                                            <span class="badge bg-secondary">
-                                                {{ $result->cgpa }}
-                                            </span>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Status</th>
+                                        <th>Academic Status</th>
                                         <td>
                                             <span
-                                                class="badge {{ $result->status == 'Pass' ? 'bg-success' : 'bg-danger' }}">
+                                                class="status-badge {{ strtolower($result->status) == 'pass' ? 'pass' : 'fail' }}">
+                                                <i
+                                                    class="bi {{ strtolower($result->status) == 'pass' ? 'bi-check-circle-fill' : 'bi-x-circle-fill' }}"></i>
                                                 {{ $result->status }}
                                             </span>
                                         </td>
                                     </tr>
-
                                 </tbody>
-
                             </table>
-
                         </div>
 
-                        <p class="text-center mb-4 text-danger">
-                        </p>
+                    </div>
 
-                        <div class="delete__modal__actions">
-
-                            <button type="button" class="delete__cancel" data-bs-dismiss="modal">
-
-                                Close
-
-                            </button>
-
-                        </div>
-
+                    {{-- Modal Footer --}}
+                    <div class="modal-footer bg-white border-0 justify-content-center py-3">
+                        <button type="button" class="btn btn-secondary px-4 rounded-3 fw-semibold"
+                            data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-1"></i> Close
+                        </button>
                     </div>
 
                 </div>

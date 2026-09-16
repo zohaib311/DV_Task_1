@@ -1,0 +1,220 @@
+.result-detail-modal .modal-content {
+    border: none;
+    border-radius: 20px;
+    margin-top: 50px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* Modal Header */
+.result-detail-modal .modal-header {
+    background: var(--gradient-primary, linear-gradient(135deg, #6c63ff 0%, #8b5cf6 100%));
+    color: #ffffff;
+    padding: 18px 24px;
+    border: none;
+}
+
+.result-detail-modal .modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.result-detail-modal .btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.result-detail-modal .btn-close-white:hover {
+    opacity: 1;
+}
+
+/* Modal Body */
+.result-detail-modal .modal-body {
+    padding: 24px;
+    background: #f8fafc;
+}
+
+/* Student Profile Card (Top Section) */
+.student-profile-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--color-outline, #e2e8f0);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.student-modal-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--color-primary, #6c63ff);
+    padding: 2px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.2);
+    flex-shrink: 0;
+}
+
+.student-info-meta h4 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.student-info-meta p {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.student-meta-pills {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.student-meta-pill {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: #f1f5f9;
+    color: #475569;
+}
+
+/* Result Metrics Cards (Middle Section) */
+.result-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.metric-card {
+    background: #ffffff;
+    border: 1px solid var(--color-outline, #e2e8f0);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.metric-card label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.metric-card .metric-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.metric-card.gpa-card .metric-value {
+    color: #3b82f6;
+}
+
+.metric-card.cgpa-card .metric-value {
+    color: #8b5cf6;
+}
+
+.metric-card.grade-card .metric-value {
+    color: #f59e0b;
+}
+
+.metric-card.percentage-card .metric-value {
+    color: #10b981;
+}
+
+/* Details Table Block */
+.result-details-box {
+    background: #ffffff;
+    border: 1px solid var(--color-outline, #e2e8f0);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.result-details-table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.result-details-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+    width: 35%;
+    padding: 12px 18px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.result-details-table td {
+    color: #1e293b;
+    font-size: 14px;
+    padding: 12px 18px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.result-details-table tr:last-child th,
+.result-details-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-badge.pass {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-badge.fail {
+    background: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Responsive adjust */
+@media (max-width: 767px) {
+    .student-profile-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .student-meta-pills {
+        justify-content: center;
+    }
+
+    .result-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
