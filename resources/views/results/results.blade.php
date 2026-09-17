@@ -58,7 +58,10 @@
                                         <th>{{ $result->id }}</th>
                                         <td class="fw-semibold">{{ $result->student->name ?? 'N/A' }}</td>
                                         <td>{{ $result->course->name ?? 'N/A' }}</td>
-                                        <td>{{ $result->section->name ?? '' }} ({{ $result->section->department ?? '' }})
+                                        <td>{{ $result->section->name ?? 'N/A' }}
+                                            @if ($result->section && $result->section->department)
+                                                ({{ $result->section->department->name }})
+                                            @endif
                                         </td>
                                         <td><span class="badge bg-secondary">{{ $result->grade }}</span></td>
                                         <td>
@@ -214,8 +217,8 @@
                                         <th>Section / Department</th>
                                         <td>
                                             {{ $result->section->name ?? 'N/A' }}
-                                            @if ($result->section && !empty($result->section->department))
-                                                <span class="text-muted">({{ $result->section->department }})</span>
+                                            @if ($result->section && $result->section->department)
+                                                <span class="text-muted">({{ $result->section->department->name }})</span>
                                             @endif
                                         </td>
                                     </tr>

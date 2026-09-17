@@ -15,7 +15,7 @@ class ResultController extends Controller
 {
     public function allResults()
     {
-        $results = Result::with(['student', 'course', 'section'])->get();
+        $results = Result::with(['student', 'course', 'section.department'])->get();
         return view('results.results', compact('results'));
     }
 
@@ -23,7 +23,7 @@ class ResultController extends Controller
     {
         $students = Student::all();
         $courses  = Course::all();
-        $sections = Section::all();
+        $sections = Section::with('department')->get();
 
         return view('results.add-result', compact('students', 'courses', 'sections'));
     }
@@ -53,7 +53,7 @@ class ResultController extends Controller
         $result   = Result::findOrFail($id);
         $students = Student::all();
         $courses  = Course::all();
-        $sections = Section::all();
+        $sections = Section::with('department')->get();
 
         return view('results.edit-result', compact('result', 'students', 'courses', 'sections'));
     }

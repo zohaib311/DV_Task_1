@@ -18,6 +18,14 @@
         <li class="nav-item">
             <a href="{{ route('allStudents') }}"
                 class="sidebar-link nav-link {{ request()->is('student*') ? 'active' : '' }}">
+                <i class="bi bi-grid-1x2-fill me-2 fs-5"></i>
+                <span class="fw-bold">Dashboard</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ route('allStudents') }}"
+                class="sidebar-link nav-link {{ request()->is('student*') ? 'active' : '' }}">
                 <i class="bi bi-mortarboard me-2 fs-5"></i>
                 <span>Students</span>
             </a>
@@ -48,6 +56,14 @@
         </li>
 
         <li class="nav-item">
+            <a href="{{ route('allDepartments') }}"
+                class="sidebar-link nav-link {{ request()->is('department*') ? 'active' : '' }}">
+                <i class="bi bi-building me-2 fs-5"></i>
+                <span>Departments</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
             <a href="{{ route('allSections') }}"
                 class="sidebar-link nav-link {{ request()->is('section*') ? 'active' : '' }}">
                 <i class="bi-bar-chart-steps me-2 fs-5"></i>
@@ -73,7 +89,7 @@
 
     </ul>
 
-    <div class="sidebar-footer mt-auto p-3">
+    <div class="sidebar-footer mt-auto p-3 ">
         <div class="d-flex align-items-center gap-2">
             <img src="{{ asset('storage/images/' . (auth()->user()->image ?? 'default-user.png')) }}"
                 alt="{{ auth()->user()->name ?? 'User' }}" class="sidebar-user-avatar">

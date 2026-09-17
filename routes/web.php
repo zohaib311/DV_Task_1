@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Course\CourseController;
+use App\Http\Controllers\Department\DepartmentController;
 use App\Http\Controllers\Event\EventController;
 use App\Http\Controllers\Result\ResultController;
 use App\Http\Controllers\Section\SectionController;
@@ -138,6 +139,21 @@ Route::prefix('users')->controller(UserController::class)->middleware('auth')->g
     Route::delete('/delete/{id}', 'deleteUser')->name('deleteUser');
 
     Route::get('/show', 'allUsers')->name('allUsers');
+});
+
+Route::prefix('department')->controller(DepartmentController::class)->middleware('auth')->group(function () {
+
+    Route::get('/add', 'create')->name('addDepartmentForm');
+
+    Route::post('/add', 'addDepartment')->name('addDepartment');
+
+    Route::get('/edit/{id}', 'editDepartmentForm')->name('editDepartmentForm');
+
+    Route::put('/update/{id}', 'updateDepartment')->name('updateDepartment');
+
+    Route::delete('/delete/{id}', 'deleteDepartment')->name('deleteDepartment');
+
+    Route::get('/show', 'allDepartments')->name('allDepartments');
 });
 
 Route::prefix('user/profile')->controller(UserController::class)->middleware('auth')->group(function () {
