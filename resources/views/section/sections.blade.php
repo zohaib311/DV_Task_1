@@ -72,10 +72,9 @@
                                         </td>
 
                                         <td>
-                                            <span class="badge bg-primary">
-                                                {{ $section->department }}
-                                            </span>
+                                            {{ $section->department->name ?? 'N/A' }}
                                         </td>
+
 
                                         <td>
 

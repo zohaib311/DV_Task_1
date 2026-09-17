@@ -71,7 +71,7 @@
                     </div>
 
 
-                    <div class="col-md-6 mb-3">
+                    {{-- <div class="col-md-6 mb-3">
 
                         <label for="department" class="form-label">
                             Department
@@ -88,7 +88,28 @@
                             </div>
                         @enderror
 
+                    </div> --}}
+                    <div class="col-md-6 mb-3">
+                        <label for="department_id" class="form-label">Department</label>
+
+                        <select name="department_id" id="department_id"
+                            class="form-select @error('department_id') is-invalid @enderror" required>
+                            <option value="">Select Department</option>
+                            @foreach ($departments as $department)
+                                <option value="{{ $department->id }}"
+                                    {{ old('department_id', $section->department_id) == $department->id ? 'selected' : '' }}>
+                                    {{ $department->name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        @error('department_id')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
+
 
 
                     <div class="col-12">
