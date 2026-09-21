@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Course\CourseController;
+use App\Http\Controllers\Dashboard\DashbaordController;
 use App\Http\Controllers\Department\DepartmentController;
 use App\Http\Controllers\Event\EventController;
 use App\Http\Controllers\Result\ResultController;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (Auth::check()) {
-        return redirect()->route('allStudents');
+        return redirect()->route('dashboardView');
     }
     return redirect()->route('signup');
 });
@@ -33,6 +34,21 @@ Route::controller(AuthController::class)->middleware('guest')->group(function ()
     Route::post('/signup', 'signupSubmit')->name('signup.submit');
 });
 
+
+Route::prefix('dashboard')->controller(DashbaordController::class)->middleware('auth')->group(function () {
+
+    // Route::get('/add', 'create')->name('addStudentForm');
+
+    // Route::post('/add', 'addStudent')->name('addStudent');
+
+    // Route::get('/edit/{id}', 'editStudentForm')->name('editStudentForm');
+
+    // Route::put('/update/{id}', 'updateStudent')->name('updateStudent');
+
+    // Route::delete('/delete/{id}', 'deleteStudent')->name('deleteStudent');
+
+    Route::get('/dashboard', 'dashboardView')->name('dashboardView');
+});
 
 Route::prefix('student')->controller(StudentController::class)->middleware('auth')->group(function () {
 
