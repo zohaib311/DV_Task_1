@@ -131,7 +131,7 @@
         <div class="modal fade student-detail-modal" id="infoStudentModal{{ $student->id }}" tabindex="-1"
             aria-labelledby="infoStudentModalLabel{{ $student->id }}" aria-hidden="true">
 
-            <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
                 <div class="modal-content">
 
                     <div class="modal-header student-modal-header">
@@ -148,131 +148,142 @@
 
                     <div class="modal-body student-modal-body">
 
-                        <div class="student-profile-card">
-                            <img src="{{ asset('storage/images/' . ($student->image ?: 'default-user.png')) }}"
-                                alt="{{ $student->name }}" class="student-modal-avatar">
+                        <div class="student-modal-layout">
 
-                            <div class="student-profile-info">
-                                <h3>{{ $student->name }}</h3>
+                            <div class="student-profile-card">
 
-                                <p>
-                                    <i class="bi bi-envelope"></i>
-                                    {{ $student->email }}
-                                </p>
+                                <div class="student-profile-image">
+                                    <img src="{{ asset('storage/images/' . ($student->image ?: 'default-user.png')) }}"
+                                        alt="{{ $student->name }}" class="student-modal-avatar">
+                                </div>
 
-                                <p>
-                                    <i class="bi bi-telephone"></i>
-                                    {{ $student->phone }}
-                                </p>
+                                <div class="student-profile-info">
+                                    <h3>{{ $student->name }}</h3>
+
+                                    <div class="student-profile-item">
+                                        <i class="bi bi-envelope"></i>
+                                        <span>{{ $student->email }}</span>
+                                    </div>
+
+                                    <div class="student-profile-item">
+                                        <i class="bi bi-telephone"></i>
+                                        <span>{{ $student->phone }}</span>
+                                    </div>
+                                </div>
+
                             </div>
+
+                            <div class="student-details-box">
+
+                                <div class="student-details-heading">
+                                    <i class="bi bi-info-circle-fill"></i>
+                                    <span>Student Information</span>
+                                </div>
+
+                                <div class="student-detail-row">
+                                    <span class="student-detail-label">
+                                        <i class="bi bi-hash"></i>
+                                        Student ID
+                                    </span>
+                                    <span class="student-detail-value">
+                                        #{{ $student->id }}
+                                    </span>
+                                </div>
+
+                                <div class="student-detail-row">
+                                    <span class="student-detail-label">
+                                        <i class="bi bi-person"></i>
+                                        Full Name
+                                    </span>
+                                    <span class="student-detail-value">
+                                        {{ $student->name }}
+                                    </span>
+                                </div>
+
+                                <div class="student-detail-row">
+                                    <span class="student-detail-label">
+                                        <i class="bi bi-envelope"></i>
+                                        Email Address
+                                    </span>
+                                    <span class="student-detail-value">
+                                        {{ $student->email }}
+                                    </span>
+                                </div>
+
+                                <div class="student-detail-row">
+                                    <span class="student-detail-label">
+                                        <i class="bi bi-telephone"></i>
+                                        Phone Number
+                                    </span>
+                                    <span class="student-detail-value">
+                                        {{ $student->phone }}
+                                    </span>
+                                </div>
+
+                                <div class="student-detail-row">
+                                    <span class="student-detail-label">
+                                        <i class="bi bi-building"></i>
+                                        Department
+                                    </span>
+                                    <span class="student-detail-value">
+                                        {{ $student->department->name ?? 'N/A' }}
+                                    </span>
+                                </div>
+
+                                <div class="student-detail-row">
+                                    <span class="student-detail-label">
+                                        <i class="bi bi-diagram-3"></i>
+                                        Section
+                                    </span>
+                                    <span class="student-detail-value">
+                                        {{ $student->section->name ?? 'N/A' }}
+                                    </span>
+                                </div>
+
+                                <div class="student-detail-row student-courses-row">
+                                    <span class="student-detail-label">
+                                        <i class="bi bi-book"></i>
+                                        Assigned Courses
+                                    </span>
+
+                                    <span class="student-detail-value student-course-list">
+                                        @forelse ($student->assigned_courses as $course)
+                                            <span class="student-course-badge">
+                                                {{ $course->name }}
+                                            </span>
+                                        @empty
+                                            <span class="text-muted">No courses assigned</span>
+                                        @endforelse
+                                    </span>
+                                </div>
+
+                                {{-- <div class="student-detail-row">
+                                    <span class="student-detail-label">
+                                        <i class="bi bi-calendar-plus"></i>
+                                        Registered At
+                                    </span>
+                                    <span class="student-detail-value">
+                                        {{ $student->created_at?->format('d M Y, h:i A') ?? 'N/A' }}
+                                    </span>
+                                </div>
+
+                                <div class="student-detail-row">
+                                    <span class="student-detail-label">
+                                        <i class="bi bi-clock-history"></i>
+                                        Last Updated
+                                    </span>
+                                    <span class="student-detail-value">
+                                        {{ $student->updated_at?->format('d M Y, h:i A') ?? 'N/A' }}
+                                    </span>
+                                </div> --}}
+
+                            </div>
+
                         </div>
 
-                        <div class="student-details-box">
-                            <div class="student-detail-row">
-                                <span class="student-detail-label">
-                                    <i class="bi bi-hash"></i>
-                                    Student ID
-                                </span>
-                                <span class="student-detail-value">
-                                    #{{ $student->id }}
-                                </span>
-                            </div>
-
-                            <div class="student-detail-row">
-                                <span class="student-detail-label">
-                                    <i class="bi bi-person"></i>
-                                    Full Name
-                                </span>
-                                <span class="student-detail-value">
-                                    {{ $student->name }}
-                                </span>
-                            </div>
-
-                            <div class="student-detail-row">
-                                <span class="student-detail-label">
-                                    <i class="bi bi-envelope"></i>
-                                    Email Address
-                                </span>
-                                <span class="student-detail-value">
-                                    {{ $student->email }}
-                                </span>
-                            </div>
-
-                            <div class="student-detail-row">
-                                <span class="student-detail-label">
-                                    <i class="bi bi-telephone"></i>
-                                    Phone Number
-                                </span>
-                                <span class="student-detail-value">
-                                    {{ $student->phone }}
-                                </span>
-                            </div>
-
-                            <div class="student-detail-row">
-                                <span class="student-detail-label">
-                                    <i class="bi bi-building"></i>
-                                    Department
-                                </span>
-                                <span class="student-detail-value">
-                                    {{ $student->department->name ?? 'N/A' }}
-                                </span>
-                            </div>
-
-                            <div class="student-detail-row">
-                                <span class="student-detail-label">
-                                    <i class="bi bi-diagram-3"></i>
-                                    Section
-                                </span>
-                                <span class="student-detail-value">
-                                    {{ $student->section->name ?? 'N/A' }}
-                                </span>
-                            </div>
-
-                            <div class="student-detail-row student-courses-row">
-                                <span class="student-detail-label">
-                                    <i class="bi bi-book"></i>
-                                    Assigned Courses
-                                </span>
-
-                                <span class="student-detail-value student-course-list">
-                                    @forelse ($student->assigned_courses as $course)
-                                        <span class="student-course-badge">
-                                            {{ $course->name }}
-                                        </span>
-                                    @empty
-                                        <span class="text-muted">No courses assigned</span>
-                                    @endforelse
-                                </span>
-                            </div>
-
-                            <div class="student-detail-row">
-                                <span class="student-detail-label">
-                                    <i class="bi bi-calendar-plus"></i>
-                                    Registered At
-                                </span>
-                                <span class="student-detail-value">
-                                    {{ $student->created_at?->format('d M Y, h:i A') ?? 'N/A' }}
-                                </span>
-                            </div>
-
-                            <div class="student-detail-row">
-                                <span class="student-detail-label">
-                                    <i class="bi bi-clock-history"></i>
-                                    Last Updated
-                                </span>
-                                <span class="student-detail-value">
-                                    {{ $student->updated_at?->format('d M Y, h:i A') ?? 'N/A' }}
-                                </span>
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="modal-footer student-modal-footer">
-                        <button type="button" class="btn student-close-btn" data-bs-dismiss="modal">
-                            <i class="bi bi-x-circle me-1"></i>
-                            Close
-                        </button>
-                    </div>
+
 
                 </div>
             </div>
