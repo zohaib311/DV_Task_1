@@ -48,9 +48,6 @@
                                     <th scope="col">Name</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Phone</th>
-                                    <th scope="col">Department</th>
-                                    <th scope="col">Section</th>
-                                    <th scope="col">Assigned Courses</th>
                                     <th scope="col">Actions</th>
                                 </tr>
                             </thead>
@@ -65,21 +62,8 @@
                                         <td class="fw-semibold">{{ $student->name }}</td>
                                         <td>{{ $student->email }}</td>
                                         <td>{{ $student->phone }}</td>
-                                        <td>{{ $student->department->name ?? 'N/A' }}</td>
-                                        <td>
-                                            <span class="badge bg-secondary">
-                                                {{ $student->section->name ?? 'N/A' }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            @forelse ($student->assigned_courses as $c)
-                                                <span class="badge bg-primary me-1 mb-1">
-                                                    {{ $c->name }}
-                                                </span>
-                                            @empty
-                                                <span class="text-muted small">No courses</span>
-                                            @endforelse
-                                        </td>
+
+
                                         <td>
                                             <div class="action__buttons">
                                                 <button type="button" class="action__btn action__info" title="View Student"
@@ -142,157 +126,156 @@
             </div>
         </div>
     @endforeach
-@endsection
 
+    @foreach ($students as $student)
+        <div class="modal fade student-detail-modal" id="infoStudentModal{{ $student->id }}" tabindex="-1"
+            aria-labelledby="infoStudentModalLabel{{ $student->id }}" aria-hidden="true">
 
-@foreach ($students as $student)
-    <div class="modal fade student-detail-modal" id="infoStudentModal{{ $student->id }}" tabindex="-1"
-        aria-labelledby="infoStudentModalLabel{{ $student->id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
 
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
+                    <div class="modal-header student-modal-header">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-person-vcard-fill"></i>
+                            <h5 class="modal-title mb-0" id="infoStudentModalLabel{{ $student->id }}">
+                                Student Details
+                            </h5>
+                        </div>
 
-                <div class="modal-header student-modal-header">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-person-vcard-fill"></i>
-                        <h5 class="modal-title mb-0" id="infoStudentModalLabel{{ $student->id }}">
-                            Student Details
-                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close">
+                        </button>
                     </div>
 
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close">
-                    </button>
-                </div>
+                    <div class="modal-body student-modal-body">
 
-                <div class="modal-body student-modal-body">
+                        <div class="student-profile-card">
+                            <img src="{{ asset('storage/images/' . ($student->image ?: 'default-user.png')) }}"
+                                alt="{{ $student->name }}" class="student-modal-avatar">
 
-                    <div class="student-profile-card">
-                        <img src="{{ asset('storage/images/' . ($student->image ?: 'default-user.png')) }}"
-                            alt="{{ $student->name }}" class="student-modal-avatar">
+                            <div class="student-profile-info">
+                                <h3>{{ $student->name }}</h3>
 
-                        <div class="student-profile-info">
-                            <h3>{{ $student->name }}</h3>
+                                <p>
+                                    <i class="bi bi-envelope"></i>
+                                    {{ $student->email }}
+                                </p>
 
-                            <p>
-                                <i class="bi bi-envelope"></i>
-                                {{ $student->email }}
-                            </p>
+                                <p>
+                                    <i class="bi bi-telephone"></i>
+                                    {{ $student->phone }}
+                                </p>
+                            </div>
+                        </div>
 
-                            <p>
-                                <i class="bi bi-telephone"></i>
-                                {{ $student->phone }}
-                            </p>
+                        <div class="student-details-box">
+                            <div class="student-detail-row">
+                                <span class="student-detail-label">
+                                    <i class="bi bi-hash"></i>
+                                    Student ID
+                                </span>
+                                <span class="student-detail-value">
+                                    #{{ $student->id }}
+                                </span>
+                            </div>
+
+                            <div class="student-detail-row">
+                                <span class="student-detail-label">
+                                    <i class="bi bi-person"></i>
+                                    Full Name
+                                </span>
+                                <span class="student-detail-value">
+                                    {{ $student->name }}
+                                </span>
+                            </div>
+
+                            <div class="student-detail-row">
+                                <span class="student-detail-label">
+                                    <i class="bi bi-envelope"></i>
+                                    Email Address
+                                </span>
+                                <span class="student-detail-value">
+                                    {{ $student->email }}
+                                </span>
+                            </div>
+
+                            <div class="student-detail-row">
+                                <span class="student-detail-label">
+                                    <i class="bi bi-telephone"></i>
+                                    Phone Number
+                                </span>
+                                <span class="student-detail-value">
+                                    {{ $student->phone }}
+                                </span>
+                            </div>
+
+                            <div class="student-detail-row">
+                                <span class="student-detail-label">
+                                    <i class="bi bi-building"></i>
+                                    Department
+                                </span>
+                                <span class="student-detail-value">
+                                    {{ $student->department->name ?? 'N/A' }}
+                                </span>
+                            </div>
+
+                            <div class="student-detail-row">
+                                <span class="student-detail-label">
+                                    <i class="bi bi-diagram-3"></i>
+                                    Section
+                                </span>
+                                <span class="student-detail-value">
+                                    {{ $student->section->name ?? 'N/A' }}
+                                </span>
+                            </div>
+
+                            <div class="student-detail-row student-courses-row">
+                                <span class="student-detail-label">
+                                    <i class="bi bi-book"></i>
+                                    Assigned Courses
+                                </span>
+
+                                <span class="student-detail-value student-course-list">
+                                    @forelse ($student->assigned_courses as $course)
+                                        <span class="student-course-badge">
+                                            {{ $course->name }}
+                                        </span>
+                                    @empty
+                                        <span class="text-muted">No courses assigned</span>
+                                    @endforelse
+                                </span>
+                            </div>
+
+                            <div class="student-detail-row">
+                                <span class="student-detail-label">
+                                    <i class="bi bi-calendar-plus"></i>
+                                    Registered At
+                                </span>
+                                <span class="student-detail-value">
+                                    {{ $student->created_at?->format('d M Y, h:i A') ?? 'N/A' }}
+                                </span>
+                            </div>
+
+                            <div class="student-detail-row">
+                                <span class="student-detail-label">
+                                    <i class="bi bi-clock-history"></i>
+                                    Last Updated
+                                </span>
+                                <span class="student-detail-value">
+                                    {{ $student->updated_at?->format('d M Y, h:i A') ?? 'N/A' }}
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="student-details-box">
-                        <div class="student-detail-row">
-                            <span class="student-detail-label">
-                                <i class="bi bi-hash"></i>
-                                Student ID
-                            </span>
-                            <span class="student-detail-value">
-                                #{{ $student->id }}
-                            </span>
-                        </div>
-
-                        <div class="student-detail-row">
-                            <span class="student-detail-label">
-                                <i class="bi bi-person"></i>
-                                Full Name
-                            </span>
-                            <span class="student-detail-value">
-                                {{ $student->name }}
-                            </span>
-                        </div>
-
-                        <div class="student-detail-row">
-                            <span class="student-detail-label">
-                                <i class="bi bi-envelope"></i>
-                                Email Address
-                            </span>
-                            <span class="student-detail-value">
-                                {{ $student->email }}
-                            </span>
-                        </div>
-
-                        <div class="student-detail-row">
-                            <span class="student-detail-label">
-                                <i class="bi bi-telephone"></i>
-                                Phone Number
-                            </span>
-                            <span class="student-detail-value">
-                                {{ $student->phone }}
-                            </span>
-                        </div>
-
-                        <div class="student-detail-row">
-                            <span class="student-detail-label">
-                                <i class="bi bi-building"></i>
-                                Department
-                            </span>
-                            <span class="student-detail-value">
-                                {{ $student->department->name ?? 'N/A' }}
-                            </span>
-                        </div>
-
-                        <div class="student-detail-row">
-                            <span class="student-detail-label">
-                                <i class="bi bi-diagram-3"></i>
-                                Section
-                            </span>
-                            <span class="student-detail-value">
-                                {{ $student->section->name ?? 'N/A' }}
-                            </span>
-                        </div>
-
-                        <div class="student-detail-row student-courses-row">
-                            <span class="student-detail-label">
-                                <i class="bi bi-book"></i>
-                                Assigned Courses
-                            </span>
-
-                            <span class="student-detail-value student-course-list">
-                                @forelse ($student->assigned_courses as $course)
-                                    <span class="student-course-badge">
-                                        {{ $course->name }}
-                                    </span>
-                                @empty
-                                    <span class="text-muted">No courses assigned</span>
-                                @endforelse
-                            </span>
-                        </div>
-
-                        <div class="student-detail-row">
-                            <span class="student-detail-label">
-                                <i class="bi bi-calendar-plus"></i>
-                                Registered At
-                            </span>
-                            <span class="student-detail-value">
-                                {{ $student->created_at?->format('d M Y, h:i A') ?? 'N/A' }}
-                            </span>
-                        </div>
-
-                        <div class="student-detail-row">
-                            <span class="student-detail-label">
-                                <i class="bi bi-clock-history"></i>
-                                Last Updated
-                            </span>
-                            <span class="student-detail-value">
-                                {{ $student->updated_at?->format('d M Y, h:i A') ?? 'N/A' }}
-                            </span>
-                        </div>
+                    <div class="modal-footer student-modal-footer">
+                        <button type="button" class="btn student-close-btn" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-1"></i>
+                            Close
+                        </button>
                     </div>
-                </div>
 
-                <div class="modal-footer student-modal-footer">
-                    <button type="button" class="btn student-close-btn" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle me-1"></i>
-                        Close
-                    </button>
                 </div>
-
             </div>
         </div>
-    </div>
-@endforeach
+    @endforeach
+@endsection

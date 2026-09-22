@@ -33,7 +33,6 @@
 
                 <div class="row g-3">
 
-                    {{-- Name --}}
                     <div class="col-md-6">
                         <label for="name" class="form-label">Name</label>
                         <input type="text" name="name" id="name" value="{{ old('name', $student->name) }}"
@@ -44,7 +43,6 @@
                         @enderror
                     </div>
 
-                    {{-- Email --}}
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" name="email" id="email" value="{{ old('email', $student->email) }}"
@@ -55,7 +53,6 @@
                         @enderror
                     </div>
 
-                    {{-- Phone --}}
                     <div class="col-md-6">
                         <label for="phone" class="form-label">Phone</label>
                         <input type="text" name="phone" id="phone" value="{{ old('phone', $student->phone) }}"
@@ -65,7 +62,6 @@
                         @enderror
                     </div>
 
-                    {{-- Department Dropdown --}}
                     <div class="col-md-6">
                         <label for="department_id" class="form-label">Department</label>
                         <select name="department_id" id="department_id"
@@ -83,7 +79,6 @@
                         @enderror
                     </div>
 
-                    {{-- Section Dropdown --}}
                     <div class="col-md-6">
                         <label for="section_id" class="form-label">Section</label>
                         <select name="section_id" id="section_id"
@@ -101,7 +96,6 @@
                         @enderror
                     </div>
 
-                    {{-- Multiple Courses Selection --}}
                     <div class="col-md-6">
                         <label for="course_ids" class="form-label">Assigned Courses <small class="text-muted">(Hold Ctrl/Cmd
                                 to select multiple)</small></label>
@@ -119,7 +113,6 @@
                         @enderror
                     </div>
 
-                    {{-- Image Section --}}
                     <div class="col-12">
                         <div class="image__section">
                             <div class="current__image__box">
