@@ -2,43 +2,48 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course\Course;
+use App\Models\Department\Department;
+use App\Models\Section\Section;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
     function create()
     {
-        return view('students.add-student');
+        $departments = Department::all();
+        $sections    = Section::with('department')->get();
+        $courses     = Course::all();
+
+        return view('students.add-student', compact('departments', 'sections', 'courses'));
     }
 
     function allstudents(Request $request)
     {
-        $student = Student::all();
-        return view('students.students', ['students' => $student]);
+        $students = Student::with(['department', 'section'])->get();
+
+        return view('students.students', compact('students'));
     }
 
     function addStudent(Request $request)
     {
         $validated = $request->validate([
-            'name'  => 'required|string',
-            'email' => 'required|email|unique:students,email',
-            'phone' => 'required|size:11',
-            'class' => 'required|string|min:2|max:10',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|email|unique:students,email',
+            'phone'         => 'required|digits:11',
+            'department_id' => 'required|exists:departments,id',
+            'section_id'    => 'required|exists:sections,id',
+            'course_ids'    => 'required|array|min:1',
+            'course_ids.*'  => 'exists:courses,id',
+            'image'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
-
             $path = $request->file('image')->store('images', 'public');
-
-            $fullFileName = explode('/', $path);
-
-            $fileName = $fullFileName[1];
+            $fileName = basename($path);
         } else {
-
             $fileName = 'default-user.png';
         }
 
@@ -46,16 +51,17 @@ class StudentController extends Controller
 
         Student::create($validated);
 
-        return redirect()->route('allStudents')->with('success', 'User added successfully!');
+        return redirect()->route('allStudents')->with('success', 'Student added successfully!');
     }
 
     function editStudentForm($id)
     {
-        $student = Student::findOrFail($id);
+        $student     = Student::findOrFail($id);
+        $departments = Department::all();
+        $sections    = Section::with('department')->get();
+        $courses     = Course::all();
 
-        return view('students.edit-student', [
-            'student' => $student
-        ]);
+        return view('students.edit-student', compact('student', 'departments', 'sections', 'courses'));
     }
 
     function updateStudent(Request $request, $id)
@@ -63,17 +69,21 @@ class StudentController extends Controller
         $student = Student::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email|unique:students,email,' . $student->id,
-            'phone' => 'required|digits:11',
-            'class' => 'required|string|min:2|max:10',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|email|unique:students,email,' . $student->id,
+            'phone'         => 'required|digits:11',
+            'department_id' => 'required|exists:departments,id',
+            'section_id'    => 'required|exists:sections,id',
+            'course_ids'    => 'required|array|min:1',
+            'course_ids.*'  => 'exists:courses,id',
+            'image'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
-
+            if ($student->image && $student->image !== 'default-user.png') {
+                Storage::disk('public')->delete('images/' . $student->image);
+            }
             $path = $request->file('image')->store('images', 'public');
-
             $validated['image'] = basename($path);
         }
 
@@ -88,12 +98,10 @@ class StudentController extends Controller
     {
         $student = Student::findOrFail($id);
 
-        // Delete image from storage
         if ($student->image && $student->image !== 'default-user.png') {
             Storage::disk('public')->delete('images/' . $student->image);
         }
 
-        // Delete student from database
         $student->delete();
 
         return redirect()
