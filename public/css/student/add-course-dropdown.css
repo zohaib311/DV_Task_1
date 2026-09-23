@@ -1,0 +1,146 @@
+.course-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.course-dropdown-btn {
+    width: 100%;
+    height: 48px;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #dee2e6;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #495057;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.course-dropdown-btn:hover {
+    border-color: #8b5cf6;
+}
+
+.course-dropdown-btn.active {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.course-dropdown-btn i {
+    font-size: 13px;
+    transition: transform 0.25s ease;
+}
+
+.course-dropdown-btn.active i {
+    transform: rotate(180deg);
+}
+
+.course-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 6px;
+    display: none;
+    z-index: 1050;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14);
+}
+
+.course-dropdown-menu.show {
+    display: block;
+}
+
+.course-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 11px;
+    margin: 0;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.course-option:hover {
+    background: #f5f7ff;
+}
+
+.course-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.course-checkbox {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 5px;
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.course-option input:checked+.course-checkbox {
+    border-color: #6366f1;
+    background: #6366f1;
+}
+
+.course-option input:checked+.course-checkbox::after {
+    content: "\f26e";
+    font-family: "bootstrap-icons";
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.course-option-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.course-name {
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.course-code {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.course-option:has(input:checked) {
+    background: #f0f4ff;
+}
+
+.course-dropdown-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.course-dropdown-menu::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+
+.course-dropdown-menu::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #cbd5e1;
+}
+
+.course-dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

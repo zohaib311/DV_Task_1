@@ -4,6 +4,8 @@
     <link rel="stylesheet" href="{{ asset('css/addstudent.css') }}">
     <link rel="stylesheet" href="{{ asset('css/universal/edit.css') }}">
     <link rel="stylesheet" href="{{ asset('css/universal/action-buttons.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/student/add-course-dropdown.css') }}">
+    <script src="{{ asset('js/add-courses.js') }}"></script>
 @endsection
 
 @section('content')
@@ -97,19 +99,39 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label for="course_ids" class="form-label">Assigned Courses <small class="text-muted">(Hold Ctrl/Cmd
-                                to select multiple)</small></label>
-                        <select name="course_ids[]" id="course_ids" multiple
-                            class="form-select @error('course_ids') is-invalid @enderror" style="height: 110px;" required>
-                            @foreach ($courses as $course)
-                                <option value="{{ $course->id }}"
-                                    {{ is_array(old('course_ids', $student->course_ids)) && in_array($course->id, old('course_ids', $student->course_ids)) ? 'selected' : '' }}>
-                                    {{ $course->name }} ({{ $course->code }})
-                                </option>
-                            @endforeach
-                        </select>
+                        <label class="form-label">Assigned Courses</label>
+
+                        <div class="course-dropdown">
+                            <button type="button" class="course-dropdown-btn" id="courseDropdownBtn">
+                                <span id="courseDropdownText">Select Courses</span>
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+
+                            <div class="course-dropdown-menu" id="courseDropdownMenu">
+
+                                @foreach ($courses as $course)
+                                    @php
+                                        $selectedCourses = old('course_ids', $student->course_ids ?? []);
+                                    @endphp
+
+                                    <label class="course-option">
+                                        <input type="checkbox" name="course_ids[]" value="{{ $course->id }}"
+                                            {{ is_array($selectedCourses) && in_array($course->id, $selectedCourses) ? 'checked' : '' }}>
+
+                                        <span class="course-checkbox"></span>
+
+                                        <span class="course-option-content">
+                                            <span class="course-name">{{ $course->name }}</span>
+                                            <span class="course-code">{{ $course->code }}</span>
+                                        </span>
+                                    </label>
+                                @endforeach
+
+                            </div>
+                        </div>
+
                         @error('course_ids')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="text-danger mt-1 small">{{ $message }}</div>
                         @enderror
                     </div>
 
