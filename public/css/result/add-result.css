@@ -1,0 +1,324 @@
+:root {
+    --color-primary: #6c63ff;
+    --color-primary-dark: #5a52d5;
+    --color-secondary: #8b5cf6;
+    --gradient-primary: linear-gradient(135deg, #6c63ff 0%, #8b5cf6 100%);
+    --color-outline: #e2e8f0;
+    --color-bg-light: #f8fafc;
+    --color-text-dark: #1e293b;
+    --color-text-muted: #64748b;
+}
+
+.add-result-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 15px;
+}
+
+/* Page Header */
+.page-header-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px 30px;
+    border: 1px solid var(--color-outline);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.page-header-title {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 26px;
+    margin-bottom: 4px;
+}
+
+.page-header-sub {
+    color: var(--color-text-muted);
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Filter Card (Department & Section) */
+.filter-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    border: 1px solid var(--color-outline);
+    box-shadow: 0 10px 30px rgba(108, 99, 255, 0.05);
+    padding: 28px 32px;
+    margin-bottom: 28px;
+    transition: all 0.3s ease;
+}
+
+.filter-card:hover {
+    box-shadow: 0 12px 35px rgba(108, 99, 255, 0.08);
+}
+
+.filter-card-title {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-card .form-label {
+    color: var(--color-text-dark);
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.filter-card .form-select {
+    min-height: 50px;
+    padding: 10px 16px;
+    border: 1.5px solid var(--color-outline);
+    border-radius: 12px;
+    background-color: var(--color-bg-light);
+    font-size: 14.5px;
+    color: var(--color-text-dark);
+    font-weight: 500;
+    transition: all 0.25s ease;
+}
+
+.filter-card .form-select:focus {
+    background-color: #ffffff;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.12);
+    outline: none;
+}
+
+.filter-card .form-select:disabled {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+/* Students List Card Section */
+.students-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    border: 1px solid var(--color-outline);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    padding: 28px 32px;
+}
+
+.students-card-title {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Loading Spinner */
+.spinner-container {
+    display: none;
+    padding: 40px;
+    text-align: center;
+}
+
+.spinner-container .spinner-border {
+    width: 2.8rem;
+    height: 2.8rem;
+    color: var(--color-primary) !important;
+}
+
+/* Table Styling */
+.students-table-responsive {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--color-outline);
+}
+
+.students-table {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.students-table thead tr {
+    background: #f1f5f9;
+}
+
+.students-table th {
+    color: #475569;
+    font-size: 13.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 14px 18px;
+    border-bottom: 2px solid var(--color-outline);
+}
+
+.students-table td {
+    padding: 14px 18px;
+    color: var(--color-text-dark);
+    font-size: 14px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.students-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.students-table tbody tr:hover {
+    background: rgba(108, 99, 255, 0.02);
+}
+
+.students-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.student-id-badge {
+    background: #e0e7ff;
+    color: #4338ca;
+    font-weight: 600;
+    font-size: 12.5px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* Add Result Button */
+.btn-add-result {
+    background: var(--gradient-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-add-result:hover {
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(108, 99, 255, 0.35);
+}
+
+/* Add Result Modal */
+.result-modal .modal-content {
+    border: none;
+    margin-top: 60px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.result-modal .modal-header {
+    background: var(--gradient-primary);
+    color: #ffffff;
+    padding: 20px 28px;
+    border: none;
+}
+
+.result-modal .modal-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.result-modal .btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.8;
+}
+
+.result-modal .btn-close-white:hover {
+    opacity: 1;
+}
+
+.result-modal .modal-body {
+    padding: 28px;
+    background: #ffffff;
+}
+
+.result-modal .student-info-box {
+    background: #f8fafc;
+    border: 1px solid var(--color-outline);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+}
+
+.result-modal .form-label {
+    color: var(--color-text-dark);
+    font-weight: 600;
+    font-size: 13.5px;
+    margin-bottom: 6px;
+}
+
+.result-modal .form-control,
+.result-modal .form-select {
+    min-height: 46px;
+    border-radius: 10px;
+    border: 1.5px solid var(--color-outline);
+    background-color: var(--color-bg-light);
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.result-modal .form-control:focus,
+.result-modal .form-select:focus {
+    background-color: #ffffff;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
+}
+
+.result-modal .modal-footer {
+    background: #f8fafc;
+    border-top: 1px solid var(--color-outline);
+    padding: 16px 28px;
+}
+
+.result-modal .btn-submit-result {
+    background: var(--gradient-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-weight: 600;
+    font-size: 14.5px;
+    box-shadow: 0 4px 14px rgba(108, 99, 255, 0.25);
+    transition: all 0.25s ease;
+}
+
+.result-modal .btn-submit-result:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgba(108, 99, 255, 0.35);
+}
+
+@media (max-width: 768px) {
+    .add-result-container {
+        padding: 10px;
+    }
+
+    .filter-card,
+    .students-card {
+        padding: 20px 18px;
+        border-radius: 16px;
+    }
+
+    .page-header-card {
+        padding: 18px 20px;
+    }
+}
