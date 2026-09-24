@@ -64,15 +64,14 @@
 
             <div id="initial_state_msg" class="alert alert-light text-center border py-4 mb-0 rounded-3">
                 <i class="bi bi-arrow-up-circle fs-3 text-primary d-block mb-2"></i>
-                <span class="fw-semibold text-secondary">Pehly Department select krain, phr Section select krain
-                    students ki list dekhny kay liye.</span>
+                <span class="fw-semibold text-secondary">Select Department First, Then Section, To View Students.</span>
             </div>
 
             <div id="loading_spinner" class="spinner-container">
                 <div class="spinner-border" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
-                <p class="mt-2 text-muted mb-0 fw-medium">Students load ho rahy hain...</p>
+                <p class="mt-2 text-muted mb-0 fw-medium">Loading Students...</p>
             </div>
 
             <div id="students_table_wrapper" style="display: none;">
@@ -95,7 +94,7 @@
 
             <div id="no_students_msg" class="alert alert-warning border-0 text-center py-4 mb-0 rounded-3"
                 style="display: none;">
-                <i class="bi bi-exclamation-triangle fs-4 me-2"></i> Is Section main koi student maujood nahi hai.
+                <i class="bi bi-exclamation-triangle fs-4 me-2"></i> There are no Students in This Section.
             </div>
         </div>
 

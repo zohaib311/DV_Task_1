@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         });
                     } else {
                         sectionSelect.innerHTML =
-                            '<option value="">There is No Section in This Department</option>';
+                            '<option value="">There Are No Sections in This Department</option>';
                     }
                 })
                 .catch(error => {
