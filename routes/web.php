@@ -132,6 +132,10 @@ Route::prefix('result')->controller(ResultController::class)->middleware('auth')
 
     Route::post('/add', 'addResult')->name('addResult');
 
+    Route::get('/get-sections/{department_id}', 'getSectionsByDepartment')->name('getSectionsByDepartment');
+
+    Route::get('/get-students/{section_id}', 'getStudentsBySection')->name('getStudentsBySection');
+
     Route::get('/edit/{id}', 'editResultForm')->name('editResultForm');
 
     Route::put('/update/{id}', 'updateResult')->name('updateResult');

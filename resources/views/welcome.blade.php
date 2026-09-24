@@ -137,6 +137,7 @@
         </script>
     @endauth
 
+    @yield('scripts')
 </body>
 
 </html>

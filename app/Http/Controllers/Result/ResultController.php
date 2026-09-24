@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Result;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course\Course;
+use App\Models\Department\Department;
 use App\Models\Result\Result;
 use App\Models\Section\Section;
 use App\Models\Student;
 use Illuminate\Http\Request;
-
-
 
 class ResultController extends Controller
 {
@@ -21,11 +20,22 @@ class ResultController extends Controller
 
     public function create()
     {
-        $students = Student::all();
-        $courses  = Course::all();
-        $sections = Section::with('department')->get();
+        $departments = Department::all();
+        $courses     = Course::all();
 
-        return view('results.add-result', compact('students', 'courses', 'sections'));
+        return view('results.add-result', compact('departments', 'courses'));
+    }
+
+    public function getSectionsByDepartment($department_id)
+    {
+        $sections = Section::where('department_id', $department_id)->get();
+        return response()->json($sections);
+    }
+
+    public function getStudentsBySection($section_id)
+    {
+        $students = Student::where('section_id', $section_id)->get();
+        return response()->json($students);
     }
 
     public function addResult(Request $request)
