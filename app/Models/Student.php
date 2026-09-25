@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Course\Course;
 use App\Models\Department\Department;
+use App\Models\Result\Result;
 use App\Models\Section\Section;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,6 +39,12 @@ class Student extends Model
     public function section()
     {
         return $this->belongsTo(Section::class, 'section_id');
+    }
+
+    // Results Relationship
+    public function results()
+    {
+        return $this->hasMany(Result::class, 'student_id');
     }
 
     // Helper Attribute to get assigned Courses Models

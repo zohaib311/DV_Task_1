@@ -14,8 +14,11 @@ class ResultController extends Controller
 {
     public function allResults()
     {
-        $results = Result::with(['student', 'course', 'section.department'])->get();
-        return view('results.results', compact('results'));
+        $departments = Department::all();
+        $courses     = Course::all();
+        $results     = Result::with(['student', 'course', 'section.department'])->get();
+
+        return view('results.results', compact('departments', 'courses', 'results'));
     }
 
     public function create()
@@ -34,7 +37,7 @@ class ResultController extends Controller
 
     public function getStudentsBySection($section_id)
     {
-        $students = Student::where('section_id', $section_id)->get();
+        $students = Student::with(['results.course', 'department', 'section'])->where('section_id', $section_id)->get();
         return response()->json($students);
     }
 

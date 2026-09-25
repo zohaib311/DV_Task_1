@@ -5,98 +5,84 @@
     gap: 8px;
 }
 
-
 .action__btn {
     width: 38px;
     height: 38px;
-
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     border-radius: 10px;
-
     text-decoration: none;
-
     font-size: 17px;
-
     transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
 }
 
-
 /* Edit */
-
 .action__edit {
-    color: var(--color-primary);
-
+    color: var(--color-primary, #6c63ff);
     background: rgba(108, 99, 255, 0.10);
-
     border: 1px solid rgba(108, 99, 255, 0.20);
 }
 
 .action__edit:hover {
     color: #fff;
-
-    background: var(--color-primary);
-
+    background: var(--color-primary, #6c63ff);
     transform: translateY(-2px);
-
     box-shadow: 0 5px 12px rgba(108, 99, 255, 0.25);
 }
 
-
 /* Delete */
-
 .action__delete {
     color: #dc3545;
-
     background: rgba(220, 53, 69, 0.08);
-
     border: 1px solid rgba(220, 53, 69, 0.18);
 }
 
-
-
 .action__delete:hover {
     color: #fff;
-
     background: #dc3545;
-
     transform: translateY(-2px);
-
     box-shadow: 0 5px 12px rgba(220, 53, 69, 0.25);
 }
 
+/* Info / View */
 .action__info {
     color: #00d0ff;
-
     background: rgba(33, 173, 192, 0.08);
-
     border: 1px solid rgba(53, 198, 220, 0.18);
 }
 
 .action__info:hover {
     color: #fff;
-
     background: #35b8dc;
-
     transform: translateY(-2px);
-
-    box-shadow: 0 5px 12px rgba(220, 53, 69, 0.25);
+    box-shadow: 0 5px 12px rgba(53, 198, 220, 0.25);
 }
 
+/* Add Result */
+.action__add {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.10);
+    border: 1px solid rgba(16, 185, 129, 0.20);
+}
+
+.action__add:hover {
+    color: #fff;
+    background: #10b981;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(16, 185, 129, 0.25);
+}
 
 .user-image:hover {
     transform: translateY(-2px);
     box-shadow: 0 7px 18px rgba(0, 0, 0, 0.16);
 }
 
-
-
 /* =========================================
    DELETE CONFIRMATION MODAL
 ========================================= */
-
 .delete__modal {
     border: none;
     border-radius: 18px;
@@ -104,50 +90,36 @@
     box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
 }
 
-
 .delete__modal__icon {
     width: 65px;
     height: 65px;
     margin: 5px auto 18px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     border-radius: 50%;
-
     color: #dc3545;
     background: rgba(220, 53, 69, 0.10);
-
     font-size: 25px;
 }
 
-
 .delete__modal h4 {
     margin-bottom: 8px;
-
     font-size: 21px;
     font-weight: 700;
-
     color: #2d2d2d;
 }
 
-
 .delete__modal p {
     margin-bottom: 25px;
-
     color: #777;
     font-size: 14px;
     line-height: 1.6;
 }
 
-
 .delete__modal p strong {
     color: #333;
 }
-
-
-/* Buttons */
 
 .delete__modal__actions {
     display: flex;
@@ -156,25 +128,16 @@
     gap: 10px;
 }
 
-
 .delete__modal__actions button {
     min-width: 100px;
     height: 42px;
-
     padding: 8px 18px;
-
     border-radius: 9px;
-
     font-size: 14px;
     font-weight: 600;
-
     cursor: pointer;
-
     transition: all 0.25s ease;
 }
-
-
-/* Cancel */
 
 .delete__cancel {
     color: #555;
@@ -186,9 +149,6 @@
     background: #e8e8e8;
     transform: translateY(-1px);
 }
-
-
-/* Confirm Delete */
 
 .delete__confirm {
     color: #fff;
@@ -202,9 +162,6 @@
     transform: translateY(-1px);
     box-shadow: 0 5px 12px rgba(220, 53, 69, 0.25);
 }
-
-
-/* Remove form spacing inside modal */
 
 .delete__modal__actions form {
     margin: 0;
