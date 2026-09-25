@@ -72,7 +72,7 @@
         </li>
 
         <li class="nav-item">
-            <a href="{{ route('allResults') }}"
+            <a href="{{ route('addResult') }}"
                 class="sidebar-link nav-link {{ request()->is('result*') ? 'active' : '' }}">
                 <i class="bi bi-window-stack me-2 fs-5"></i>
                 <span>Results</span>
