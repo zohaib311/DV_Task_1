@@ -15,14 +15,28 @@ class Student extends Model
     use HasFactory, Notifiable;
 
     protected $fillable = [
+        'registration_no',
         'name',
         'email',
         'phone',
         'department_id',
         'section_id',
+        'semester',
         'course_ids',
         'image',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($student) {
+            if (empty($student->registration_no)) {
+                $year = date('Y');
+                $maxId = static::max('id') ?? 0;
+                $nextId = $maxId + 1;
+                $student->registration_no = 'REG-' . $year . '-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
+            }
+        });
+    }
 
     // Array Cast for Multiple Courses JSON Column
     protected $casts = [

@@ -90,6 +90,23 @@
                         @enderror
                     </div>
 
+                    <div class="col-md-6 mb-3">
+                        <label for="semester" class="form-label">Semester</label>
+                        <select name="semester" id="semester"
+                            class="form-select @error('semester') is-invalid @enderror" required>
+                            <option value="">Select Semester</option>
+                            @for ($i = 1; $i <= 8; $i++)
+                                <option value="Semester {{ $i }}"
+                                    {{ old('semester') == "Semester $i" ? 'selected' : '' }}>
+                                    Semester {{ $i }}
+                                </option>
+                            @endfor
+                        </select>
+                        @error('semester')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <div class="col-md-6">
                         <label class="form-label">Assigned Courses</label>
 

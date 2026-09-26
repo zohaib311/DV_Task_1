@@ -44,10 +44,12 @@
                             <thead class="table-light">
                                 <tr>
                                     <th scope="col">#</th>
+                                    <th scope="col">Reg No</th>
                                     <th scope="col">Image</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Phone</th>
+                                    <th scope="col">Semester</th>
                                     <th scope="col">Actions</th>
                                 </tr>
                             </thead>
@@ -55,6 +57,11 @@
                                 @forelse ($students as $student)
                                     <tr>
                                         <th scope="row">{{ $student->id }}</th>
+                                        <td>
+                                            <span class="badge bg-secondary text-wrap" style="font-size: 0.85rem;">
+                                                {{ $student->registration_no ?? 'N/A' }}
+                                            </span>
+                                        </td>
                                         <td class="user__image">
                                             <img src="{{ asset('storage/images/' . $student->image) }}"
                                                 alt="{{ $student->name }}" class="user-image">
@@ -62,6 +69,11 @@
                                         <td class="fw-semibold">{{ $student->name }}</td>
                                         <td>{{ $student->email }}</td>
                                         <td>{{ $student->phone }}</td>
+                                        <td>
+                                            <span class="badge bg-info text-dark">
+                                                {{ $student->semester ?? 'N/A' }}
+                                            </span>
+                                        </td>
 
 
                                         <td>
@@ -192,6 +204,16 @@
 
                                 <div class="student-detail-row">
                                     <span class="student-detail-label">
+                                        <i class="bi bi-card-heading"></i>
+                                        Registration No
+                                    </span>
+                                    <span class="student-detail-value fw-bold text-primary">
+                                        {{ $student->registration_no ?? 'N/A' }}
+                                    </span>
+                                </div>
+
+                                <div class="student-detail-row">
+                                    <span class="student-detail-label">
                                         <i class="bi bi-person"></i>
                                         Full Name
                                     </span>
@@ -237,6 +259,16 @@
                                     </span>
                                     <span class="student-detail-value">
                                         {{ $student->section->name ?? 'N/A' }}
+                                    </span>
+                                </div>
+
+                                <div class="student-detail-row">
+                                    <span class="student-detail-label">
+                                        <i class="bi bi-calendar3"></i>
+                                        Semester
+                                    </span>
+                                    <span class="student-detail-value">
+                                        {{ $student->semester ?? 'N/A' }}
                                     </span>
                                 </div>
 
