@@ -94,6 +94,7 @@
                             <option value="">Select Section</option>
                             @foreach ($sections as $section)
                                 <option value="{{ $section->id }}"
+                                    data-department-id="{{ $section->department_id }}"
                                     {{ old('section_id', $student->section_id) == $section->id ? 'selected' : '' }}>
                                     {{ $section->name }} ({{ $section->department->name ?? '' }})
                                 </option>
@@ -212,4 +213,46 @@
             </form>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const departmentSelect = document.getElementById('department_id');
+            const sectionSelect = document.getElementById('section_id');
+
+            if (departmentSelect && sectionSelect) {
+                function filterSections() {
+                    const selectedDeptId = departmentSelect.value;
+                    const options = sectionSelect.querySelectorAll('option');
+
+                    options.forEach(option => {
+                        if (!option.value) return; // Skip placeholder option
+
+                        const deptId = option.getAttribute('data-department-id');
+
+                        if (!selectedDeptId || deptId === selectedDeptId) {
+                            option.hidden = false;
+                            option.disabled = false;
+                        } else {
+                            option.hidden = true;
+                            option.disabled = true;
+                            if (option.selected) {
+                                option.selected = false;
+                            }
+                        }
+                    });
+
+                    // If currently selected option is now hidden/disabled, reset selection
+                    const currentOption = sectionSelect.options[sectionSelect.selectedIndex];
+                    if (currentOption && currentOption.disabled) {
+                        sectionSelect.value = '';
+                    }
+                }
+
+                departmentSelect.addEventListener('change', filterSections);
+                filterSections(); // Run initially for pre-selected values
+            }
+        });
+    </script>
 @endsection
