@@ -1,128 +1,101 @@
-/* ===================================================
-   ADD STUDENT RIGHT SIDE DRAWER / OFFCANVAS MODAL
-   =================================================== */
-
+/* Add student drawer */
 .add-student-drawer {
-    width: 600px !important;
+    width: 640px !important;
     max-width: 100vw !important;
-    border: none !important;
-    box-shadow: -10px 0 35px rgba(15, 23, 42, 0.2);
-    display: flex;
-    flex-direction: column;
     top: var(--navbar-height, 64px) !important;
     height: calc(100vh - var(--navbar-height, 64px)) !important;
+    border: 0 !important;
+    box-shadow: -16px 0 45px rgba(15, 23, 42, 0.22);
 }
 
-/* Make the backdrop also sit below the navbar */
-.add-student-drawer + .offcanvas-backdrop,
-.offcanvas-backdrop.show {
-    top: var(--navbar-height, 64px);
-}
+.offcanvas-backdrop.show { top: var(--navbar-height, 64px); }
 
 .add-student-drawer .drawer-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
-    color: #ffffff;
-    padding: 18px 25px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    flex-shrink: 0;
+    position: relative; display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 15px 22px; color: #fff;
+    background: linear-gradient(135deg, #5b4ee8 0%, #7c3aed 58%, #a855f7 100%); overflow: hidden;
 }
 
+.add-student-drawer .drawer-header::after {
+    position: absolute; right: -48px; bottom: -68px; width: 180px; height: 180px; content: '';
+    border: 32px solid rgba(255, 255, 255, 0.12); border-radius: 50%;
+}
+
+.drawer-title-wrap { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; }
+.drawer-title-icon {
+    display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px; background: rgba(255, 255, 255, 0.16); font-size: 15px;
+}
 .add-student-drawer .drawer-header h5 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    margin: 0 0 1px; color: #fff; font-size: 16px; font-weight: 800; letter-spacing: -0.15px;
 }
-
+.add-student-drawer .drawer-header p { margin: 0; color: rgba(255, 255, 255, 0.82); font-size: 11px; }
 .add-student-drawer .drawer-header .btn-close {
-    filter: invert(1) grayscale(100%) brightness(200%);
-    opacity: 0.85;
-    transition: all 0.2s ease;
+    position: relative; z-index: 1; margin: 1px 0 0 10px; filter: invert(1) grayscale(1) brightness(3); opacity: 0.88;
 }
+.add-student-drawer .drawer-header .btn-close:hover { opacity: 1; transform: scale(1.1); }
 
-.add-student-drawer .drawer-header .btn-close:hover {
-    opacity: 1;
-    transform: scale(1.1);
+.add-student-drawer .drawer-body { flex: 1; padding: 24px 26px 30px; overflow-y: auto; background: #f8fafc; }
+.student-drawer-note {
+    display: flex; align-items: flex-start; gap: 9px; margin-bottom: 22px; padding: 11px 13px;
+    border: 1px solid #d9d6fe; border-radius: 11px; background: #f1f0ff; color: #5147b8; font-size: 12px; line-height: 1.45;
 }
+.student-drawer-note i { margin-top: 1px; font-size: 14px; }
+.student-form-errors { border: 0; border-radius: 12px; font-size: 13px; }
 
-.add-student-drawer .drawer-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 25px;
-    background: #f8fafc;
+.student-form-section {
+    margin-bottom: 24px;
+    padding: 0 0 24px;
+    border: 0;
+    border-bottom: 1px solid #e2e8f0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+.student-form-section-title { display: flex; align-items: center; gap: 10px; margin-bottom: 17px; }
+.student-form-section-title > span {
+    display: grid; width: 32px; height: 32px; place-items: center; border-radius: 9px; background: #eeedff; color: #6257d9; font-size: 15px;
+}
+.student-form-section-title h6 { margin: 0 0 1px; color: #1e293b; font-size: 14px; font-weight: 800; }
+.student-form-section-title p { margin: 0; color: #64748b; font-size: 11px; }
+.student-form-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+
+.add-student-drawer .form-label { margin-bottom: 6px; color: #334155; font-size: 12px; font-weight: 700; }
+.form-label-hint, .student-field-hint { color: #94a3b8; font-size: 11px; font-weight: 500; }
+.student-field-hint { display: block; margin-top: 5px; }
+.add-student-drawer .form-select, .student-input-wrap .form-control {
+    min-height: 45px; border-color: #dbe1ea; border-radius: 10px; color: #334155; font-size: 13px; box-shadow: none;
+}
+.add-student-drawer .form-select:focus, .student-input-wrap .form-control:focus {
+    border-color: #7569e8; box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
+}
+.student-input-wrap { position: relative; }
+.student-input-wrap > i {
+    position: absolute; top: 50%; left: 13px; z-index: 2; color: #8b83df; font-size: 14px; pointer-events: none; transform: translateY(-50%);
+}
+.student-input-wrap .form-control { padding-left: 37px; }
+.student-input-wrap input[type='file'] { padding-top: 10px; font-size: 12px; }
+.student-input-wrap input[type='file']::file-selector-button {
+    margin-right: 9px; padding: 3px 7px; border: 0; border-radius: 5px; background: #eeedff; color: #5d52d1; font-weight: 700;
 }
 
 .add-student-drawer .drawer-footer {
-    position: sticky;
-    bottom: 0;
-    z-index: 100;
-    background: #ffffff;
-    padding: 16px 25px;
-    border-top: 1px solid #e2e8f0;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
-    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.03);
-    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: flex-end; gap: 9px; padding: 10px 22px; border-top: 1px solid #e5e7eb;
+    background: #fff; box-shadow: 0 -5px 15px rgba(15, 23, 42, 0.035);
 }
-
-.add-student-drawer .drawer-footer .btn-cancel {
-    padding: 9px 20px;
-    border-radius: 10px;
-    background: #f1f5f9;
-    color: #475569;
-    border: 1px solid #cbd5e1;
-    font-weight: 600;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    cursor: pointer;
+.add-student-drawer .drawer-footer button {
+    min-height: 36px; padding: 0 15px; border-radius: 9px; font-size: 12px; font-weight: 700; transition: 0.2s ease;
 }
-
-.add-student-drawer .drawer-footer .btn-cancel:hover {
-    background: #e2e8f0;
-    color: #1e293b;
+.add-student-drawer .btn-cancel { border: 1px solid #dbe1ea; background: #fff; color: #475569; }
+.add-student-drawer .btn-cancel:hover { border-color: #c5ccd7; background: #f8fafc; }
+.add-student-drawer .btn-submit {
+    border: 0; background: linear-gradient(135deg, #6257d9, #8b5cf6); box-shadow: 0 6px 14px rgba(108, 99, 255, 0.24); color: #fff;
 }
-
-.add-student-drawer .drawer-footer .btn-submit {
-    padding: 9px 24px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #2563eb, #4f46e5);
-    color: #ffffff;
-    border: none;
-    font-weight: 600;
-    font-size: 14px;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-
-.add-student-drawer .drawer-footer .btn-submit:hover {
-    background: linear-gradient(135deg, #1d4ed8, #4338ca);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
-}
+.add-student-drawer .btn-submit:hover { box-shadow: 0 9px 18px rgba(108, 99, 255, 0.35); transform: translateY(-1px); }
 
 @media (max-width: 640px) {
-    .add-student-drawer {
-        width: 100vw !important;
-    }
-
-    .add-student-drawer .drawer-body {
-        padding: 16px;
-    }
-
-    .add-student-drawer .drawer-header,
-    .add-student-drawer .drawer-footer {
-        padding: 14px 18px;
-    }
+    .add-student-drawer { width: 100vw !important; }
+    .add-student-drawer .drawer-header, .add-student-drawer .drawer-body { padding-right: 18px; padding-left: 18px; }
+    .add-student-drawer .drawer-footer { padding: 9px 18px; }
+    .student-form-section { padding-bottom: 20px; }
 }
