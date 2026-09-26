@@ -22,9 +22,12 @@ class StudentController extends Controller
 
     function allstudents(Request $request)
     {
-        $students = Student::with(['department', 'section'])->get();
+        $students    = Student::with(['department', 'section'])->get();
+        $departments = Department::all();
+        $sections    = Section::with('department')->get();
+        $courses     = Course::all();
 
-        return view('students.students', compact('students'));
+        return view('students.students', compact('students', 'departments', 'sections', 'courses'));
     }
 
     function addStudent(Request $request)
