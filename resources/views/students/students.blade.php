@@ -18,19 +18,6 @@
                         </div>
                     @endif
 
-                    <script>
-                        setTimeout(function() {
-                            const message = document.getElementById('success-message');
-
-                            if (message) {
-                                message.style.transition = 'opacity 0.5s ease';
-                                message.style.opacity = '0';
-
-                                setTimeout(() => message.remove(), 500);
-                            }
-                        }, 2000);
-                    </script>
-
                     <div class="add__user__btn">
                         <a href="{{ route('addStudentForm') }}" class="nav-link">
                             <span>Add Student</span>
@@ -58,7 +45,7 @@
                                     <tr>
                                         <th scope="row">{{ $student->id }}</th>
                                         <td>
-                                            <span class="badge bg-secondary text-wrap" style="font-size: 0.85rem;">
+                                            <span class="badge bg-secondary text-wrap reg-no-badge">
                                                 {{ $student->registration_no ?? 'N/A' }}
                                             </span>
                                         </td>
@@ -321,4 +308,8 @@
             </div>
         </div>
     @endforeach
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('js/student/alert-dismiss.js') }}"></script>
 @endsection
