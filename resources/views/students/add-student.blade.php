@@ -173,35 +173,52 @@
             const sectionSelect = document.getElementById('section_id');
 
             if (departmentSelect && sectionSelect) {
+                const placeholderOption = sectionSelect.querySelector('option[value=""]');
+
                 function filterSections() {
                     const selectedDeptId = departmentSelect.value;
                     const options = sectionSelect.querySelectorAll('option');
 
+                    if (!selectedDeptId) {
+                        sectionSelect.disabled = true;
+                        if (placeholderOption) placeholderOption.textContent = 'Select Department First';
+                        sectionSelect.value = '';
+                        options.forEach(option => {
+                            if (option.value) {
+                                option.hidden = true;
+                                option.disabled = true;
+                            }
+                        });
+                        return;
+                    }
+
+                    sectionSelect.disabled = false;
+                    if (placeholderOption) placeholderOption.textContent = 'Select Section';
+
                     options.forEach(option => {
-                        if (!option.value) return; // Skip placeholder option
+                        if (!option.value) return;
 
                         const deptId = option.getAttribute('data-department-id');
-
-                        if (!selectedDeptId || deptId === selectedDeptId) {
+                        if (deptId === selectedDeptId) {
                             option.hidden = false;
                             option.disabled = false;
                         } else {
                             option.hidden = true;
                             option.disabled = true;
-                            if (option.selected) {
-                                option.selected = false;
-                            }
                         }
                     });
 
-                    // If currently selected option is now hidden/disabled, reset selection
                     const currentOption = sectionSelect.options[sectionSelect.selectedIndex];
                     if (currentOption && currentOption.disabled) {
                         sectionSelect.value = '';
                     }
                 }
 
-                departmentSelect.addEventListener('change', filterSections);
+                departmentSelect.addEventListener('change', function () {
+                    sectionSelect.value = '';
+                    filterSections();
+                });
+
                 filterSections(); // Run initially for pre-selected values
             }
         });

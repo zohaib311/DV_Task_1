@@ -21,4 +21,10 @@ class Section extends Model
     {
         return $this->belongsTo(Department::class, 'department_id');
     }
+
+    // Students Relationship
+    public function students()
+    {
+        return $this->hasMany(\App\Models\Student::class, 'section_id');
+    }
 }
