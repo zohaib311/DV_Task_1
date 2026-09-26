@@ -1,7 +1,7 @@
 <div class="offcanvas offcanvas-end add-student-drawer" tabindex="-1" id="addStudentDrawer"
     aria-labelledby="addStudentDrawerLabel">
     <form action="{{ route('addStudent') }}" method="POST" enctype="multipart/form-data"
-        class="d-flex flex-column h-100 m-0">
+        class="d-flex flex-column h-100 m-0" novalidate>
         @csrf
 
         <div class="drawer-header">
@@ -16,19 +16,22 @@
         </div>
 
         <div class="drawer-body">
-            <div class="student-drawer-note">
-                <i class="bi bi-info-circle-fill"></i>
-                <span>A registration number will be created automatically after saving.</span>
-            </div>
-
             @if ($errors->any())
-                <div class="alert alert-danger student-form-errors" role="alert">
-                    <strong>Please correct the following:</strong>
-                    <ul class="mb-0 mt-1 ps-3">
+                <div class="student-validation-summary" role="alert" aria-live="assertive">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div>
+                        <strong>Please correct the following errors:</strong>
+                        <ul>
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
-                    </ul>
+                        </ul>
+                    </div>
+                </div>
+            @else
+                <div class="student-drawer-note">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>A registration number will be created automatically after saving.</span>
                 </div>
             @endif
 

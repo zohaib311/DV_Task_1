@@ -41,7 +41,23 @@
     border: 1px solid #d9d6fe; border-radius: 11px; background: #f1f0ff; color: #5147b8; font-size: 12px; line-height: 1.45;
 }
 .student-drawer-note i { margin-top: 1px; font-size: 14px; }
-.student-form-errors { border: 0; border-radius: 12px; font-size: 13px; }
+.student-validation-summary {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 22px;
+    padding: 12px 13px;
+    border: 1px solid #fecaca;
+    border-radius: 11px;
+    background: #fff1f2;
+    color: #b4233d;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.student-validation-summary > i { margin-top: 2px; font-size: 15px; }
+.student-validation-summary strong { display: block; font-weight: 800; }
+.student-validation-summary ul { margin: 4px 0 0; padding-left: 17px; }
 
 .student-form-section {
     margin-bottom: 24px;
