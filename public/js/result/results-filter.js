@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                             tr.innerHTML = `
                                 <td>${index + 1}</td>
-                                <td><span class="student-id-badge">STD-${student.id}</span></td>
+                                <td><span class="student-id-badge">${student.registration_no}</span></td>
                                 <td class="fw-bold text-dark">${student.name}</td>
                                 <td class="text-muted">${student.email || 'N/A'}</td>
                                 <td>${courseStatusHtml}</td>
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('view_student_email').textContent = viewBtn.getAttribute('data-student-email');
             document.getElementById('view_student_phone').textContent = viewBtn.getAttribute('data-student-phone');
             document.getElementById('view_student_image').src = `/storage/images/${viewBtn.getAttribute('data-student-image')}`;
-            
+
             document.getElementById('view_percentage').textContent = viewBtn.getAttribute('data-percentage') + '%';
             document.getElementById('view_gpa').textContent = viewBtn.getAttribute('data-gpa');
             document.getElementById('view_cgpa').textContent = viewBtn.getAttribute('data-cgpa');
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('edit_modal_section_id').value = editBtn.getAttribute('data-section-id');
             document.getElementById('edit_modal_student_name').textContent = editBtn.getAttribute('data-student-name');
             document.getElementById('edit_modal_student_email').textContent = editBtn.getAttribute('data-student-email');
-            
+
             document.getElementById('edit_course_id').value = editBtn.getAttribute('data-course-id');
             document.getElementById('edit_percentage').value = editBtn.getAttribute('data-percentage');
             document.getElementById('edit_gpa').value = editBtn.getAttribute('data-gpa');

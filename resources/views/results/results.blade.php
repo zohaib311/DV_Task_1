@@ -45,87 +45,88 @@
                     </script>
                 @endif
 
-        <section class="results-filter-section" aria-labelledby="results-filter-heading">
-            <div class="results-section-heading">
-                <div>
-                    <span class="results-section-eyebrow">Filter records</span>
-                    <h2 id="results-filter-heading">Choose a class</h2>
-                </div>
-                <span class="results-step-hint"><i class="bi bi-sliders"></i> Required selection</span>
-            </div>
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label for="department_id" class="form-label"><span>01</span> Department</label>
-                    <div class="results-select-wrap">
-                        <i class="bi bi-building"></i>
-                        <select id="department_id" class="form-select">
-                            <option value="">-- Select Department --</option>
-                            @foreach ($departments as $department)
-                                <option value="{{ $department->id }}">{{ $department->name }}</option>
-                            @endforeach
-                        </select>
+                <section class="results-filter-section" aria-labelledby="results-filter-heading">
+                    <div class="results-section-heading">
+                        <div>
+                            <span class="results-section-eyebrow">Filter records</span>
+                            <h2 id="results-filter-heading">Choose a class</h2>
+                        </div>
+                        <span class="results-step-hint"><i class="bi bi-sliders"></i> Required selection</span>
                     </div>
-                </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="department_id" class="form-label"><span>01</span> Department</label>
+                            <div class="results-select-wrap">
+                                <i class="bi bi-building"></i>
+                                <select id="department_id" class="form-select">
+                                    <option value="">-- Select Department --</option>
+                                    @foreach ($departments as $department)
+                                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
 
-                <div class="col-md-6">
-                    <label for="section_id" class="form-label"><span>02</span> Section</label>
-                    <div class="results-select-wrap">
-                        <i class="bi bi-diagram-3"></i>
-                        <select id="section_id" class="form-select" disabled>
-                            <option value="">-- Select Department First --</option>
-                        </select>
+                        <div class="col-md-6">
+                            <label for="section_id" class="form-label"><span>02</span> Section</label>
+                            <div class="results-select-wrap">
+                                <i class="bi bi-diagram-3"></i>
+                                <select id="section_id" class="form-select" disabled>
+                                    <option value="">-- Select Department First --</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </section>
+                </section>
 
-        <section class="results-list-section" aria-labelledby="results-list-heading">
-            <div class="results-section-heading results-list-heading">
-                <div>
-                    <span class="results-section-eyebrow">Student records</span>
-                    <h2 id="results-list-heading">Students & results</h2>
-                </div>
-                <span class="results-list-status"><i class="bi bi-lightning-charge"></i> Live records</span>
-            </div>
+                <section class="results-list-section" aria-labelledby="results-list-heading">
+                    <div class="results-section-heading results-list-heading">
+                        <div>
+                            <span class="results-section-eyebrow">Student records</span>
+                            <h2 id="results-list-heading">Students & results</h2>
+                        </div>
+                        <span class="results-list-status"><i class="bi bi-lightning-charge"></i> Live records</span>
+                    </div>
 
-            <div id="initial_state_msg" class="results-empty-state">
-                <i class="bi bi-arrow-up-circle"></i>
-                <strong>Select a department and section</strong>
-                <span>Students and their results will appear here.</span>
-            </div>
+                    <div id="initial_state_msg" class="results-empty-state">
+                        <i class="bi bi-arrow-up-circle"></i>
+                        <strong>Select a department and section</strong>
+                        <span>Students and their results will appear here.</span>
+                    </div>
 
-            <div id="loading_spinner" class="spinner-container">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-2 text-muted mb-0 fw-medium">Students load ho rahy hain...</p>
-            </div>
+                    <div id="loading_spinner" class="spinner-container">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted mb-0 fw-medium">Students load ho rahy hain...</p>
+                    </div>
 
-            <div id="students_table_wrapper" style="display: none;">
-                <div class="students-table-responsive results-table-scroll">
-                    <table class="students-table table align-middle mb-0">
-                        <thead>
-                            <tr>
-                                <th width="50">#</th>
-                                <th width="120">Student ID</th>
-                                <th>Student Name</th>
-                                <th>Email</th>
-                                <th>Result / Course Summary</th>
-                                <th width="180" class="text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="students_table_body">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    <div id="students_table_wrapper" style="display: none;">
+                        <div class="students-table-responsive results-table-scroll">
+                            <table class="students-table table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th width="50">#</th>
+                                        <th width="120">REG NO</th>
+                                        <th>Student Name</th>
+                                        <th>Email</th>
+                                        <th>Result / Course Summary</th>
+                                        <th width="180" class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="students_table_body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-            <div id="no_students_msg" class="results-empty-state results-empty-state-warning" style="display: none;">
-                <i class="bi bi-people"></i>
-                <strong>No students found</strong>
-                <span>This section does not have any students yet.</span>
-            </div>
-        </section>
+                    <div id="no_students_msg" class="results-empty-state results-empty-state-warning"
+                        style="display: none;">
+                        <i class="bi bi-people"></i>
+                        <strong>No students found</strong>
+                        <span>This section does not have any students yet.</span>
+                    </div>
+                </section>
 
             </div>
         </div>
@@ -140,7 +141,8 @@
                         <i class="bi bi-file-earmark-person-fill fs-5"></i>
                         <h5 class="modal-title mb-0">Student Result Detail</h5>
                     </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body">
@@ -221,152 +223,163 @@
     </div>
 
     {{-- 2. ADD RESULT DRAWER --}}
-    <div class="offcanvas offcanvas-end result-drawer" tabindex="-1" id="addResultModal" aria-labelledby="addResultModalLabel">
-                <div class="drawer-header">
-                    <h5 class="modal-title" id="addResultModalLabel">
-                        <i class="bi bi-plus-circle me-2"></i>Add Student Result
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <div class="offcanvas offcanvas-end result-drawer" tabindex="-1" id="addResultModal"
+        aria-labelledby="addResultModalLabel">
+        <div class="drawer-header">
+            <h5 class="modal-title" id="addResultModalLabel">
+                <i class="bi bi-plus-circle me-2"></i>Add Student Result
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <form action="{{ route('addResult') }}" method="POST" class="d-flex flex-column flex-grow-1 m-0">
+            @csrf
+            <div class="drawer-body">
+                <input type="hidden" name="student_id" id="add_modal_student_id">
+                <input type="hidden" name="section_id" id="add_modal_section_id">
+
+                <div class="student-info-box">
+                    <div class="row">
+                        <div class="col-md-6 mb-2 mb-md-0">
+                            <small class="text-muted d-block fw-semibold">Student Name:</small>
+                            <strong id="add_modal_student_name" class="fs-6 text-dark">-</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block fw-semibold">Student Email:</small>
+                            <strong id="add_modal_student_email" class="fs-6 text-dark">-</strong>
+                        </div>
+                    </div>
                 </div>
-                <form action="{{ route('addResult') }}" method="POST" class="d-flex flex-column flex-grow-1 m-0">
-                    @csrf
-                    <div class="drawer-body">
-                        <input type="hidden" name="student_id" id="add_modal_student_id">
-                        <input type="hidden" name="section_id" id="add_modal_section_id">
 
-                        <div class="student-info-box">
-                            <div class="row">
-                                <div class="col-md-6 mb-2 mb-md-0">
-                                    <small class="text-muted d-block fw-semibold">Student Name:</small>
-                                    <strong id="add_modal_student_name" class="fs-6 text-dark">-</strong>
-                                </div>
-                                <div class="col-md-6">
-                                    <small class="text-muted d-block fw-semibold">Student Email:</small>
-                                    <strong id="add_modal_student_email" class="fs-6 text-dark">-</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="add_course_id" class="form-label">Course</label>
-                                <select name="course_id" id="add_course_id" class="form-select" required>
-                                    <option value="">-- Select Course --</option>
-                                    @foreach ($courses as $course)
-                                        <option value="{{ $course->id }}">{{ $course->name }} ({{ $course->code }})</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="add_percentage" class="form-label">Percentage (%)</label>
-                                <input type="number" step="0.01" name="percentage" id="add_percentage" class="form-control" placeholder="e.g. 85.50" required>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="add_gpa" class="form-label">GPA</label>
-                                <input type="number" step="0.01" name="gpa" id="add_gpa" class="form-control" placeholder="e.g. 3.70" required>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="add_cgpa" class="form-label">CGPA</label>
-                                <input type="number" step="0.01" name="cgpa" id="add_cgpa" class="form-control" placeholder="e.g. 3.50" required>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="add_grade" class="form-label">Grade</label>
-                                <input type="text" name="grade" id="add_grade" class="form-control" placeholder="e.g. A, B+" required>
-                            </div>
-
-                            <div class="col-md-12">
-                                <label for="add_status" class="form-label">Status</label>
-                                <select name="status" id="add_status" class="form-select" required>
-                                    <option value="Pass">Pass</option>
-                                    <option value="Fail">Fail</option>
-                                </select>
-                            </div>
-                        </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="add_course_id" class="form-label">Course</label>
+                        <select name="course_id" id="add_course_id" class="form-select" required>
+                            <option value="">-- Select Course --</option>
+                            @foreach ($courses as $course)
+                                <option value="{{ $course->id }}">{{ $course->name }} ({{ $course->code }})</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="drawer-footer">
-                        <button type="button" class="btn-cancel" data-bs-dismiss="offcanvas">Cancel</button>
-                        <button type="submit" class="btn-submit-result"><i class="bi bi-check2-circle"></i> Submit Result</button>
+
+                    <div class="col-md-6">
+                        <label for="add_percentage" class="form-label">Percentage (%)</label>
+                        <input type="number" step="0.01" name="percentage" id="add_percentage" class="form-control"
+                            placeholder="e.g. 85.50" required>
                     </div>
-                </form>
+
+                    <div class="col-md-4">
+                        <label for="add_gpa" class="form-label">GPA</label>
+                        <input type="number" step="0.01" name="gpa" id="add_gpa" class="form-control"
+                            placeholder="e.g. 3.70" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="add_cgpa" class="form-label">CGPA</label>
+                        <input type="number" step="0.01" name="cgpa" id="add_cgpa" class="form-control"
+                            placeholder="e.g. 3.50" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="add_grade" class="form-label">Grade</label>
+                        <input type="text" name="grade" id="add_grade" class="form-control"
+                            placeholder="e.g. A, B+" required>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label for="add_status" class="form-label">Status</label>
+                        <select name="status" id="add_status" class="form-select" required>
+                            <option value="Pass">Pass</option>
+                            <option value="Fail">Fail</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="drawer-footer">
+                <button type="button" class="btn-cancel" data-bs-dismiss="offcanvas">Cancel</button>
+                <button type="submit" class="btn-submit-result"><i class="bi bi-check2-circle"></i> Submit
+                    Result</button>
+            </div>
+        </form>
     </div>
 
     {{-- 3. EDIT RESULT DRAWER --}}
-    <div class="offcanvas offcanvas-end result-drawer" tabindex="-1" id="editResultModal" aria-labelledby="editResultModalLabel">
-                <div class="drawer-header">
-                    <h5 class="modal-title" id="editResultModalLabel">
-                        <i class="bi bi-pencil-square me-2"></i>Edit Student Result
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <div class="offcanvas offcanvas-end result-drawer" tabindex="-1" id="editResultModal"
+        aria-labelledby="editResultModalLabel">
+        <div class="drawer-header">
+            <h5 class="modal-title" id="editResultModalLabel">
+                <i class="bi bi-pencil-square me-2"></i>Edit Student Result
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <form id="editResultForm" method="POST" class="d-flex flex-column flex-grow-1 m-0">
+            @csrf
+            @method('PUT')
+            <div class="drawer-body">
+                <input type="hidden" name="student_id" id="edit_modal_student_id">
+                <input type="hidden" name="section_id" id="edit_modal_section_id">
+
+                <div class="student-info-box">
+                    <div class="row">
+                        <div class="col-md-6 mb-2 mb-md-0">
+                            <small class="text-muted d-block fw-semibold">Student Name:</small>
+                            <strong id="edit_modal_student_name" class="fs-6 text-dark">-</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block fw-semibold">Student Email:</small>
+                            <strong id="edit_modal_student_email" class="fs-6 text-dark">-</strong>
+                        </div>
+                    </div>
                 </div>
-                <form id="editResultForm" method="POST" class="d-flex flex-column flex-grow-1 m-0">
-                    @csrf
-                    @method('PUT')
-                    <div class="drawer-body">
-                        <input type="hidden" name="student_id" id="edit_modal_student_id">
-                        <input type="hidden" name="section_id" id="edit_modal_section_id">
 
-                        <div class="student-info-box">
-                            <div class="row">
-                                <div class="col-md-6 mb-2 mb-md-0">
-                                    <small class="text-muted d-block fw-semibold">Student Name:</small>
-                                    <strong id="edit_modal_student_name" class="fs-6 text-dark">-</strong>
-                                </div>
-                                <div class="col-md-6">
-                                    <small class="text-muted d-block fw-semibold">Student Email:</small>
-                                    <strong id="edit_modal_student_email" class="fs-6 text-dark">-</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="edit_course_id" class="form-label">Course</label>
-                                <select name="course_id" id="edit_course_id" class="form-select" required>
-                                    <option value="">-- Select Course --</option>
-                                    @foreach ($courses as $course)
-                                        <option value="{{ $course->id }}">{{ $course->name }} ({{ $course->code }})</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="edit_percentage" class="form-label">Percentage (%)</label>
-                                <input type="number" step="0.01" name="percentage" id="edit_percentage" class="form-control" required>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="edit_gpa" class="form-label">GPA</label>
-                                <input type="number" step="0.01" name="gpa" id="edit_gpa" class="form-control" required>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="edit_cgpa" class="form-label">CGPA</label>
-                                <input type="number" step="0.01" name="cgpa" id="edit_cgpa" class="form-control" required>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="edit_grade" class="form-label">Grade</label>
-                                <input type="text" name="grade" id="edit_grade" class="form-control" required>
-                            </div>
-
-                            <div class="col-md-12">
-                                <label for="edit_status" class="form-label">Status</label>
-                                <select name="status" id="edit_status" class="form-select" required>
-                                    <option value="Pass">Pass</option>
-                                    <option value="Fail">Fail</option>
-                                </select>
-                            </div>
-                        </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="edit_course_id" class="form-label">Course</label>
+                        <select name="course_id" id="edit_course_id" class="form-select" required>
+                            <option value="">-- Select Course --</option>
+                            @foreach ($courses as $course)
+                                <option value="{{ $course->id }}">{{ $course->name }} ({{ $course->code }})</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="drawer-footer">
-                        <button type="button" class="btn-cancel" data-bs-dismiss="offcanvas">Cancel</button>
-                        <button type="submit" class="btn-submit-result"><i class="bi bi-check2-circle"></i> Update Result</button>
+
+                    <div class="col-md-6">
+                        <label for="edit_percentage" class="form-label">Percentage (%)</label>
+                        <input type="number" step="0.01" name="percentage" id="edit_percentage"
+                            class="form-control" required>
                     </div>
-                </form>
+
+                    <div class="col-md-4">
+                        <label for="edit_gpa" class="form-label">GPA</label>
+                        <input type="number" step="0.01" name="gpa" id="edit_gpa" class="form-control"
+                            required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="edit_cgpa" class="form-label">CGPA</label>
+                        <input type="number" step="0.01" name="cgpa" id="edit_cgpa" class="form-control"
+                            required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="edit_grade" class="form-label">Grade</label>
+                        <input type="text" name="grade" id="edit_grade" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label for="edit_status" class="form-label">Status</label>
+                        <select name="status" id="edit_status" class="form-select" required>
+                            <option value="Pass">Pass</option>
+                            <option value="Fail">Fail</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="drawer-footer">
+                <button type="button" class="btn-cancel" data-bs-dismiss="offcanvas">Cancel</button>
+                <button type="submit" class="btn-submit-result"><i class="bi bi-check2-circle"></i> Update
+                    Result</button>
+            </div>
+        </form>
     </div>
 
 @endsection
