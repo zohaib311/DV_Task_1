@@ -5,85 +5,95 @@
     <link rel="stylesheet" href="{{ asset('css/universal/action-buttons.css') }}">
     <link rel="stylesheet" href="{{ asset('css/result/result-model.css') }}">
     <link rel="stylesheet" href="{{ asset('css/result/add-result.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/result/results.css') }}">
 @endsection
 
 @section('content')
-    <div class="add-result-container">
+    <div class="results-page">
+        <div class="results-main-card">
+            <header class="results-page-header">
+                <span class="results-page-kicker"><i class="bi bi-journal-check"></i> Academic Records</span>
+                <h1>Results Management</h1>
+                <p>Select a department and section to view, add, or update student results.</p>
+            </header>
 
-        {{-- Page Header Card --}}
-        <div class="page-header-card">
-            <div>
-                <h3 class="page-header-title">Results Management</h3>
-                <p class="page-header-sub">Select department and section to view, add, or edit student results.</p>
-            </div>
-        </div>
+            <div class="results-main-card-body">
 
-        @if ($errors->any())
-            <div class="alert alert-danger border-0 shadow-sm mb-4 rounded-3">
-                <ul class="mb-0 ps-3">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger results-alert" role="alert">
+                        <ul class="mb-0 ps-3">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
-        @if (session('success'))
-            <div class="alert alert-success border-0 shadow-sm mb-4 rounded-3" id="success-message">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-            </div>
-            <script>
-                setTimeout(function() {
-                    const message = document.getElementById('success-message');
-                    if (message) {
-                        message.style.transition = 'opacity 0.5s ease';
-                        message.style.opacity = '0';
-                        setTimeout(() => message.remove(), 500);
-                    }
-                }, 3000);
-            </script>
-        @endif
+                @if (session('success'))
+                    <div class="alert alert-success results-alert" id="success-message" role="status">
+                        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                    </div>
+                    <script>
+                        setTimeout(function() {
+                            const message = document.getElementById('success-message');
+                            if (message) {
+                                message.style.transition = 'opacity 0.5s ease';
+                                message.style.opacity = '0';
+                                setTimeout(() => message.remove(), 500);
+                            }
+                        }, 3000);
+                    </script>
+                @endif
 
-        {{-- Top Filter Section: Department (Left) and Section (Right) --}}
-        <div class="filter-card">
-            <h5 class="filter-card-title">
-                <i class="bi bi-funnel-fill"></i>Select Department & Section
-            </h5>
-            <div class="row">
-                {{-- Department Dropdown (Left Side) --}}
-                <div class="col-md-6 mb-3 mb-md-0">
-                    <label for="department_id" class="form-label">1. Department</label>
-                    <select id="department_id" class="form-select">
-                        <option value="">-- Select Department --</option>
-                        @foreach ($departments as $department)
-                            <option value="{{ $department->id }}">{{ $department->name }}</option>
-                        @endforeach
-                    </select>
+        <section class="results-filter-section" aria-labelledby="results-filter-heading">
+            <div class="results-section-heading">
+                <div>
+                    <span class="results-section-eyebrow">Filter records</span>
+                    <h2 id="results-filter-heading">Choose a class</h2>
                 </div>
-
-                {{-- Section Dropdown (Right Side, Initially Disabled) --}}
+                <span class="results-step-hint"><i class="bi bi-sliders"></i> Required selection</span>
+            </div>
+            <div class="row g-3">
                 <div class="col-md-6">
-                    <label for="section_id" class="form-label">2. Section</label>
-                    <select id="section_id" class="form-select" disabled>
-                        <option value="">-- Select Department First --</option>
-                    </select>
+                    <label for="department_id" class="form-label"><span>01</span> Department</label>
+                    <div class="results-select-wrap">
+                        <i class="bi bi-building"></i>
+                        <select id="department_id" class="form-select">
+                            <option value="">-- Select Department --</option>
+                            @foreach ($departments as $department)
+                                <option value="{{ $department->id }}">{{ $department->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="section_id" class="form-label"><span>02</span> Section</label>
+                    <div class="results-select-wrap">
+                        <i class="bi bi-diagram-3"></i>
+                        <select id="section_id" class="form-select" disabled>
+                            <option value="">-- Select Department First --</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        {{-- Students List Card Section --}}
-        <div class="students-card">
-            <h5 class="students-card-title">
-                <i class="bi bi-people-fill"></i>Students List & Results
-            </h5>
-
-            {{-- Initial / Empty State Message --}}
-            <div id="initial_state_msg" class="alert alert-light text-center border py-4 mb-0 rounded-3">
-                <i class="bi bi-arrow-up-circle fs-3 text-primary d-block mb-2"></i>
-                <span class="fw-semibold text-secondary">Pehly Department select krain, phr Section select krain students ki list aur results dekhny kay liye.</span>
+        <section class="results-list-section" aria-labelledby="results-list-heading">
+            <div class="results-section-heading results-list-heading">
+                <div>
+                    <span class="results-section-eyebrow">Student records</span>
+                    <h2 id="results-list-heading">Students & results</h2>
+                </div>
+                <span class="results-list-status"><i class="bi bi-lightning-charge"></i> Live records</span>
             </div>
 
-            {{-- Loading Spinner --}}
+            <div id="initial_state_msg" class="results-empty-state">
+                <i class="bi bi-arrow-up-circle"></i>
+                <strong>Select a department and section</strong>
+                <span>Students and their results will appear here.</span>
+            </div>
+
             <div id="loading_spinner" class="spinner-container">
                 <div class="spinner-border" role="status">
                     <span class="visually-hidden">Loading...</span>
@@ -91,9 +101,8 @@
                 <p class="mt-2 text-muted mb-0 fw-medium">Students load ho rahy hain...</p>
             </div>
 
-            {{-- Table Container --}}
             <div id="students_table_wrapper" style="display: none;">
-                <div class="students-table-responsive">
+                <div class="students-table-responsive results-table-scroll">
                     <table class="students-table table align-middle mb-0">
                         <thead>
                             <tr>
@@ -106,18 +115,20 @@
                             </tr>
                         </thead>
                         <tbody id="students_table_body">
-                            {{-- Dynamic Rows via AJAX --}}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {{-- No Students Found Message --}}
-            <div id="no_students_msg" class="alert alert-warning border-0 text-center py-4 mb-0 rounded-3" style="display: none;">
-                <i class="bi bi-exclamation-triangle fs-4 me-2"></i> Is Section main koi student maujood nahi hai.
+            <div id="no_students_msg" class="results-empty-state results-empty-state-warning" style="display: none;">
+                <i class="bi bi-people"></i>
+                <strong>No students found</strong>
+                <span>This section does not have any students yet.</span>
+            </div>
+        </section>
+
             </div>
         </div>
-
     </div>
 
     {{-- 1. VIEW RESULT MODAL --}}
