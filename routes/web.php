@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Course\CourseController;
 use App\Http\Controllers\Dashboard\DashbaordController;
 use App\Http\Controllers\Department\DepartmentController;
+use App\Http\Controllers\Enrollment\StudentSemesterEnrollmentController;
 use App\Http\Controllers\Event\EventController;
 use App\Http\Controllers\Result\ResultController;
 use App\Http\Controllers\Section\SectionController;
@@ -63,6 +64,15 @@ Route::prefix('student')->controller(StudentController::class)->middleware('auth
     Route::delete('/delete/{id}', 'deleteStudent')->name('deleteStudent');
 
     Route::get('/show', 'allStudents')->name('allStudents');
+});
+
+Route::prefix('enrollment')->controller(StudentSemesterEnrollmentController::class)->middleware('auth')->group(function () {
+
+    Route::get('/show', 'index')->name('allEnrollments');
+
+    Route::get('/add', 'create')->name('addEnrollmentForm');
+
+    Route::post('/add', 'store')->name('addEnrollment');
 });
 
 Route::prefix('teacher')->controller(TeacherController::class)->middleware('auth')->group(function () {

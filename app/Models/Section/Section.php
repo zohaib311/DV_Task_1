@@ -3,6 +3,7 @@
 namespace App\Models\Section;
 
 use App\Models\Department\Department;
+use App\Models\Enrollment\StudentSemesterEnrollment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -26,5 +27,10 @@ class Section extends Model
     public function students()
     {
         return $this->hasMany(\App\Models\Student::class, 'section_id');
+    }
+
+    public function semesterEnrollments()
+    {
+        return $this->hasMany(StudentSemesterEnrollment::class);
     }
 }

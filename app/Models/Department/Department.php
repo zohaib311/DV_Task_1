@@ -4,6 +4,7 @@ namespace App\Models\Department;
 
 use App\Models\Section\Section;
 use App\Models\Student;
+use App\Models\Enrollment\StudentSemesterEnrollment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -26,5 +27,10 @@ class Department extends Model
     public function students()
     {
         return $this->hasMany(Student::class, 'department_id');
+    }
+
+    public function semesterEnrollments()
+    {
+        return $this->hasMany(StudentSemesterEnrollment::class);
     }
 }

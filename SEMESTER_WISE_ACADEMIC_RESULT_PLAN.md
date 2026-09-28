@@ -190,13 +190,13 @@ Agar future mein course ke credit hours ya total marks change hon, purane semest
 
 ### Phase 2 completion checklist
 
-- [ ] Both enrollment migrations created
-- [ ] Eloquent models and relationships added
-- [ ] Create enrollment drawer/page created
-- [ ] Enrollment courses select UI created
-- [ ] Duplicate enrollment validation added
-- [ ] Current student semester sync policy implemented
-- [ ] Existing student `course_ids` migration strategy decided
+- [x] Both enrollment migrations created
+- [x] Eloquent models and relationships added
+- [x] Create enrollment page created
+- [x] Enrollment courses select UI created
+- [x] Duplicate enrollment validation added
+- [x] Current student semester sync policy implemented
+- [x] Existing student `course_ids` compatibility strategy implemented
 
 ---
 

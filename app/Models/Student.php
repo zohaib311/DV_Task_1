@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Course\Course;
 use App\Models\Department\Department;
+use App\Models\Enrollment\StudentSemesterEnrollment;
 use App\Models\Result\Result;
 use App\Models\Section\Section;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -59,6 +60,11 @@ class Student extends Model
     public function results()
     {
         return $this->hasMany(Result::class, 'student_id');
+    }
+
+    public function semesterEnrollments()
+    {
+        return $this->hasMany(StudentSemesterEnrollment::class);
     }
 
     // Helper Attribute to get assigned Courses Models

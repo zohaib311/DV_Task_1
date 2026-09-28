@@ -2,6 +2,7 @@
 
 namespace App\Models\Course;
 
+use App\Models\Enrollment\StudentEnrollmentCourse;
 use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
@@ -20,4 +21,9 @@ class Course extends Model
         'total_marks' => 'integer',
         'is_active' => 'boolean',
     ];
+
+    public function enrollmentCourses()
+    {
+        return $this->hasMany(StudentEnrollmentCourse::class);
+    }
 }

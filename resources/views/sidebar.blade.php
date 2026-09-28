@@ -32,6 +32,14 @@
         </li>
 
         <li class="nav-item">
+            <a href="{{ route('allEnrollments') }}"
+                class="sidebar-link nav-link {{ request()->is('enrollment*') ? 'active' : '' }}">
+                <i class="bi bi-journal-bookmark me-2 fs-5"></i>
+                <span>Enrollments</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
             <a href="{{ route('allTeachers') }}"
                 class="sidebar-link nav-link {{ request()->is('teacher*') ? 'active' : '' }}">
                 <i class="bi bi-person-badge me-2 fs-5"></i>
