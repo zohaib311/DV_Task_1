@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course\Course;
 use App\Models\Department\Department;
 use App\Models\Section\Section;
 use App\Models\Student;
@@ -15,19 +14,17 @@ class StudentController extends Controller
     {
         $departments = Department::all();
         $sections    = Section::with('department')->get();
-        $courses     = Course::all();
 
-        return view('students.add-student', compact('departments', 'sections', 'courses'));
+        return view('students.add-student', compact('departments', 'sections'));
     }
 
     function allstudents(Request $request)
     {
-        $students    = Student::with(['department', 'section'])->get();
+        $students    = Student::with(['department', 'section', 'activeSemesterEnrollment.courses.course'])->get();
         $departments = Department::all();
         $sections    = Section::with('department')->get();
-        $courses     = Course::all();
 
-        return view('students.students', compact('students', 'departments', 'sections', 'courses'));
+        return view('students.students', compact('students', 'departments', 'sections'));
     }
 
     function addStudent(Request $request)
@@ -38,9 +35,6 @@ class StudentController extends Controller
             'phone'         => 'required|digits:11',
             'department_id' => 'required|exists:departments,id',
             'section_id'    => 'required|exists:sections,id',
-            'semester'      => 'required|string|max:50',
-            'course_ids'    => 'required|array|min:1',
-            'course_ids.*'  => 'exists:courses,id',
             'image'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
@@ -53,9 +47,11 @@ class StudentController extends Controller
 
         $validated['image'] = $fileName;
 
-        Student::create($validated);
+        $student = Student::create($validated);
 
-        return redirect()->route('allStudents')->with('success', 'Student added successfully!');
+        return redirect()
+            ->route('addEnrollmentForm', ['student_id' => $student->id])
+            ->with('success', 'Student profile created. Create the first semester enrollment next.');
     }
 
     function editStudentForm($id)
@@ -63,9 +59,13 @@ class StudentController extends Controller
         $student     = Student::findOrFail($id);
         $departments = Department::all();
         $sections    = Section::with('department')->get();
-        $courses     = Course::all();
+        $activeEnrollment = $student->semesterEnrollments()
+            ->with('courses.course')
+            ->where('status', 'active')
+            ->latest('enrolled_at')
+            ->first();
 
-        return view('students.edit-student', compact('student', 'departments', 'sections', 'courses'));
+        return view('students.edit-student', compact('student', 'departments', 'sections', 'activeEnrollment'));
     }
 
     function updateStudent(Request $request, $id)
@@ -78,9 +78,6 @@ class StudentController extends Controller
             'phone'         => 'required|digits:11',
             'department_id' => 'required|exists:departments,id',
             'section_id'    => 'required|exists:sections,id',
-            'semester'      => 'required|string|max:50',
-            'course_ids'    => 'required|array|min:1',
-            'course_ids.*'  => 'exists:courses,id',
             'image'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 

@@ -9,7 +9,7 @@
                 <span class="drawer-title-icon"><i class="bi bi-person-plus-fill"></i></span>
                 <div>
                     <h5 id="addStudentDrawerLabel">Add New Student</h5>
-                    <p>Create an academic profile in a few steps.</p>
+                        <p>Create a student profile, then enroll them in a semester.</p>
                 </div>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -31,7 +31,7 @@
             @else
                 <div class="student-drawer-note">
                     <i class="bi bi-info-circle-fill"></i>
-                    <span>A registration number will be created automatically after saving.</span>
+                <span>A registration number will be created automatically. Semester and courses are assigned from Enrollments.</span>
                 </div>
             @endif
 
@@ -92,8 +92,8 @@
                 <div class="student-form-section-title">
                     <span><i class="bi bi-mortarboard"></i></span>
                     <div>
-                        <h6>Academic placement</h6>
-                        <p>Choose the department, section and current semester.</p>
+                        <h6>Current placement</h6>
+                        <p>Choose the student's current department and section.</p>
                     </div>
                 </div>
 
@@ -124,52 +124,7 @@
                         </select>
                         @error('section_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
-
-                    <div class="col-12">
-                        <label for="semester" class="form-label">Current semester</label>
-                        <select name="semester" id="semester" class="form-select @error('semester') is-invalid @enderror" required>
-                            <option value="">Select semester</option>
-                            @for ($i = 1; $i <= 8; $i++)
-                                <option value="Semester {{ $i }}" {{ old('semester') == "Semester $i" ? 'selected' : '' }}>
-                                    Semester {{ $i }}
-                                </option>
-                            @endfor
-                        </select>
-                        @error('semester') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
                 </div>
-            </section>
-
-            <section class="student-form-section mb-0">
-                <div class="student-form-section-title">
-                    <span><i class="bi bi-journal-check"></i></span>
-                    <div>
-                        <h6>Course enrollment</h6>
-                        <p>Select one or more courses for this student.</p>
-                    </div>
-                </div>
-
-                <div class="course-dropdown">
-                    <button type="button" class="course-dropdown-btn" id="courseDropdownBtn" aria-expanded="false">
-                        <span id="courseDropdownText">Select courses</span>
-                        <i class="bi bi-chevron-down"></i>
-                    </button>
-                    <div class="course-dropdown-menu" id="courseDropdownMenu">
-                        @php($selectedCourses = old('course_ids', []))
-                        @foreach ($courses as $course)
-                            <label class="course-option">
-                                <input type="checkbox" name="course_ids[]" value="{{ $course->id }}"
-                                    {{ is_array($selectedCourses) && in_array($course->id, $selectedCourses) ? 'checked' : '' }}>
-                                <span class="course-checkbox"></span>
-                                <span class="course-option-content">
-                                    <span class="course-name">{{ $course->name }}</span>
-                                    <span class="course-code">{{ $course->code }}</span>
-                                </span>
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
-                @error('course_ids') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror
             </section>
         </div>
 

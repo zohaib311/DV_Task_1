@@ -5,7 +5,6 @@
     <link rel="stylesheet" href="{{ asset('css/universal/action-buttons.css') }}">
     <link rel="stylesheet" href="{{ asset('css/student/student-model.css') }}">
     <link rel="stylesheet" href="{{ asset('css/student/add-student-drawer.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/student/add-course-dropdown.css') }}">
 @endsection
 
 @section('content')
@@ -39,7 +38,7 @@
                                     <th scope="col">Name</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Phone</th>
-                                    <th scope="col">Semester</th>
+                                    <th scope="col">Enrollment</th>
                                     <th scope="col">Actions</th>
                                 </tr>
                             </thead>
@@ -60,9 +59,16 @@
                                         <td>{{ $student->email }}</td>
                                         <td>{{ $student->phone }}</td>
                                         <td>
-                                            <span class="badge bg-info text-dark">
-                                                {{ $student->semester ?? 'N/A' }}
-                                            </span>
+                                            @if ($student->activeSemesterEnrollment)
+                                                <span class="badge bg-info text-dark">
+                                                    {{ $student->activeSemesterEnrollment->semester }}
+                                                </span>
+                                                <small class="d-block text-muted mt-1">
+                                                    {{ $student->activeSemesterEnrollment->academic_year }}
+                                                </small>
+                                            @else
+                                                <span class="text-muted small">Not enrolled</span>
+                                            @endif
                                         </td>
 
 
@@ -258,7 +264,27 @@
                                         Semester
                                     </span>
                                     <span class="student-detail-value">
-                                        {{ $student->semester ?? 'N/A' }}
+                                        {{ $student->activeSemesterEnrollment?->semester ?? 'Not enrolled' }}
+                                    </span>
+                                </div>
+
+                                <div class="student-detail-row">
+                                    <span class="student-detail-label">
+                                        <i class="bi bi-calendar-range"></i>
+                                        Academic Year
+                                    </span>
+                                    <span class="student-detail-value">
+                                        {{ $student->activeSemesterEnrollment?->academic_year ?? 'N/A' }}
+                                    </span>
+                                </div>
+
+                                <div class="student-detail-row">
+                                    <span class="student-detail-label">
+                                        <i class="bi bi-calendar-check"></i>
+                                        Enrolled On
+                                    </span>
+                                    <span class="student-detail-value">
+                                        {{ $student->activeSemesterEnrollment?->enrolled_at?->format('d M Y') ?? 'N/A' }}
                                     </span>
                                 </div>
 
@@ -269,12 +295,13 @@
                                     </span>
 
                                     <span class="student-detail-value student-course-list">
-                                        @forelse ($student->assigned_courses as $course)
+                                        @forelse ($student->activeSemesterEnrollment?->courses ?? [] as $enrollmentCourse)
                                             <span class="student-course-badge">
-                                                {{ $course->name }}
+                                                {{ $enrollmentCourse->course->name ?? 'Course removed' }}
+                                                <small>({{ $enrollmentCourse->credit_hours }} Cr. Hrs)</small>
                                             </span>
                                         @empty
-                                            <span class="text-muted">No courses assigned</span>
+                                            <span class="text-muted">No enrollment courses assigned</span>
                                         @endforelse
                                     </span>
                                 </div>
@@ -312,11 +339,10 @@
         </div>
     @endforeach
 
-    <x-student.add-student-drawer :departments="$departments" :sections="$sections" :courses="$courses" />
+    <x-student.add-student-drawer :departments="$departments" :sections="$sections" />
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('js/add-courses.js') }}"></script>
     <script src="{{ asset('js/student/department-section-filter.js') }}"></script>
     <script src="{{ asset('js/student/alert-dismiss.js') }}"></script>
     @if ($errors->any())

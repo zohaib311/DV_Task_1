@@ -83,5 +83,40 @@ class StudentSemesterEnrollmentTest extends TestCase
         $student->refresh();
         $this->assertSame('Semester 2', $student->semester);
         $this->assertSame([$firstCourse->id, $secondCourse->id], $student->course_ids);
+
+        $this->actingAs($user)
+            ->get(route('allStudents'))
+            ->assertOk()
+            ->assertSee('Semester 2')
+            ->assertSee('2026-2027')
+            ->assertSee('Programming');
+    }
+
+    public function test_a_student_profile_is_created_before_the_first_semester_enrollment(): void
+    {
+        $department = Department::create(['name' => 'Software Engineering']);
+        $section = Section::create(['name' => 'B', 'department_id' => $department->id]);
+        $user = new \App\Models\User([
+            'name' => 'Academic Admin',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('password'),
+            'phone' => '03007654321',
+            'image' => 'default-user.png',
+        ]);
+        $user->save();
+
+        $response = $this->actingAs($user)->post(route('addStudent'), [
+            'name' => 'Sara Khan',
+            'email' => 'sara@example.com',
+            'phone' => '03001112233',
+            'department_id' => $department->id,
+            'section_id' => $section->id,
+        ]);
+
+        $student = Student::where('email', 'sara@example.com')->firstOrFail();
+
+        $response->assertRedirect(route('addEnrollmentForm', ['student_id' => $student->id]));
+        $this->assertNull($student->semester);
+        $this->assertNull($student->course_ids);
     }
 }

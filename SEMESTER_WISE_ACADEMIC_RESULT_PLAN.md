@@ -197,6 +197,8 @@ Agar future mein course ke credit hours ya total marks change hon, purane semest
 - [x] Duplicate enrollment validation added
 - [x] Current student semester sync policy implemented
 - [x] Existing student `course_ids` compatibility strategy implemented
+- [x] Student profile forms restricted to profile/placement data; enrollment owns semester and courses
+- [x] Students list and detail view read current academic data from active enrollment
 
 ---
 

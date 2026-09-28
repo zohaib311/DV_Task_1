@@ -9,6 +9,7 @@ use App\Models\Result\Result;
 use App\Models\Section\Section;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 
 class Student extends Model
@@ -65,6 +66,13 @@ class Student extends Model
     public function semesterEnrollments()
     {
         return $this->hasMany(StudentSemesterEnrollment::class);
+    }
+
+    public function activeSemesterEnrollment(): HasOne
+    {
+        return $this->hasOne(StudentSemesterEnrollment::class)
+            ->where('status', 'active')
+            ->latestOfMany('enrolled_at');
     }
 
     // Helper Attribute to get assigned Courses Models

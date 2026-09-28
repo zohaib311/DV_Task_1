@@ -16,6 +16,12 @@
                 </div>
             </div>
 
+            @if (session('success'))
+                <div class="alert alert-success enrollment-errors border-success text-success" role="status">
+                    <i class="bi bi-check-circle-fill me-1"></i>{{ session('success') }}
+                </div>
+            @endif
+
             @if ($errors->any())
                 <div class="alert alert-danger enrollment-errors" role="alert">
                     <strong>Please correct the following:</strong>
@@ -49,7 +55,7 @@
                                         data-registration="{{ $student->registration_no }}"
                                         data-department="{{ $student->department->name ?? 'Not assigned' }}"
                                         data-section="{{ $student->section->name ?? 'Not assigned' }}"
-                                        {{ old('student_id') == $student->id ? 'selected' : '' }}>
+                                        {{ old('student_id', request('student_id')) == $student->id ? 'selected' : '' }}>
                                         {{ $student->name }} ({{ $student->registration_no ?? 'No registration no.' }})
                                     </option>
                                 @endforeach
