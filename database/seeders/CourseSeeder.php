@@ -20,10 +20,16 @@ class CourseSeeder extends Seeder
             ['code' => 'EE101', 'name' => 'Linear Circuit Analysis', 'description' => 'Basic laws of electric circuits, Ohm\'s law, Kirchhoff\'s laws.'],
         ];
 
+        $academicDefaults = [
+            'credit_hours' => config('academic.courses.default_credit_hours'),
+            'total_marks' => config('academic.marks.default_total'),
+            'is_active' => true,
+        ];
+
         foreach ($courses as $course) {
             Course::firstOrCreate(
                 ['code' => $course['code']],
-                $course
+                [...$course, ...$academicDefaults]
             );
         }
     }

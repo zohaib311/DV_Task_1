@@ -126,10 +126,10 @@ Har course ke liye credit hours zaroori hain, kyun ke accurate SGPA aur CGPA wei
 
 ### Phase 1 completion checklist
 
-- [ ] Course migration created
-- [ ] Existing courses ko default credit hours assigned
-- [ ] Add/Edit Course validation added
-- [ ] Course listing updated
+- [x] Course migration created
+- [x] Existing courses ko Phase 0 defaults assigned
+- [x] Add/Edit Course validation added
+- [x] Course listing updated
 
 ---
 

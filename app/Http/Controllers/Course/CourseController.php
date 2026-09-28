@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class CourseController extends Controller
 {
@@ -17,18 +18,9 @@ class CourseController extends Controller
 
     function addCourse(Request $request)
     {
-        $request->validate([
-            'code' => 'required|string|max:50',
-            'name' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
-        ]);
+        $validated = $request->validate($this->courseRules());
 
-
-        Course::create([
-            'code' => $request->code,
-            'name' => $request->name,
-            'description' => $request->description,
-        ]);
+        Course::create($validated);
 
 
         return redirect()
@@ -39,7 +31,7 @@ class CourseController extends Controller
 
     function allCourses()
     {
-        $courses = Course::all();
+        $courses = Course::orderByDesc('is_active')->orderBy('name')->get();
 
         return view('course.courses', [
             'courses' => $courses
@@ -59,17 +51,25 @@ class CourseController extends Controller
     {
         $course = Course::findOrFail($id);
 
-        $validated = $request->validate([
-            'code' => 'required|string|max:50',
-            'name' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
-        ]);
+        $validated = $request->validate($this->courseRules($course));
 
         $course->update($validated);
 
         return redirect()
             ->route('allCourses')
             ->with('success', 'course updated successfully!');
+    }
+
+    private function courseRules(?Course $course = null): array
+    {
+        return [
+            'code' => ['required', 'string', 'max:50', Rule::unique('courses', 'code')->ignore($course)],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:1000'],
+            'credit_hours' => ['required', 'numeric', 'min:0.5', 'max:12'],
+            'total_marks' => ['required', 'integer', 'min:1', 'max:1000'],
+            'is_active' => ['required', 'boolean'],
+        ];
     }
 
     function deleteCourse($id)

@@ -83,6 +83,55 @@
                         @enderror
                     </div>
 
+                    <div class="col-md-6 mb-3">
+                        <label for="credit_hours" class="form-label">
+                            Credit Hours
+                        </label>
+
+                        <input type="number" name="credit_hours" id="credit_hours"
+                            value="{{ old('credit_hours', $course->credit_hours) }}"
+                            class="form-control @error('credit_hours') is-invalid @enderror" min="0.5" max="12"
+                            step="0.5" required>
+
+                        @error('credit_hours')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="total_marks" class="form-label">
+                            Total Marks
+                        </label>
+
+                        <input type="number" name="total_marks" id="total_marks"
+                            value="{{ old('total_marks', $course->total_marks) }}"
+                            class="form-control @error('total_marks') is-invalid @enderror" min="1" max="1000" step="1"
+                            required>
+
+                        @error('total_marks')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <input type="hidden" name="is_active" value="0">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input @error('is_active') is-invalid @enderror" type="checkbox"
+                                role="switch" name="is_active" value="1" id="is_active"
+                                {{ old('is_active', $course->is_active) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="is_active">Course is active and available for enrollment</label>
+                        </div>
+                        @error('is_active')
+                            <div class="invalid-feedback d-block">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
 
                     <div class="col-12 mb-3">
                         <label for="description" class="form-label">

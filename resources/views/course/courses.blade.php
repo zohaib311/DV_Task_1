@@ -54,6 +54,9 @@
                                     <th>Code</th>
                                     <th>Name</th>
                                     <th>Description</th>
+                                    <th>Credit Hours</th>
+                                    <th>Total Marks</th>
+                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -81,6 +84,22 @@
                                         </td>
 
                                         <td>
+                                            <span class="badge bg-info text-dark">
+                                                {{ number_format((float) $course->credit_hours, 1) }} Cr. Hrs
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            {{ $course->total_marks }}
+                                        </td>
+
+                                        <td>
+                                            <span class="badge {{ $course->is_active ? 'bg-success' : 'bg-secondary' }}">
+                                                {{ $course->is_active ? 'Active' : 'Inactive' }}
+                                            </span>
+                                        </td>
+
+                                        <td>
                                             <div class="action__buttons">
 
                                                 <a href="{{ route('editCourseForm', $course->id) }}"
@@ -103,7 +122,7 @@
                                 @empty
 
                                     <tr>
-                                        <td colspan="4" class="text-center py-4">
+                                        <td colspan="8" class="text-center py-4">
                                             No courses found.
                                         </td>
                                     </tr>
