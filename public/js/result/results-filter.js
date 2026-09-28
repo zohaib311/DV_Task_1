@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                         <!-- Add Result -->
                                         <button type="button" class="action__btn action__add btn-add-result"
                                             title="Add New Result"
-                                            data-bs-toggle="modal" data-bs-target="#addResultModal"
+                                            data-bs-toggle="offcanvas" data-bs-target="#addResultModal"
                                             data-student-id="${student.id}"
                                             data-section-id="${sectionId}"
                                             data-student-name="${student.name}"
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                         <!-- Edit Result -->
                                         <button type="button" class="action__btn action__edit btn-edit-result"
                                             title="Edit Result"
-                                            data-bs-toggle="modal" data-bs-target="#editResultModal"
+                                            data-bs-toggle="offcanvas" data-bs-target="#editResultModal"
                                             data-result-id="${latestResult.id}"
                                             data-student-id="${student.id}"
                                             data-section-id="${sectionId}"
@@ -136,15 +136,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                             data-student-email="${student.email || 'N/A'}">
                                             <i class="bi bi-pencil-square"></i>
                                         </button>
-
-                                        <!-- Delete Result -->
-                                        <button type="button" class="action__btn action__delete btn-delete-result"
-                                            title="Delete Result"
-                                            data-bs-toggle="modal" data-bs-target="#deleteResultModal"
-                                            data-result-id="${latestResult.id}"
-                                            data-student-name="${student.name}">
-                                            <i class="bi bi-trash3"></i>
-                                        </button>
                                     </div>
                                 `;
                             } else {
@@ -153,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                         <!-- Add Result -->
                                         <button type="button" class="action__btn action__add btn-add-result"
                                             title="Add Result"
-                                            data-bs-toggle="modal" data-bs-target="#addResultModal"
+                                            data-bs-toggle="offcanvas" data-bs-target="#addResultModal"
                                             data-student-id="${student.id}"
                                             data-section-id="${sectionId}"
                                             data-student-name="${student.name}"
@@ -254,19 +245,6 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('edit_cgpa').value = editBtn.getAttribute('data-cgpa');
             document.getElementById('edit_grade').value = editBtn.getAttribute('data-grade');
             document.getElementById('edit_status').value = editBtn.getAttribute('data-status');
-        }
-
-        // D. Delete Result Modal Click
-        const deleteBtn = e.target.closest('.btn-delete-result');
-        if (deleteBtn) {
-            const resultId = deleteBtn.getAttribute('data-result-id');
-            const studentName = deleteBtn.getAttribute('data-student-name');
-
-            document.getElementById('delete_student_name').textContent = studentName;
-            const deleteForm = document.getElementById('deleteResultForm');
-            if (deleteForm) {
-                deleteForm.action = `/result/delete/${resultId}`;
-            }
         }
     });
 });

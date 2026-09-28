@@ -220,19 +220,17 @@
         </div>
     </div>
 
-    {{-- 2. ADD RESULT MODAL --}}
-    <div class="modal fade result-modal" id="addResultModal" tabindex="-1" aria-labelledby="addResultModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
+    {{-- 2. ADD RESULT DRAWER --}}
+    <div class="offcanvas offcanvas-end result-drawer" tabindex="-1" id="addResultModal" aria-labelledby="addResultModalLabel">
+                <div class="drawer-header">
                     <h5 class="modal-title" id="addResultModalLabel">
                         <i class="bi bi-plus-circle me-2"></i>Add Student Result
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('addResult') }}" method="POST">
+                <form action="{{ route('addResult') }}" method="POST" class="d-flex flex-column flex-grow-1 m-0">
                     @csrf
-                    <div class="modal-body">
+                    <div class="drawer-body">
                         <input type="hidden" name="student_id" id="add_modal_student_id">
                         <input type="hidden" name="section_id" id="add_modal_section_id">
 
@@ -289,29 +287,25 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-submit-result">Submit Result</button>
+                    <div class="drawer-footer">
+                        <button type="button" class="btn-cancel" data-bs-dismiss="offcanvas">Cancel</button>
+                        <button type="submit" class="btn-submit-result"><i class="bi bi-check2-circle"></i> Submit Result</button>
                     </div>
                 </form>
-            </div>
-        </div>
     </div>
 
-    {{-- 3. EDIT RESULT MODAL --}}
-    <div class="modal fade result-modal" id="editResultModal" tabindex="-1" aria-labelledby="editResultModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
+    {{-- 3. EDIT RESULT DRAWER --}}
+    <div class="offcanvas offcanvas-end result-drawer" tabindex="-1" id="editResultModal" aria-labelledby="editResultModalLabel">
+                <div class="drawer-header">
                     <h5 class="modal-title" id="editResultModalLabel">
                         <i class="bi bi-pencil-square me-2"></i>Edit Student Result
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
-                <form id="editResultForm" method="POST">
+                <form id="editResultForm" method="POST" class="d-flex flex-column flex-grow-1 m-0">
                     @csrf
                     @method('PUT')
-                    <div class="modal-body">
+                    <div class="drawer-body">
                         <input type="hidden" name="student_id" id="edit_modal_student_id">
                         <input type="hidden" name="section_id" id="edit_modal_section_id">
 
@@ -368,35 +362,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-submit-result">Update Result</button>
+                    <div class="drawer-footer">
+                        <button type="button" class="btn-cancel" data-bs-dismiss="offcanvas">Cancel</button>
+                        <button type="submit" class="btn-submit-result"><i class="bi bi-check2-circle"></i> Update Result</button>
                     </div>
                 </form>
-            </div>
-        </div>
     </div>
 
-    {{-- 4. DELETE RESULT CONFIRMATION MODAL --}}
-    <div class="modal fade" id="deleteResultModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content delete__modal">
-                <div class="modal-body text-center p-4">
-                    <div class="delete__modal__icon"><i class="bi bi-trash3"></i></div>
-                    <h4>Delete Result?</h4>
-                    <p>Are you sure you want to delete this result for <strong id="delete_student_name">Student</strong>?</p>
-                    <div class="delete__modal__actions">
-                        <button type="button" class="delete__cancel" data-bs-dismiss="modal">Cancel</button>
-                        <form id="deleteResultForm" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="delete__confirm"><i class="bi bi-trash3 me-1"></i> Delete</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @section('scripts')
