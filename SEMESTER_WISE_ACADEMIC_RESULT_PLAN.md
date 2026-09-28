@@ -76,13 +76,32 @@ Implementation se pehle university ki academic policy confirm karni hogi. Yeh ru
 | 50–54 | D | 1.00 | Pass |
 | Below 50 | F | 0.00 | Fail |
 
+## Implemented system defaults
+
+Phase 0 is implemented as a configurable policy baseline in `config/academic.php`. These values are used as the project defaults until an official university policy requires a change:
+
+| Decision | Configured default |
+|---|---|
+| Passing marks | `50%` |
+| Default total marks | `100` |
+| Grade system | 4.0 scale shown above |
+| Default credit hours | `3` |
+| Repeat/improvement CGPA rule | Latest completed attempt replaces the earlier attempt |
+| Section change within the same semester | Not allowed as an in-place history rewrite |
+| Result drafts | Allowed |
+| Publish rule | All enrolled course marks are required |
+| Published-result editing | Disabled by default |
+
+Environment overrides are documented in `.env.example`. Before result publishing starts, an admin can update the policy values without changing the future calculation code.
+
 ### Phase 0 completion checklist
 
-- [ ] Official passing marks confirmed
-- [ ] Official grade scale confirmed
-- [ ] Credit-hour policy confirmed
-- [ ] Repeat/improvement course policy confirmed
-- [ ] Draft/publish policy confirmed
+- [x] Passing-mark system default configured
+- [x] 4.0 grade-scale system default configured
+- [x] Default credit-hour policy configured
+- [x] Repeat/improvement CGPA policy configured
+- [x] Draft/publish policy configured
+- [x] Policy configuration tests added
 
 ---
 
