@@ -175,6 +175,10 @@
 .semester-picker-row .form-label { margin: 0; color: #39465e; font-size: 12px; font-weight: 800; }
 .semester-picker-row small { color: #778197; font-size: 11px; }
 .semester-picker-row .form-select { min-height: 40px; }
+.semester-saved-summary { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 14px; padding: 11px 13px; border: 1px solid #dedbfd; border-left: 3px solid #766ae5; border-radius: 8px; background: #f8f7ff; }
+.semester-saved-summary strong { color: #514a9a; font-size: 13px; font-weight: 800; }
+.semester-saved-summary > span { color: #6f7890; font-size: 11px; font-weight: 650; text-align: right; }
+.btn-edit-result { display: none !important; }
 .semester-result-locked { display: flex; align-items: flex-start; gap: 9px; margin: 17px 0 0; padding: 11px 12px; border-left: 3px solid #d79b1f; border-radius: 7px; background: #fff9ed; color: #8a5c04; font-size: 12px; }
 .semester-result-locked > i { margin-top: 1px; font-size: 15px; }
 .semester-result-locked strong, .semester-result-locked span { display: block; }
@@ -221,6 +225,8 @@
     .semester-student-summary { align-items: flex-start; flex-direction: column; gap: 12px; }
     .semester-summary-grid { width: 100%; grid-template-columns: repeat(2, 1fr); }
     .semester-picker-row { grid-template-columns: 1fr; gap: 6px; }
+    .semester-saved-summary { align-items: flex-start; flex-direction: column; gap: 4px; }
+    .semester-saved-summary > span { text-align: left; }
     .semester-live-summary { align-items: flex-start; flex-direction: column; gap: 12px; }
     .semester-summary-metrics { width: 100%; grid-template-columns: repeat(2, 1fr); row-gap: 15px; }
 }

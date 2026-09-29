@@ -160,10 +160,6 @@ Route::prefix('result')->controller(ResultController::class)->middleware('auth')
 
     Route::get('/get-students/{section_id}', 'getStudentsBySection')->name('getStudentsBySection');
 
-    Route::get('/edit/{id}', 'editResultForm')->name('editResultForm');
-
-    Route::put('/update/{id}', 'updateResult')->name('updateResult');
-
     Route::delete('/delete/{id}', 'deleteResult')->name('deleteResult');
 
     Route::get('/show', 'allResults')->name('allResults');

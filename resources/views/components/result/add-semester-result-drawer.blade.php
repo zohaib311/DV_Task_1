@@ -51,6 +51,14 @@
                     <small id="semester_result_enrollment_help">Choose an enrollment to load its assigned courses.</small>
                 </div>
 
+                <section id="semester_result_saved_summary" class="semester-saved-summary" aria-label="Saved result summary" hidden>
+                    <div>
+                        <span class="summary-kicker">Saved result</span>
+                        <strong id="semester_result_saved_status">—</strong>
+                    </div>
+                    <span id="semester_result_saved_note">Existing calculated result is loaded below.</span>
+                </section>
+
                 <div id="semester_result_locked" class="semester-result-locked" hidden></div>
 
                 <section class="semester-marks-section" aria-labelledby="semester_marks_heading">

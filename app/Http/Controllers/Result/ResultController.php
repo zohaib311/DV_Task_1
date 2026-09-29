@@ -196,6 +196,9 @@ class ResultController extends Controller
             'result' => [
                 'id' => $semesterResult->id,
                 'status' => $semesterResult->status,
+                'semester_percentage' => $semesterResult->semester_percentage,
+                'sgpa' => $semesterResult->sgpa,
+                'cgpa' => $semesterResult->cgpa,
                 'published_at' => $semesterResult->published_at?->toIso8601String(),
                 'items' => $semesterResult->items->mapWithKeys(fn (SemesterResultItem $item) => [
                     $item->student_enrollment_course_id => [
@@ -433,38 +436,6 @@ class ResultController extends Controller
         return redirect()
             ->route('allResults')
             ->with('success', 'Result added successfully!');
-    }
-
-    public function editResultForm($id)
-    {
-        $result = Result::findOrFail($id);
-        $students = Student::all();
-        $courses = Course::all();
-        $sections = Section::with('department')->get();
-
-        return view('results.edit-result', compact('result', 'students', 'courses', 'sections'));
-    }
-
-    public function updateResult(Request $request, $id)
-    {
-        $result = Result::findOrFail($id);
-
-        $validated = $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'course_id' => 'required|exists:courses,id',
-            'section_id' => 'required|exists:sections,id',
-            'percentage' => 'required|numeric|min:0|max:100',
-            'gpa' => 'required|numeric|min:0|max:4.0',
-            'cgpa' => 'required|numeric|min:0|max:4.0',
-            'grade' => 'required|string|max:10',
-            'status' => 'required|in:Pass,Fail',
-        ]);
-
-        $result->update($validated);
-
-        return redirect()
-            ->route('allResults')
-            ->with('success', 'Result updated successfully!');
     }
 
     public function deleteResult($id)
