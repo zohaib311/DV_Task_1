@@ -421,13 +421,13 @@ User only `Obtained Marks` enter karega. Baqi columns live update honge.
 
 ### Phase 5 completion checklist
 
-- [ ] Student/enrollment result API created
-- [ ] Right drawer UI built
-- [ ] Dynamic course rows rendered
-- [ ] Live marks calculation implemented
-- [ ] Summary metrics implemented
-- [ ] Submit errors drawer ke andar shown
-- [ ] Success ke baad list refresh
+- [x] Student/enrollment result API created
+- [x] Right drawer UI built
+- [x] Dynamic course rows rendered
+- [x] Live marks calculation implemented
+- [x] Summary metrics implemented
+- [x] Submit errors drawer ke andar shown
+- [x] Success ke baad list refresh
 
 ---
 

@@ -142,6 +142,14 @@ Route::prefix('result')->controller(ResultController::class)->middleware('auth')
 
     Route::post('/add', 'addResult')->name('addResult');
 
+    Route::get('/student/{student}/semester-enrollments', 'getStudentResultEnrollments')
+        ->name('result.student.enrollments');
+
+    Route::get('/semester-enrollment/{enrollment}/data', 'getEnrollmentResultData')
+        ->name('result.enrollment.data');
+
+    Route::post('/semester-result', 'storeSemesterResult')->name('result.semester.store');
+
     Route::get('/get-sections/{department_id}', 'getSectionsByDepartment')->name('getSectionsByDepartment');
 
     Route::get('/get-students/{section_id}', 'getStudentsBySection')->name('getStudentsBySection');
