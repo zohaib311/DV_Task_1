@@ -15,11 +15,17 @@ class StudentEnrollmentCourse extends Model
         'course_id',
         'credit_hours',
         'total_marks',
+        'attendance_marks',
+        'mid_marks',
+        'final_marks',
     ];
 
     protected $casts = [
         'credit_hours' => 'decimal:1',
         'total_marks' => 'integer',
+        'attendance_marks' => 'integer',
+        'mid_marks' => 'integer',
+        'final_marks' => 'integer',
     ];
 
     public function enrollment(): BelongsTo

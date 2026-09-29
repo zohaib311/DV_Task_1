@@ -44,7 +44,7 @@
             @endif
 
 
-            <form action="{{ route('updateCourse', $course->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('updateCourse', $course->id) }}" method="POST" enctype="multipart/form-data" data-assessment-form>
 
                 @csrf
                 @method('PUT')
@@ -65,6 +65,43 @@
                                 {{ $message }}
                             </div>
                         @enderror
+                    </div>
+
+                    <div class="col-12 mb-2">
+                        <div class="assessment-scheme-heading">
+                            <div>
+                                <span>Assessment scheme</span>
+                                <small>Attendance, Midterm aur Final ka total course marks ke barabar hona chahiye.</small>
+                            </div>
+                            <strong id="assessment_scheme_total">0 / {{ old('total_marks', $course->total_marks) }}</strong>
+                        </div>
+                        @error('assessment_scheme')
+                            <div class="text-danger small mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="attendance_marks" class="form-label">Attendance Marks</label>
+                        <input type="number" name="attendance_marks" id="attendance_marks"
+                            value="{{ old('attendance_marks', $course->attendance_marks) }}"
+                            class="form-control @error('attendance_marks') is-invalid @enderror" min="0" max="1000" step="1" required>
+                        @error('attendance_marks')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="mid_marks" class="form-label">Midterm Marks</label>
+                        <input type="number" name="mid_marks" id="mid_marks"
+                            value="{{ old('mid_marks', $course->mid_marks) }}"
+                            class="form-control @error('mid_marks') is-invalid @enderror" min="0" max="1000" step="1" required>
+                        @error('mid_marks')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="final_marks" class="form-label">Final Marks</label>
+                        <input type="number" name="final_marks" id="final_marks"
+                            value="{{ old('final_marks', $course->final_marks) }}"
+                            class="form-control @error('final_marks') is-invalid @enderror" min="0" max="1000" step="1" required>
+                        @error('final_marks')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
 
@@ -190,4 +227,8 @@
             }
         }, 2000);
     </script>
+@endsection
+
+@section('scripts')
+    @include('course.partials.assessment-scheme-script')
 @endsection

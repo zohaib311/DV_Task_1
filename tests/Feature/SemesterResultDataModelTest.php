@@ -51,6 +51,9 @@ class SemesterResultDataModelTest extends TestCase
         $this->assertSame('Academic Writing', $item->course_name);
         $this->assertSame('3.0', $item->credit_hours);
         $this->assertSame(100, $item->total_marks);
+        $this->assertNull($item->attendance_obtained_marks);
+        $this->assertNull($item->mid_obtained_marks);
+        $this->assertNull($item->final_obtained_marks);
         $this->assertSame('Pass', $semesterResult->status);
         $this->assertNotNull($semesterResult->published_at);
     }

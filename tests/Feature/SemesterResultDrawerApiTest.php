@@ -32,6 +32,9 @@ class SemesterResultDrawerApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('enrollment.academic_year', '2026-2027')
             ->assertJsonCount(2, 'courses')
+            ->assertJsonPath('courses.0.attendance_marks', 10)
+            ->assertJsonPath('courses.0.mid_marks', 30)
+            ->assertJsonPath('courses.0.final_marks', 60)
             ->assertJsonFragment(['course_id' => $firstCourse->id])
             ->assertJsonFragment(['course_id' => $secondCourse->id]);
     }
@@ -48,14 +51,18 @@ class SemesterResultDrawerApiTest extends TestCase
             'courses' => [
                 [
                     'student_enrollment_course_id' => $enrollmentCourses[0]->id,
-                    'obtained_marks' => 85,
+                    'attendance_obtained_marks' => 10,
+                    'mid_obtained_marks' => 25,
+                    'final_obtained_marks' => 50,
                     'percentage' => 0,
                     'grade' => 'F',
                     'grade_point' => 0,
                 ],
                 [
                     'student_enrollment_course_id' => $enrollmentCourses[1]->id,
-                    'obtained_marks' => 80,
+                    'attendance_obtained_marks' => 10,
+                    'mid_obtained_marks' => 25,
+                    'final_obtained_marks' => 45,
                 ],
             ],
         ]);
@@ -79,6 +86,9 @@ class SemesterResultDrawerApiTest extends TestCase
             'grade' => 'A',
             'grade_point' => 4,
             'status' => 'Pass',
+            'attendance_obtained_marks' => 10,
+            'mid_obtained_marks' => 25,
+            'final_obtained_marks' => 50,
         ]);
         $this->assertDatabaseHas('semester_result_items', [
             'course_id' => $secondCourse->id,
@@ -87,6 +97,9 @@ class SemesterResultDrawerApiTest extends TestCase
             'grade' => 'A-',
             'grade_point' => 3.7,
             'status' => 'Pass',
+            'attendance_obtained_marks' => 10,
+            'mid_obtained_marks' => 25,
+            'final_obtained_marks' => 45,
         ]);
     }
 
@@ -101,8 +114,8 @@ class SemesterResultDrawerApiTest extends TestCase
                 'enrollment_id' => $enrollment->id,
                 'action' => 'draft',
                 'courses' => [
-                    ['student_enrollment_course_id' => $enrollmentCourses[0]->id, 'obtained_marks' => 77],
-                    ['student_enrollment_course_id' => $enrollmentCourses[1]->id, 'obtained_marks' => null],
+                    ['student_enrollment_course_id' => $enrollmentCourses[0]->id, 'attendance_obtained_marks' => 7, 'mid_obtained_marks' => 25, 'final_obtained_marks' => null],
+                    ['student_enrollment_course_id' => $enrollmentCourses[1]->id, 'attendance_obtained_marks' => null, 'mid_obtained_marks' => null, 'final_obtained_marks' => null],
                 ],
             ])
             ->assertCreated()
@@ -138,11 +151,11 @@ class SemesterResultDrawerApiTest extends TestCase
         ]);
         $firstCourse = Course::create([
             'code' => 'CS101', 'name' => 'Programming', 'description' => 'Programming fundamentals.',
-            'credit_hours' => 3, 'total_marks' => 100, 'is_active' => true,
+            'credit_hours' => 3, 'total_marks' => 100, 'attendance_marks' => 10, 'mid_marks' => 30, 'final_marks' => 60, 'is_active' => true,
         ]);
         $secondCourse = Course::create([
             'code' => 'CS102', 'name' => 'Databases', 'description' => 'Database fundamentals.',
-            'credit_hours' => 3, 'total_marks' => 100, 'is_active' => true,
+            'credit_hours' => 3, 'total_marks' => 100, 'attendance_marks' => 10, 'mid_marks' => 30, 'final_marks' => 60, 'is_active' => true,
         ]);
         $enrollment = StudentSemesterEnrollment::create([
             'student_id' => $student->id, 'department_id' => $department->id, 'section_id' => $section->id,
@@ -154,6 +167,9 @@ class SemesterResultDrawerApiTest extends TestCase
                 'course_id' => $course->id,
                 'credit_hours' => $course->credit_hours,
                 'total_marks' => $course->total_marks,
+                'attendance_marks' => $course->attendance_marks,
+                'mid_marks' => $course->mid_marks,
+                'final_marks' => $course->final_marks,
             ]);
         }
 

@@ -63,6 +63,85 @@ class AcademicResultCalculator
     }
 
     /**
+     * Calculate a course from its separate Attendance, Midterm and Final
+     * components. Combined obtained_marks is always derived here, never read
+     * from a submitted request.
+     *
+     * @param  array<string, mixed>  $course
+     * @return array<string, mixed>
+     */
+    public function calculateAssessmentCourse(array $course): array
+    {
+        $totalMarks = $this->validatedPositiveNumber($course['total_marks'] ?? null, 'Total marks must be greater than zero.');
+        $components = [
+            'attendance' => ['maximum' => 'attendance_marks', 'obtained' => 'attendance_obtained_marks', 'label' => 'Attendance'],
+            'mid' => ['maximum' => 'mid_marks', 'obtained' => 'mid_obtained_marks', 'label' => 'Midterm'],
+            'final' => ['maximum' => 'final_marks', 'obtained' => 'final_obtained_marks', 'label' => 'Final'],
+        ];
+        $componentValues = [];
+        $componentMaximumTotal = 0.0;
+        $isComplete = true;
+
+        foreach ($components as $name => $definition) {
+            $maximum = $this->validatedNonNegativeNumber(
+                $course[$definition['maximum']] ?? null,
+                "{$definition['label']} maximum marks must be zero or greater."
+            );
+            $submittedValue = $course[$definition['obtained']] ?? null;
+            $componentMaximumTotal += $maximum;
+
+            if ($maximum === 0.0) {
+                if ($submittedValue !== null && $submittedValue !== '' && (! is_numeric($submittedValue) || (float) $submittedValue !== 0.0)) {
+                    throw new InvalidArgumentException("{$definition['label']} marks must be 0 because this course has no {$definition['label']} component.");
+                }
+                $componentValues[$name] = 0.0;
+
+                continue;
+            }
+
+            if ($submittedValue === null || $submittedValue === '') {
+                $componentValues[$name] = null;
+                $isComplete = false;
+
+                continue;
+            }
+
+            if (! is_numeric($submittedValue) || (float) $submittedValue < 0 || (float) $submittedValue > $maximum) {
+                throw new InvalidArgumentException("{$definition['label']} obtained marks must be between 0 and {$maximum}.");
+            }
+
+            $componentValues[$name] = (float) $submittedValue;
+        }
+
+        if (round($componentMaximumTotal, 2) !== round($totalMarks, 2)) {
+            throw new InvalidArgumentException("Attendance, Midterm and Final maximum marks must equal the course total ({$totalMarks}).");
+        }
+
+        $obtainedMarks = $isComplete ? array_sum($componentValues) : null;
+        $calculation = $this->calculateCourse($obtainedMarks, $totalMarks);
+
+        if ($isComplete && config('academic.assessment.final_minimum.enabled')) {
+            $finalMaximum = $this->validatedNonNegativeNumber($course['final_marks'] ?? null, 'Final maximum marks must be zero or greater.');
+            $minimumPercentage = (float) config('academic.assessment.final_minimum.minimum_percentage');
+
+            if ($finalMaximum > 0 && (($componentValues['final'] / $finalMaximum) * 100) < $minimumPercentage) {
+                $calculation['grade'] = 'F';
+                $calculation['grade_point'] = 0.0;
+                $calculation['status'] = 'Fail';
+            }
+        }
+
+        return array_merge($calculation, [
+            'attendance_marks' => $this->normaliseIntegerOrFloat($course['attendance_marks']),
+            'mid_marks' => $this->normaliseIntegerOrFloat($course['mid_marks']),
+            'final_marks' => $this->normaliseIntegerOrFloat($course['final_marks']),
+            'attendance_obtained_marks' => $componentValues['attendance'],
+            'mid_obtained_marks' => $componentValues['mid'],
+            'final_obtained_marks' => $componentValues['final'],
+        ]);
+    }
+
+    /**
      * Calculate a complete semester. A blank obtained_marks value is allowed
      * for a draft, but it never produces a final GPA or percentage.
      *
@@ -84,10 +163,12 @@ class AcademicResultCalculator
                 $course['credit_hours'] ?? null,
                 'Course credit hours must be greater than zero.'
             );
-            $courseCalculation = $this->calculateCourse(
-                $course['obtained_marks'] ?? null,
-                $course['total_marks'] ?? null
-            );
+            $courseCalculation = array_key_exists('attendance_marks', $course)
+                ? $this->calculateAssessmentCourse($course)
+                : $this->calculateCourse(
+                    $course['obtained_marks'] ?? null,
+                    $course['total_marks'] ?? null
+                );
 
             $items[] = array_merge($course, $courseCalculation, ['credit_hours' => $creditHours]);
             $totalMarks += $courseCalculation['total_marks'];
@@ -212,14 +293,21 @@ class AcademicResultCalculator
                 'course_name' => $enrollmentCourse->course->name,
                 'credit_hours' => $enrollmentCourse->credit_hours,
                 'total_marks' => $enrollmentCourse->total_marks,
-                'obtained_marks' => $submittedCourse['obtained_marks'] ?? null,
+                'attendance_marks' => $enrollmentCourse->attendance_marks,
+                'mid_marks' => $enrollmentCourse->mid_marks,
+                'final_marks' => $enrollmentCourse->final_marks,
+                'attendance_obtained_marks' => $submittedCourse['attendance_obtained_marks'] ?? null,
+                'mid_obtained_marks' => $submittedCourse['mid_obtained_marks'] ?? null,
+                'final_obtained_marks' => $submittedCourse['final_obtained_marks'] ?? null,
             ];
         })->all();
 
         try {
             $summary = $this->calculateSemester(
                 $coursesForCalculation,
-                $publish && config('academic.results.require_all_course_marks_to_publish')
+                $publish
+                    && config('academic.results.require_all_course_marks_to_publish')
+                    && config('academic.assessment.require_all_components_to_publish')
             );
         } catch (InvalidArgumentException $exception) {
             throw ValidationException::withMessages(['courses' => $exception->getMessage()]);
@@ -345,6 +433,22 @@ class AcademicResultCalculator
         }
 
         return (float) $value;
+    }
+
+    private function validatedNonNegativeNumber(mixed $value, string $message): float
+    {
+        if (! is_numeric($value) || (float) $value < 0) {
+            throw new InvalidArgumentException($message);
+        }
+
+        return (float) $value;
+    }
+
+    private function normaliseIntegerOrFloat(mixed $value): int|float
+    {
+        $number = (float) $value;
+
+        return floor($number) === $number ? (int) $number : $number;
     }
 
     /** @param array<string, mixed>|SemesterResultItem $item @return array<string, mixed> */

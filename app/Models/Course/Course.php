@@ -14,12 +14,18 @@ class Course extends Model
         'description',
         'credit_hours',
         'total_marks',
+        'attendance_marks',
+        'mid_marks',
+        'final_marks',
         'is_active',
     ];
 
     protected $casts = [
         'credit_hours' => 'decimal:1',
         'total_marks' => 'integer',
+        'attendance_marks' => 'integer',
+        'mid_marks' => 'integer',
+        'final_marks' => 'integer',
         'is_active' => 'boolean',
     ];
 

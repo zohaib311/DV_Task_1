@@ -91,6 +91,25 @@
     color: #ef4444;
 }
 
+.assessment-scheme-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 11px 13px;
+    border-left: 3px solid #756ae2;
+    border-radius: 8px;
+    background: #f7f6ff;
+}
+
+.assessment-scheme-heading span,
+.assessment-scheme-heading small { display: block; }
+.assessment-scheme-heading span { color: #3e396e; font-size: 12px; font-weight: 800; }
+.assessment-scheme-heading small { margin-top: 2px; color: #778197; font-size: 11px; }
+.assessment-scheme-heading strong { color: #665bd0; font-size: 14px; white-space: nowrap; }
+.assessment-scheme-heading strong.is-valid { color: #07835b; }
+.assessment-scheme-heading strong.is-invalid { color: #c83f3f; }
+
 @media (max-width: 768px) {
     .add__form_cont {
         padding: 5px 0 20px;

@@ -83,4 +83,58 @@ class AcademicResultCalculatorTest extends TestCase
 
         $this->assertSame(3.85, $cgpa);
     }
+
+    public function test_it_derives_course_outcomes_from_attendance_midterm_and_final_marks(): void
+    {
+        $outcome = $this->calculator->calculateAssessmentCourse([
+            'total_marks' => 100,
+            'attendance_marks' => 10,
+            'mid_marks' => 30,
+            'final_marks' => 60,
+            'attendance_obtained_marks' => 8,
+            'mid_obtained_marks' => 24,
+            'final_obtained_marks' => 50,
+        ]);
+
+        $this->assertSame(82.0, $outcome['obtained_marks']);
+        $this->assertSame(82.0, $outcome['percentage']);
+        $this->assertSame('A-', $outcome['grade']);
+        $this->assertSame(3.7, $outcome['grade_point']);
+    }
+
+    public function test_it_rejects_component_marks_above_their_own_maximum(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->calculator->calculateAssessmentCourse([
+            'total_marks' => 100,
+            'attendance_marks' => 10,
+            'mid_marks' => 30,
+            'final_marks' => 60,
+            'attendance_obtained_marks' => 11,
+            'mid_obtained_marks' => 20,
+            'final_obtained_marks' => 50,
+        ]);
+    }
+
+    public function test_optional_final_minimum_rule_can_fail_an_otherwise_passing_course(): void
+    {
+        config()->set('academic.assessment.final_minimum.enabled', true);
+        config()->set('academic.assessment.final_minimum.minimum_percentage', 50);
+
+        $outcome = $this->calculator->calculateAssessmentCourse([
+            'total_marks' => 100,
+            'attendance_marks' => 10,
+            'mid_marks' => 30,
+            'final_marks' => 60,
+            'attendance_obtained_marks' => 10,
+            'mid_obtained_marks' => 30,
+            'final_obtained_marks' => 20,
+        ]);
+
+        $this->assertSame(60.0, $outcome['percentage']);
+        $this->assertSame('F', $outcome['grade']);
+        $this->assertSame(0.0, $outcome['grade_point']);
+        $this->assertSame('Fail', $outcome['status']);
+    }
 }

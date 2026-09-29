@@ -22,6 +22,21 @@ return [
         'default_credit_hours' => (float) env('ACADEMIC_DEFAULT_CREDIT_HOURS', 3),
     ],
 
+    'assessment' => [
+        'defaults' => [
+            'attendance_marks' => (int) env('ACADEMIC_DEFAULT_ATTENDANCE_MARKS', 10),
+            'mid_marks' => (int) env('ACADEMIC_DEFAULT_MID_MARKS', 30),
+            'final_marks' => (int) env('ACADEMIC_DEFAULT_FINAL_MARKS', 60),
+        ],
+        'attendance_mode' => env('ACADEMIC_ATTENDANCE_MODE', 'manual'),
+        'require_all_components_to_publish' => true,
+        'final_minimum' => [
+            // Keep disabled until the university confirms that final-exam minimum is mandatory.
+            'enabled' => (bool) env('ACADEMIC_FINAL_MINIMUM_ENABLED', false),
+            'minimum_percentage' => (float) env('ACADEMIC_FINAL_MINIMUM_PERCENTAGE', 50),
+        ],
+    ],
+
     /*
     | The list must remain in descending minimum-percentage order. Phase 4's
     | calculator will use the first matching entry for a course percentage.

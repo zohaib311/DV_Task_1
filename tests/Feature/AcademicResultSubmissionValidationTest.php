@@ -26,7 +26,10 @@ class AcademicResultSubmissionValidationTest extends TestCase
             $enrollment,
             [[
                 'student_enrollment_course_id' => $enrollmentCourse->id,
-                'obtained_marks' => 82,
+                'attendance_obtained_marks' => 8,
+                'mid_obtained_marks' => 24,
+                'final_obtained_marks' => 50,
+                'obtained_marks' => 1,
                 'percentage' => 1,
                 'grade' => 'F',
                 'grade_point' => 0,
@@ -50,7 +53,9 @@ class AcademicResultSubmissionValidationTest extends TestCase
         try {
             $calculator->prepareEnrollmentResult($enrollment, [[
                 'student_enrollment_course_id' => 99999,
-                'obtained_marks' => 80,
+                'attendance_obtained_marks' => 8,
+                'mid_obtained_marks' => 24,
+                'final_obtained_marks' => 48,
             ]], true);
             $this->fail('An unenrolled course should be rejected.');
         } catch (ValidationException $exception) {
@@ -60,7 +65,9 @@ class AcademicResultSubmissionValidationTest extends TestCase
         try {
             $calculator->prepareEnrollmentResult($enrollment, [[
                 'student_enrollment_course_id' => $enrollmentCourse->id,
-                'obtained_marks' => 101,
+                'attendance_obtained_marks' => 8,
+                'mid_obtained_marks' => 24,
+                'final_obtained_marks' => 61,
             ]], true);
             $this->fail('Marks above the enrolled course total should be rejected.');
         } catch (ValidationException $exception) {
@@ -88,7 +95,9 @@ class AcademicResultSubmissionValidationTest extends TestCase
 
         app(AcademicResultCalculator::class)->prepareEnrollmentResult($enrollment, [[
             'student_enrollment_course_id' => $enrollmentCourse->id,
-            'obtained_marks' => 80,
+            'attendance_obtained_marks' => 8,
+            'mid_obtained_marks' => 24,
+            'final_obtained_marks' => 48,
         ]], false);
     }
 
@@ -110,6 +119,9 @@ class AcademicResultSubmissionValidationTest extends TestCase
             'description' => 'Core programming course.',
             'credit_hours' => 3,
             'total_marks' => 100,
+            'attendance_marks' => 10,
+            'mid_marks' => 30,
+            'final_marks' => 60,
             'is_active' => true,
         ]);
         $enrollment = StudentSemesterEnrollment::create([
@@ -126,6 +138,9 @@ class AcademicResultSubmissionValidationTest extends TestCase
             'course_id' => $course->id,
             'credit_hours' => 3,
             'total_marks' => 100,
+            'attendance_marks' => 10,
+            'mid_marks' => 30,
+            'final_marks' => 60,
         ]);
 
         return [$student, $enrollment, $enrollmentCourse];

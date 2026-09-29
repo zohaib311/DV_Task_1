@@ -7,6 +7,7 @@ use App\Models\Department\Department;
 use App\Models\Enrollment\StudentSemesterEnrollment;
 use App\Models\Section\Section;
 use App\Models\Student;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,6 +35,9 @@ class StudentSemesterEnrollmentTest extends TestCase
             'description' => 'Programming fundamentals.',
             'credit_hours' => 3,
             'total_marks' => 100,
+            'attendance_marks' => 10,
+            'mid_marks' => 30,
+            'final_marks' => 60,
             'is_active' => true,
         ]);
         $secondCourse = Course::create([
@@ -42,10 +46,13 @@ class StudentSemesterEnrollmentTest extends TestCase
             'description' => 'Discrete mathematics.',
             'credit_hours' => 4,
             'total_marks' => 150,
+            'attendance_marks' => 15,
+            'mid_marks' => 45,
+            'final_marks' => 90,
             'is_active' => true,
         ]);
 
-        $user = new \App\Models\User([
+        $user = new User([
             'name' => 'Academic Admin',
             'email' => 'admin@example.com',
             'password' => bcrypt('password'),
@@ -78,6 +85,9 @@ class StudentSemesterEnrollmentTest extends TestCase
             'course_id' => $secondCourse->id,
             'credit_hours' => 4,
             'total_marks' => 150,
+            'attendance_marks' => 15,
+            'mid_marks' => 45,
+            'final_marks' => 90,
         ]);
 
         $student->refresh();
@@ -96,7 +106,7 @@ class StudentSemesterEnrollmentTest extends TestCase
     {
         $department = Department::create(['name' => 'Software Engineering']);
         $section = Section::create(['name' => 'B', 'department_id' => $department->id]);
-        $user = new \App\Models\User([
+        $user = new User([
             'name' => 'Academic Admin',
             'email' => 'admin@example.com',
             'password' => bcrypt('password'),

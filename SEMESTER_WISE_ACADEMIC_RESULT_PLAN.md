@@ -584,16 +584,16 @@ Phase 5 ka right drawer same clean layout retain karega, lekin marks table ki ro
 
 ### Phase 5A completion checklist
 
-- [ ] Assessment policy configuration created
-- [ ] Course assessment-component fields and validation added
-- [ ] Enrollment component snapshots added
-- [ ] Result-item component snapshots and obtained fields added
-- [ ] Calculator updated for Attendance + Midterm + Final
-- [ ] Course add/edit/list UI updated
-- [ ] Add Result drawer updated with component inputs
-- [ ] Save Draft / Publish API updated
-- [ ] Historical-data compatibility preserved
-- [ ] Assessment calculation and validation tests written
+- [x] Assessment policy configuration created
+- [x] Course assessment-component fields and validation added
+- [x] Enrollment component snapshots added
+- [x] Result-item component snapshots and obtained fields added
+- [x] Calculator updated for Attendance + Midterm + Final
+- [x] Course add/edit/list UI updated
+- [x] Add Result drawer updated with component inputs
+- [x] Save Draft / Publish API updated
+- [x] Historical-data compatibility preserved
+- [x] Assessment calculation and validation tests written
 
 ---
 

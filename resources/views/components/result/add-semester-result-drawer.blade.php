@@ -2,7 +2,9 @@
     aria-labelledby="semesterResultDrawerLabel" data-student-enrollments-url="{{ url('/result/student') }}"
     data-enrollment-url="{{ url('/result/semester-enrollment') }}" data-store-url="{{ route('result.semester.store') }}"
     data-grade-scale='@json(config('academic.grade_scale'))'
-    data-allow-drafts="{{ config('academic.results.allow_drafts') ? 'true' : 'false' }}">
+    data-allow-drafts="{{ config('academic.results.allow_drafts') ? 'true' : 'false' }}"
+    data-final-minimum-enabled="{{ config('academic.assessment.final_minimum.enabled') ? 'true' : 'false' }}"
+    data-final-minimum-percentage="{{ config('academic.assessment.final_minimum.minimum_percentage') }}">
     <div class="drawer-header">
         <div>
             <span class="drawer-eyebrow"><i class="bi bi-mortarboard-fill"></i> Academic record</span>
@@ -63,9 +65,12 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Course</th>
+                                    <th>Code</th>
                                     <th>Cr.</th>
-                                    <th>Total</th>
-                                    <th class="marks-input-heading">Obtained</th>
+                                    <th class="marks-input-heading">Attendance</th>
+                                    <th class="marks-input-heading">Midterm</th>
+                                    <th class="marks-input-heading">Final</th>
+                                    <th>Obtained</th>
                                     <th>%</th>
                                     <th>Grade</th>
                                     <th>GP</th>

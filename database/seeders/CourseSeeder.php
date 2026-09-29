@@ -23,6 +23,9 @@ class CourseSeeder extends Seeder
         $academicDefaults = [
             'credit_hours' => config('academic.courses.default_credit_hours'),
             'total_marks' => config('academic.marks.default_total'),
+            'attendance_marks' => config('academic.assessment.defaults.attendance_marks'),
+            'mid_marks' => config('academic.assessment.defaults.mid_marks'),
+            'final_marks' => config('academic.assessment.defaults.final_marks'),
             'is_active' => true,
         ];
 

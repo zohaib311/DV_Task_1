@@ -55,6 +55,7 @@
                                     <th>Name</th>
                                     <th>Description</th>
                                     <th>Credit Hours</th>
+                                    <th>Assessment</th>
                                     <th>Total Marks</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -90,6 +91,11 @@
                                         </td>
 
                                         <td>
+                                            <small class="d-block text-muted">Att. {{ $course->attendance_marks }}</small>
+                                            <small class="d-block text-muted">Mid {{ $course->mid_marks }} · Final {{ $course->final_marks }}</small>
+                                        </td>
+
+                                        <td>
                                             {{ $course->total_marks }}
                                         </td>
 
@@ -122,7 +128,7 @@
                                 @empty
 
                                     <tr>
-                                        <td colspan="8" class="text-center py-4">
+                                        <td colspan="9" class="text-center py-4">
                                             No courses found.
                                         </td>
                                     </tr>

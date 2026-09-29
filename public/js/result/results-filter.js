@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         studentName: document.getElementById('semester_result_student_name'), registrationNo: document.getElementById('semester_result_registration_no'),
         department: document.getElementById('semester_result_department'), section: document.getElementById('semester_result_section'),
         academicYear: document.getElementById('semester_result_academic_year'), gradeScale: JSON.parse(drawer.dataset.gradeScale || '[]'),
+        finalMinimumEnabled: drawer.dataset.finalMinimumEnabled === 'true', finalMinimumPercentage: Number(drawer.dataset.finalMinimumPercentage || 0),
         student: null, enrollment: null, courses: [], priorItems: [],
     } : null;
 
@@ -142,19 +143,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderCourseRows(courses) {
-        drawerState.coursesBody.innerHTML = courses.map((course, index) => `<tr data-course-id="${course.student_enrollment_course_id}"><td>${index + 1}</td><td><strong>${escapeHtml(course.course_name)}</strong><small>${escapeHtml(course.course_code)}</small></td><td>${formatNumber(course.credit_hours, 1)}</td><td>${formatNumber(course.total_marks, 0)}</td><td><input class="form-control result-mark-input" type="number" inputmode="decimal" min="0" max="${course.total_marks}" step="0.01" aria-label="Obtained marks for ${escapeAttribute(course.course_name)}" data-enrollment-course-id="${course.student_enrollment_course_id}" data-total-marks="${course.total_marks}"></td><td class="result-row-percentage">—</td><td class="result-row-grade">—</td><td class="result-row-gp">—</td><td class="result-row-status"><span class="course-status is-draft">Draft</span></td></tr>`).join('');
-        drawerState.coursesBody.querySelectorAll('.result-mark-input').forEach((input) => input.addEventListener('input', updateLiveSummary));
+        drawerState.coursesBody.innerHTML = courses.map((course, index) => `<tr data-course-id="${course.student_enrollment_course_id}">
+            <td>${index + 1}</td><td><strong>${escapeHtml(course.course_name)}</strong></td><td>${escapeHtml(course.course_code)}</td><td>${formatNumber(course.credit_hours, 1)}</td>
+            ${renderAssessmentInput(course, 'attendance', 'Attendance')}${renderAssessmentInput(course, 'mid', 'Midterm')}${renderAssessmentInput(course, 'final', 'Final')}
+            <td class="result-row-obtained">—</td><td class="result-row-percentage">—</td><td class="result-row-grade">—</td><td class="result-row-gp">—</td><td class="result-row-status"><span class="course-status is-draft">Draft</span></td>
+        </tr>`).join('');
+        drawerState.coursesBody.querySelectorAll('.assessment-mark-input').forEach((input) => input.addEventListener('input', updateLiveSummary));
+    }
+
+    function renderAssessmentInput(course, component, label) {
+        const maximum = Number(course[`${component}_marks`]);
+        const field = `${component}_obtained_marks`;
+        const disabled = maximum === 0 ? 'disabled value="0"' : '';
+        return `<td><div class="assessment-mark-entry"><small>${label} / ${formatNumber(maximum, 0)}</small><input class="form-control assessment-mark-input" type="number" inputmode="decimal" min="0" max="${maximum}" step="0.01" ${disabled} aria-label="${label} marks for ${escapeAttribute(course.course_name)}" data-component="${field}" data-enrollment-course-id="${course.student_enrollment_course_id}"></div></td>`;
     }
 
     function updateLiveSummary() {
         if (!drawerState?.courses.length) return;
         let earned = 0; let total = 0; let totalCredits = 0; let qualityPoints = 0; let complete = true; let hasFail = false; const currentItems = [];
         drawerState.courses.forEach((course) => {
-            const row = drawerState.coursesBody.querySelector(`[data-course-id="${course.student_enrollment_course_id}"]`); const input = row.querySelector('.result-mark-input'); const rawValue = input.value.trim(); total += Number(course.total_marks); input.classList.remove('is-invalid');
-            if (rawValue === '') { complete = false; setCoursePreview(row, null); return; }
-            const marks = Number(rawValue);
-            if (!Number.isFinite(marks) || marks < 0 || marks > Number(course.total_marks)) { complete = false; input.classList.add('is-invalid'); setCoursePreview(row, null); return; }
-            const outcome = calculateCoursePreview(marks, Number(course.total_marks)); earned += marks; totalCredits += Number(course.credit_hours); qualityPoints += outcome.gradePoint * Number(course.credit_hours); hasFail = hasFail || outcome.status === 'Fail';
+            const row = drawerState.coursesBody.querySelector(`[data-course-id="${course.student_enrollment_course_id}"]`); const componentMarks = {}; let courseComplete = true; total += Number(course.total_marks);
+            ['attendance', 'mid', 'final'].forEach((component) => {
+                const maximum = Number(course[`${component}_marks`]);
+                const input = row.querySelector(`[data-component="${component}_obtained_marks"]`);
+                const rawValue = input.value.trim(); input.classList.remove('is-invalid');
+                if (maximum === 0) { componentMarks[component] = 0; return; }
+                if (rawValue === '') { courseComplete = false; return; }
+                const marks = Number(rawValue);
+                if (!Number.isFinite(marks) || marks < 0 || marks > maximum) { courseComplete = false; input.classList.add('is-invalid'); return; }
+                componentMarks[component] = marks;
+            });
+            if (!courseComplete) { complete = false; setCoursePreview(row, null); return; }
+            const marks = componentMarks.attendance + componentMarks.mid + componentMarks.final;
+            const outcome = calculateCoursePreview(marks, Number(course.total_marks), componentMarks.final, Number(course.final_marks)); earned += marks; totalCredits += Number(course.credit_hours); qualityPoints += outcome.gradePoint * Number(course.credit_hours); hasFail = hasFail || outcome.status === 'Fail';
             currentItems.push({ course_id: course.course_id, course_code: course.course_code, credit_hours: Number(course.credit_hours), grade_point: outcome.gradePoint, attempted_at: new Date().toISOString(), result_id: Number.MAX_SAFE_INTEGER, item_id: course.student_enrollment_course_id }); setCoursePreview(row, outcome);
         });
         drawerState.total.textContent = complete ? `${formatNumber(earned, 2)} / ${formatNumber(total, 0)}` : `— / ${formatNumber(total, 0)}`;
@@ -162,23 +183,39 @@ document.addEventListener('DOMContentLoaded', () => {
         drawerState.percentage.textContent = `${formatNumber((earned / total) * 100, 2)}%`; drawerState.sgpa.textContent = formatNumber(qualityPoints / totalCredits, 2); drawerState.cgpa.textContent = formatCgpa([...drawerState.priorItems, ...currentItems]); setSummaryStatus(hasFail ? 'Fail' : 'Pass');
     }
 
-    function calculateCoursePreview(marks, totalMarks) { const percentage = (marks / totalMarks) * 100; const grade = drawerState.gradeScale.find((item) => percentage >= Number(item.minimum_percentage)); return { percentage, grade: grade.grade, gradePoint: Number(grade.grade_point), status: grade.status }; }
+    function calculateCoursePreview(marks, totalMarks, finalMarks, finalMaximum) {
+        const percentage = (marks / totalMarks) * 100; const grade = drawerState.gradeScale.find((item) => percentage >= Number(item.minimum_percentage));
+        const finalMinimumFailed = drawerState.finalMinimumEnabled && finalMaximum > 0 && ((finalMarks / finalMaximum) * 100) < drawerState.finalMinimumPercentage;
+        return finalMinimumFailed ? { obtainedMarks: marks, percentage, grade: 'F', gradePoint: 0, status: 'Fail' } : { obtainedMarks: marks, percentage, grade: grade.grade, gradePoint: Number(grade.grade_point), status: grade.status };
+    }
     function setCoursePreview(row, outcome) {
-        const percentage = row.querySelector('.result-row-percentage'); const grade = row.querySelector('.result-row-grade'); const gp = row.querySelector('.result-row-gp'); const status = row.querySelector('.result-row-status');
-        if (!outcome) { percentage.textContent = grade.textContent = gp.textContent = '—'; status.innerHTML = '<span class="course-status is-draft">Draft</span>'; return; }
-        percentage.textContent = `${formatNumber(outcome.percentage, 2)}%`; grade.textContent = outcome.grade; gp.textContent = formatNumber(outcome.gradePoint, 2); status.innerHTML = `<span class="course-status is-${outcome.status.toLowerCase()}">${outcome.status}</span>`;
+        const obtained = row.querySelector('.result-row-obtained'); const percentage = row.querySelector('.result-row-percentage'); const grade = row.querySelector('.result-row-grade'); const gp = row.querySelector('.result-row-gp'); const status = row.querySelector('.result-row-status');
+        if (!outcome) { obtained.textContent = percentage.textContent = grade.textContent = gp.textContent = '—'; status.innerHTML = '<span class="course-status is-draft">Draft</span>'; return; }
+        obtained.textContent = formatNumber(outcome.obtainedMarks, 2); percentage.textContent = `${formatNumber(outcome.percentage, 2)}%`; grade.textContent = outcome.grade; gp.textContent = formatNumber(outcome.gradePoint, 2); status.innerHTML = `<span class="course-status is-${outcome.status.toLowerCase()}">${outcome.status}</span>`;
     }
     function formatCgpa(items) {
         const latestAttempts = new Map(); [...items].sort((a, b) => new Date(a.attempted_at || 0) - new Date(b.attempted_at || 0)).forEach((item) => latestAttempts.set(item.course_id ? `id:${item.course_id}` : `code:${item.course_code}`, item));
         let credits = 0; let points = 0; latestAttempts.forEach((item) => { credits += Number(item.credit_hours); points += Number(item.grade_point) * Number(item.credit_hours); }); return credits ? formatNumber(points / credits, 2) : '—';
     }
     function setSummaryStatus(status) { drawerState.status.textContent = status; drawerState.status.className = `semester-status is-${status.toLowerCase()}`; drawerState.actionState.textContent = status === 'Draft' ? 'Draft' : 'Ready to publish'; }
-    function setDrawerLocked(locked, message = '') { drawerState.locked.hidden = !locked; drawerState.locked.textContent = message; drawerState.form.querySelectorAll('[data-result-action]').forEach((button) => { button.disabled = locked; }); drawerState.coursesBody.querySelectorAll('.result-mark-input').forEach((input) => { input.disabled = locked; }); }
+    function setDrawerLocked(locked, message = '') { drawerState.locked.hidden = !locked; drawerState.locked.textContent = message; drawerState.form.querySelectorAll('[data-result-action]').forEach((button) => { button.disabled = locked; }); drawerState.coursesBody.querySelectorAll('.assessment-mark-input').forEach((input) => { input.disabled = locked; }); }
 
     drawerState?.form.addEventListener('submit', async (event) => {
         event.preventDefault(); const action = event.submitter?.dataset.resultAction; if (!action || !drawerState.enrollment?.id) return;
         clearDrawerError(); const submitButtons = drawerState.form.querySelectorAll('[data-result-action]'); submitButtons.forEach((button) => { button.disabled = true; });
-        const courses = [...drawerState.coursesBody.querySelectorAll('.result-mark-input')].map((input) => ({ student_enrollment_course_id: Number(input.dataset.enrollmentCourseId), obtained_marks: input.value.trim() === '' ? null : Number(input.value) }));
+        const courses = drawerState.courses.map((course) => {
+            const row = drawerState.coursesBody.querySelector(`[data-course-id="${course.student_enrollment_course_id}"]`);
+            const valueFor = (component) => {
+                const input = row.querySelector(`[data-component="${component}_obtained_marks"]`);
+                return input.value.trim() === '' ? null : Number(input.value);
+            };
+            return {
+                student_enrollment_course_id: course.student_enrollment_course_id,
+                attendance_obtained_marks: valueFor('attendance'),
+                mid_obtained_marks: valueFor('mid'),
+                final_obtained_marks: valueFor('final'),
+            };
+        });
         try {
             const response = await fetch(drawer.dataset.storeUrl, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': drawerState.form.querySelector('[name="_token"]').value }, body: JSON.stringify({ student_id: Number(drawerState.studentId.value), enrollment_id: Number(drawerState.enrollmentId.value), action, courses }) });
             const data = await response.json(); if (!response.ok) { displayServerErrors(data.errors || { result: data.message || 'Result save nahi ho saka.' }); return; }

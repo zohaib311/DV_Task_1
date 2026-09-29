@@ -18,6 +18,9 @@ class CourseAcademicFieldsTest extends TestCase
             'description' => 'Course used to verify academic course fields.',
             'credit_hours' => 4.0,
             'total_marks' => 150,
+            'attendance_marks' => 15,
+            'mid_marks' => 45,
+            'final_marks' => 90,
             'is_active' => false,
         ]);
 
@@ -25,6 +28,9 @@ class CourseAcademicFieldsTest extends TestCase
 
         $this->assertSame('4.0', $course->credit_hours);
         $this->assertSame(150, $course->total_marks);
+        $this->assertSame(15, $course->attendance_marks);
+        $this->assertSame(45, $course->mid_marks);
+        $this->assertSame(90, $course->final_marks);
         $this->assertFalse($course->is_active);
     }
 }

@@ -143,6 +143,9 @@ class ResultController extends Controller
                 'course_code' => $course->course->code,
                 'credit_hours' => (float) $course->credit_hours,
                 'total_marks' => $course->total_marks,
+                'attendance_marks' => $course->attendance_marks,
+                'mid_marks' => $course->mid_marks,
+                'final_marks' => $course->final_marks,
             ])->values(),
             'prior_result_items' => $priorResultItems,
         ]);
@@ -160,7 +163,9 @@ class ResultController extends Controller
             'action' => ['required', 'in:draft,publish'],
             'courses' => ['required', 'array'],
             'courses.*.student_enrollment_course_id' => ['required', 'integer'],
-            'courses.*.obtained_marks' => ['nullable', 'numeric'],
+            'courses.*.attendance_obtained_marks' => ['nullable', 'numeric'],
+            'courses.*.mid_obtained_marks' => ['nullable', 'numeric'],
+            'courses.*.final_obtained_marks' => ['nullable', 'numeric'],
         ]);
 
         $enrollment = StudentSemesterEnrollment::query()
@@ -202,7 +207,13 @@ class ResultController extends Controller
                     'course_name',
                     'credit_hours',
                     'total_marks',
+                    'attendance_marks',
+                    'mid_marks',
+                    'final_marks',
                     'obtained_marks',
+                    'attendance_obtained_marks',
+                    'mid_obtained_marks',
+                    'final_obtained_marks',
                     'percentage',
                     'grade',
                     'grade_point',

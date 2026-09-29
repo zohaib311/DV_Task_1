@@ -71,6 +71,12 @@ class StudentSemesterEnrollmentController extends Controller
             ]);
         }
 
+        if ($courses->contains(fn (Course $course) => ($course->attendance_marks + $course->mid_marks + $course->final_marks) !== $course->total_marks)) {
+            throw ValidationException::withMessages([
+                'course_ids' => 'Every selected course must have a valid Attendance + Midterm + Final assessment scheme before enrollment.',
+            ]);
+        }
+
         if (StudentSemesterEnrollment::query()
             ->where('student_id', $student->id)
             ->where('academic_year', $validated['academic_year'])
@@ -97,6 +103,9 @@ class StudentSemesterEnrollmentController extends Controller
                     'course_id' => $course->id,
                     'credit_hours' => $course->credit_hours,
                     'total_marks' => $course->total_marks,
+                    'attendance_marks' => $course->attendance_marks,
+                    'mid_marks' => $course->mid_marks,
+                    'final_marks' => $course->final_marks,
                 ])->all()
             );
 
@@ -116,6 +125,6 @@ class StudentSemesterEnrollmentController extends Controller
     {
         $startYear = now()->month >= 8 ? now()->year : now()->subYear()->year;
 
-        return $startYear . '-' . ($startYear + 1);
+        return $startYear.'-'.($startYear + 1);
     }
 }
