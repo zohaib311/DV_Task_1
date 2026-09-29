@@ -6,6 +6,7 @@ use App\Models\Course\Course;
 use App\Models\Department\Department;
 use App\Models\Enrollment\StudentEnrollmentCourse;
 use App\Models\Enrollment\StudentSemesterEnrollment;
+use App\Models\Result\SemesterResult;
 use App\Models\Section\Section;
 use App\Models\Student;
 use App\Models\User;
@@ -37,6 +38,23 @@ class SemesterResultDrawerApiTest extends TestCase
             ->assertJsonPath('courses.0.final_marks', 60)
             ->assertJsonFragment(['course_id' => $firstCourse->id])
             ->assertJsonFragment(['course_id' => $secondCourse->id]);
+    }
+
+    public function test_results_list_api_exposes_an_existing_active_semester_result_before_the_drawer_is_opened(): void
+    {
+        [$user, $student, $enrollment] = $this->makeAcademicRecord();
+        SemesterResult::create([
+            'student_semester_enrollment_id' => $enrollment->id,
+            'student_id' => $student->id,
+            'status' => 'Pass',
+            'published_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->getJson(route('getStudentsBySection', $student->section_id))
+            ->assertOk()
+            ->assertJsonPath('0.active_semester_enrollment.id', $enrollment->id)
+            ->assertJsonPath('0.active_semester_enrollment.semester_result.status', 'Pass');
     }
 
     public function test_publish_endpoint_creates_the_semester_header_and_server_calculated_items(): void

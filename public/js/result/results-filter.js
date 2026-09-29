@@ -70,9 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderStudentRow(student, index) {
         const latestResult = student.results?.[student.results.length - 1];
-        const resultHtml = latestResult ? `<div><div class="fw-bold text-dark">${escapeHtml(latestResult.course?.name || 'N/A')}</div><small class="text-muted">Grade: <strong>${escapeHtml(latestResult.grade || 'N/A')}</strong> | GPA: <strong>${escapeHtml(latestResult.gpa || '0')}</strong></small><span class="badge ${(latestResult.status || '').toLowerCase() === 'pass' ? 'bg-success' : 'bg-danger'} ms-1">${escapeHtml(latestResult.status || 'N/A')}</span></div>` : '<span class="badge bg-secondary">No legacy result</span>';
+        const activeEnrollment = student.active_semester_enrollment;
+        const semesterResult = activeEnrollment?.semester_result;
+        const resultHtml = semesterResult ? `<div class="semester-result-list-state"><span class="semester-result-list-label"><i class="bi bi-journal-check"></i> Semester result added</span><strong>${escapeHtml(activeEnrollment.semester)} · ${escapeHtml(activeEnrollment.academic_year)}</strong><small>${semesterResult.published_at ? 'Published' : 'Draft saved'} <span class="semester-result-list-status is-${semesterResult.status.toLowerCase()}">${escapeHtml(semesterResult.status)}</span></small></div>` : latestResult ? `<div><div class="fw-bold text-dark">${escapeHtml(latestResult.course?.name || 'N/A')}</div><small class="text-muted">Grade: <strong>${escapeHtml(latestResult.grade || 'N/A')}</strong> | GPA: <strong>${escapeHtml(latestResult.gpa || '0')}</strong></small><span class="badge ${(latestResult.status || '').toLowerCase() === 'pass' ? 'bg-success' : 'bg-danger'} ms-1">${escapeHtml(latestResult.status || 'N/A')}</span></div>` : '<span class="badge bg-secondary">No semester result</span>';
         const viewEditButtons = latestResult ? `<button type="button" class="action__btn action__info btn-view-result" title="View legacy result" data-bs-toggle="modal" data-bs-target="#viewResultModal" data-result-id="${latestResult.id}" data-student-name="${escapeAttribute(student.name)}" data-student-email="${escapeAttribute(student.email || 'N/A')}" data-student-phone="${escapeAttribute(student.phone || 'N/A')}" data-student-image="${escapeAttribute(student.image || 'default-user.png')}" data-percentage="${latestResult.percentage}" data-gpa="${latestResult.gpa}" data-cgpa="${latestResult.cgpa}" data-grade="${escapeAttribute(latestResult.grade)}" data-status="${escapeAttribute(latestResult.status)}" data-course-name="${escapeAttribute(latestResult.course?.name || 'N/A')}" data-course-code="${escapeAttribute(latestResult.course?.code || '')}" data-section-name="${escapeAttribute(student.section?.name || '')}"><i class="bi bi-info-circle"></i></button><button type="button" class="action__btn action__edit btn-edit-result" title="Edit legacy result" data-bs-toggle="offcanvas" data-bs-target="#editResultModal" data-result-id="${latestResult.id}" data-student-id="${student.id}" data-section-id="${currentSectionId}" data-course-id="${latestResult.course_id}" data-percentage="${latestResult.percentage}" data-gpa="${latestResult.gpa}" data-cgpa="${latestResult.cgpa}" data-grade="${escapeAttribute(latestResult.grade)}" data-status="${escapeAttribute(latestResult.status)}" data-student-name="${escapeAttribute(student.name)}" data-student-email="${escapeAttribute(student.email || 'N/A')}"><i class="bi bi-pencil-square"></i></button>` : '';
-        return `<tr><td>${index + 1}</td><td><span class="student-id-badge">${escapeHtml(student.registration_no || '—')}</span></td><td class="fw-bold text-dark">${escapeHtml(student.name)}</td><td class="text-muted">${escapeHtml(student.email || 'N/A')}</td><td>${resultHtml}</td><td class="text-center"><div class="action__buttons">${viewEditButtons}<button type="button" class="action__btn action__add btn-add-semester-result" title="Add semester result" data-bs-toggle="offcanvas" data-bs-target="#semesterResultDrawer" data-student-id="${student.id}"><i class="bi bi-plus-circle"></i></button></div></td></tr>`;
+        const addActionClass = semesterResult ? 'action__info' : 'action__add';
+        const addActionTitle = semesterResult ? 'Semester result already added' : 'Add semester result';
+        const addActionIcon = semesterResult ? 'bi-journal-check' : 'bi-plus-circle';
+        return `<tr><td>${index + 1}</td><td><span class="student-id-badge">${escapeHtml(student.registration_no || '—')}</span></td><td class="fw-bold text-dark">${escapeHtml(student.name)}</td><td class="text-muted">${escapeHtml(student.email || 'N/A')}</td><td>${resultHtml}</td><td class="text-center"><div class="action__buttons">${viewEditButtons}<button type="button" class="action__btn ${addActionClass} btn-add-semester-result" title="${addActionTitle}" data-bs-toggle="offcanvas" data-bs-target="#semesterResultDrawer" data-student-id="${student.id}" data-existing-result="${semesterResult ? 'true' : 'false'}"><i class="bi ${addActionIcon}"></i></button></div></td></tr>`;
     }
 
     function resetStudentViews() {
@@ -82,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('click', (event) => {
         const viewBtn = event.target.closest('.btn-view-result'); if (viewBtn) fillLegacyView(viewBtn);
-        const addBtn = event.target.closest('.btn-add-semester-result'); if (addBtn && drawerState) openSemesterDrawer(addBtn.dataset.studentId);
+        const addBtn = event.target.closest('.btn-add-semester-result'); if (addBtn && drawerState) openSemesterDrawer(addBtn.dataset.studentId, addBtn.dataset.existingResult === 'true');
         const editBtn = event.target.closest('.btn-edit-result'); if (editBtn) fillLegacyEdit(editBtn);
     });
 
@@ -100,8 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.entries(fields).forEach(([id, value]) => { const element = document.getElementById(id); if (!element) return; if (['INPUT', 'SELECT'].includes(element.tagName)) element.value = value; else element.textContent = value; });
     }
 
-    async function openSemesterDrawer(studentId) {
+    async function openSemesterDrawer(studentId, knownExistingResult = false) {
         resetDrawer(); drawerState.loading.hidden = false; drawerState.content.hidden = true;
+        if (knownExistingResult) drawerState.actionState.textContent = 'Result already added';
         try {
             const response = await fetch(`${drawer.dataset.studentEnrollmentsUrl}/${studentId}/semester-enrollments`, { headers: { Accept: 'application/json' } });
             if (!response.ok) throw new Error('Student enrollments request failed');
@@ -136,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
             drawerState.courseCount.textContent = `${data.courses.length} ${data.courses.length === 1 ? 'course' : 'courses'}`; renderCourseRows(data.courses);
             if (data.enrollment.existing_result) {
                 const result = data.enrollment.existing_result;
-                setDrawerLocked(true, result.published_at ? 'This semester result is already published. Phase 6 will provide the authorized edit flow.' : 'A draft already exists for this semester. It will be editable in the Phase 6 edit flow.');
+                setDrawerLocked(true, result.published_at ? 'This semester result is already published. An authorized edit workflow will be available in Phase 6.' : 'A draft already exists for this semester. It will be editable in the Phase 6 edit flow.');
             }
             updateLiveSummary();
         } catch (error) { showDrawerError('Enrollment courses load nahi ho sakay. Please select the semester again.'); console.error(error); }
@@ -198,7 +204,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let credits = 0; let points = 0; latestAttempts.forEach((item) => { credits += Number(item.credit_hours); points += Number(item.grade_point) * Number(item.credit_hours); }); return credits ? formatNumber(points / credits, 2) : '—';
     }
     function setSummaryStatus(status) { drawerState.status.textContent = status; drawerState.status.className = `semester-status is-${status.toLowerCase()}`; drawerState.actionState.textContent = status === 'Draft' ? 'Draft' : 'Ready to publish'; }
-    function setDrawerLocked(locked, message = '') { drawerState.locked.hidden = !locked; drawerState.locked.textContent = message; drawerState.form.querySelectorAll('[data-result-action]').forEach((button) => { button.disabled = locked; }); drawerState.coursesBody.querySelectorAll('.assessment-mark-input').forEach((input) => { input.disabled = locked; }); }
+    function setDrawerLocked(locked, message = '') {
+        drawerState.locked.hidden = !locked;
+        drawerState.locked.innerHTML = locked ? `<i class="bi bi-shield-check"></i><div><strong>Result already added</strong><span>${escapeHtml(message)}</span></div>` : '';
+        drawerState.form.querySelectorAll('[data-result-action]').forEach((button) => { button.disabled = locked; }); drawerState.coursesBody.querySelectorAll('.assessment-mark-input').forEach((input) => { input.disabled = locked; });
+    }
 
     drawerState?.form.addEventListener('submit', async (event) => {
         event.preventDefault(); const action = event.submitter?.dataset.resultAction; if (!action || !drawerState.enrollment?.id) return;
@@ -218,7 +228,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         try {
             const response = await fetch(drawer.dataset.storeUrl, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': drawerState.form.querySelector('[name="_token"]').value }, body: JSON.stringify({ student_id: Number(drawerState.studentId.value), enrollment_id: Number(drawerState.enrollmentId.value), action, courses }) });
-            const data = await response.json(); if (!response.ok) { displayServerErrors(data.errors || { result: data.message || 'Result save nahi ho saka.' }); return; }
+            const data = await response.json(); if (!response.ok) {
+                const duplicateMessage = data.errors?.result?.find((message) => message.toLowerCase().includes('already exists'));
+                if (duplicateMessage) setDrawerLocked(true, duplicateMessage);
+                displayServerErrors(data.errors || { result: data.message || 'Result save nahi ho saka.' }); return;
+            }
             bootstrap.Offcanvas.getOrCreateInstance(drawer).hide(); showPageNotice(data.message, 'success'); if (currentSectionId) loadStudents(currentSectionId);
         } catch (error) { console.error(error); showDrawerError('Network issue ki wajah se result save nahi ho saka. Please try again.'); }
         finally { if (!drawerState.enrollment?.existing_result) submitButtons.forEach((button) => { button.disabled = false; }); }

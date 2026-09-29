@@ -45,6 +45,7 @@ class ResultController extends Controller
     public function getStudentsBySection($section_id)
     {
         $students = Student::with(['results.course', 'department', 'section'])
+            ->with(['activeSemesterEnrollment.semesterResult'])
             ->where('section_id', $section_id)
             ->get();
 
