@@ -141,13 +141,15 @@
 
 /* Semester result entry: one clear academic flow, without stacked card boxes. */
 .semester-result-drawer { width: min(1040px, 94vw) !important; }
+.semester-result-drawer > form { min-height: 0; overflow: hidden; }
 .semester-result-drawer .drawer-header { padding: 13px 24px; }
 .semester-result-drawer .drawer-header h5 { margin-top: 2px; font-size: 17px; }
 .drawer-eyebrow { display: block; color: rgba(255,255,255,.74); font-size: 9.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .drawer-header-actions { display: flex; align-items: center; gap: 13px; }
 .drawer-action-state { padding: 4px 9px; border: 1px solid rgba(255,255,255,.26); border-radius: 20px; color: #fff; font-size: 10px; font-weight: 800; }
-.semester-result-drawer .drawer-body { padding: 20px 24px 24px; background: #fbfcff; }
-.semester-result-drawer .drawer-footer { padding: 10px 24px; }
+.semester-result-drawer .drawer-body { min-height: 0; padding: 20px 24px 24px; background: #fbfcff; }
+.semester-result-drawer .drawer-footer { position: relative; z-index: 2; margin-top: auto; padding: 10px 24px; box-shadow: 0 -5px 16px rgba(15, 23, 42, .045); }
+.semester-result-footer { flex-wrap: wrap; }
 .semester-result-loading { display: flex; min-height: 190px; align-items: center; justify-content: center; gap: 10px; color: #665ad3; font-size: 13px; font-weight: 700; }
 .semester-result-errors { display: flex; align-items: flex-start; gap: 9px; margin-bottom: 17px; padding: 11px 13px; border: 1px solid #fecaca; border-left: 3px solid #ef4444; border-radius: 8px; background: #fff7f7; color: #b42318; font-size: 12px; }
 .semester-result-errors > i { margin-top: 2px; }
@@ -209,6 +211,11 @@
     .semester-picker-row { grid-template-columns: 1fr; gap: 6px; }
     .semester-live-summary { align-items: flex-start; flex-direction: column; gap: 12px; }
     .semester-summary-metrics { width: 100%; grid-template-columns: repeat(2, 1fr); row-gap: 15px; }
+}
+
+@media (max-width: 460px) {
+    .semester-result-drawer .drawer-footer { justify-content: stretch; padding: 10px 16px; }
+    .semester-result-footer > button { flex: 1 1 100%; }
 }
 
 @media (max-width: 640px) {
