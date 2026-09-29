@@ -3,6 +3,7 @@
 namespace App\Models\Course;
 
 use App\Models\Enrollment\StudentEnrollmentCourse;
+use App\Models\Result\SemesterResultItem;
 use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
@@ -25,5 +26,10 @@ class Course extends Model
     public function enrollmentCourses()
     {
         return $this->hasMany(StudentEnrollmentCourse::class);
+    }
+
+    public function semesterResultItems()
+    {
+        return $this->hasMany(SemesterResultItem::class);
     }
 }

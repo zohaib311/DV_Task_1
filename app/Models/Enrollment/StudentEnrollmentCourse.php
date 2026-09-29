@@ -3,8 +3,10 @@
 namespace App\Models\Enrollment;
 
 use App\Models\Course\Course;
+use App\Models\Result\SemesterResultItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class StudentEnrollmentCourse extends Model
 {
@@ -28,5 +30,10 @@ class StudentEnrollmentCourse extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function resultItem(): HasOne
+    {
+        return $this->hasOne(SemesterResultItem::class, 'student_enrollment_course_id');
     }
 }

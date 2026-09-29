@@ -253,13 +253,17 @@ Before removing or changing old data:
 4. Decide whether existing results will be migrated manually, automatically, or left as historical legacy records.
 5. Only remove old structure after migration verification.
 
+### Implemented legacy-data decision
+
+The current `results` table remains untouched as a **read-only legacy record** during Phases 3 and 4. It cannot be safely auto-migrated because its records do not identify a semester enrollment or an academic year. New semester-wise results will use `semester_results` and `semester_result_items` from Phase 5 onward. A future admin-led legacy migration may only run after each old record is mapped to a verified enrollment.
+
 ### Phase 3 completion checklist
 
-- [ ] New result migrations created
-- [ ] Models and relationships added
-- [ ] Old results data strategy approved
-- [ ] Foreign keys and unique constraints added
-- [ ] Database backup confirmed before data migration
+- [x] New result migrations created
+- [x] Models and relationships added
+- [x] Legacy results retained as read-only records; no unsafe automatic migration
+- [x] Foreign keys and unique constraints added
+- [x] No legacy data migration attempted; current database records preserved
 
 ---
 

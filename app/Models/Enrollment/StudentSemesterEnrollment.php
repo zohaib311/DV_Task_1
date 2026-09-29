@@ -5,9 +5,11 @@ namespace App\Models\Enrollment;
 use App\Models\Department\Department;
 use App\Models\Section\Section;
 use App\Models\Student;
+use App\Models\Result\SemesterResult;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class StudentSemesterEnrollment extends Model
 {
@@ -45,5 +47,10 @@ class StudentSemesterEnrollment extends Model
     public function courses(): HasMany
     {
         return $this->hasMany(StudentEnrollmentCourse::class);
+    }
+
+    public function semesterResult(): HasOne
+    {
+        return $this->hasOne(SemesterResult::class);
     }
 }

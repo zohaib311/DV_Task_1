@@ -6,6 +6,7 @@ use App\Models\Course\Course;
 use App\Models\Department\Department;
 use App\Models\Enrollment\StudentSemesterEnrollment;
 use App\Models\Result\Result;
+use App\Models\Result\SemesterResult;
 use App\Models\Section\Section;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -66,6 +67,11 @@ class Student extends Model
     public function semesterEnrollments()
     {
         return $this->hasMany(StudentSemesterEnrollment::class);
+    }
+
+    public function semesterResults()
+    {
+        return $this->hasMany(SemesterResult::class);
     }
 
     public function activeSemesterEnrollment(): HasOne

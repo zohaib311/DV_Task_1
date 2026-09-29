@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Models\Result;
+
+use App\Models\Course\Course;
+use App\Models\Enrollment\StudentEnrollmentCourse;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class SemesterResultItem extends Model
+{
+    protected $fillable = [
+        'semester_result_id',
+        'student_enrollment_course_id',
+        'course_id',
+        'course_code',
+        'course_name',
+        'credit_hours',
+        'total_marks',
+        'obtained_marks',
+        'percentage',
+        'grade',
+        'grade_point',
+        'status',
+    ];
+
+    protected $casts = [
+        'credit_hours' => 'decimal:1',
+        'total_marks' => 'integer',
+        'obtained_marks' => 'decimal:2',
+        'percentage' => 'decimal:2',
+        'grade_point' => 'decimal:2',
+    ];
+
+    public function semesterResult(): BelongsTo
+    {
+        return $this->belongsTo(SemesterResult::class);
+    }
+
+    public function enrollmentCourse(): BelongsTo
+    {
+        return $this->belongsTo(StudentEnrollmentCourse::class, 'student_enrollment_course_id');
+    }
+
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class);
+    }
+}
