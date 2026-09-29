@@ -346,11 +346,11 @@ Suggested rule:
 
 ### Phase 4 completion checklist
 
-- [ ] Grade scale configuration created
-- [ ] Result calculator service created
-- [ ] Course, SGPA and CGPA unit tests written
-- [ ] Pass/fail rule implemented
-- [ ] Server-side validation completed
+- [x] Grade scale configuration created
+- [x] Result calculator service created
+- [x] Course, SGPA and CGPA unit tests written
+- [x] Pass/fail rule implemented
+- [x] Server-side validation completed
 
 ---
 
