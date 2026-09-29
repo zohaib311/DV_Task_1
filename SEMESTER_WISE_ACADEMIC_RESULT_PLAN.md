@@ -707,11 +707,11 @@ Promotion ko manually controlled academic action rakhna chahiye.
 
 ### Phase 8 completion checklist
 
-- [ ] Promote student action created
-- [ ] Next semester enrollment creation implemented
-- [ ] Course assignment flow connected
-- [ ] Failure/repeat policy implemented
-- [ ] Academic history verified
+- [x] Promote student action created
+- [x] Next semester enrollment creation implemented
+- [x] Course assignment flow connected
+- [x] Failure/repeat policy implemented
+- [x] Academic history verified
 
 ---
 

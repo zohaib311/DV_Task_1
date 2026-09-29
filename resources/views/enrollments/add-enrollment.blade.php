@@ -6,13 +6,14 @@
 @endsection
 
 @section('content')
+    @php($isPromotion = isset($promotionEnrollment))
     <div class="container add__form_cont py-5">
         <div class="add__form enrollment-form mx-auto">
             <div class="enrollment-form-header">
-                <div class="enrollment-form-icon"><i class="bi bi-journal-plus"></i></div>
+                <div class="enrollment-form-icon"><i class="bi {{ $isPromotion ? 'bi-arrow-up-right-circle' : 'bi-journal-plus' }}"></i></div>
                 <div>
-                    <h2>New Semester Enrollment</h2>
-                    <p>Assign a student to a semester and preserve their course record.</p>
+                    <h2>{{ $isPromotion ? 'Promote Student to Next Semester' : 'New Semester Enrollment' }}</h2>
+                    <p>{{ $isPromotion ? 'Verify the completed result and select the next semester course plan.' : 'Assign a student to a semester and preserve their course record.' }}</p>
                 </div>
             </div>
 
@@ -33,7 +34,17 @@
                 </div>
             @endif
 
-            <form action="{{ route('addEnrollment') }}" method="POST" novalidate>
+            @if ($isPromotion)
+                <div class="promotion-policy-note {{ $promotionEligibility['allowed'] ? 'is-allowed' : 'is-blocked' }}" role="status">
+                    <i class="bi {{ $promotionEligibility['allowed'] ? 'bi-shield-check' : 'bi-shield-exclamation' }}"></i>
+                    <div>
+                        <strong>{{ $promotionEligibility['allowed'] ? 'Promotion check passed' : 'Promotion currently blocked' }}</strong>
+                        <span>{{ $promotionEligibility['message'] }}</span>
+                    </div>
+                </div>
+            @endif
+
+            <form action="{{ $isPromotion ? route('promoteEnrollment', $promotionEnrollment) : route('addEnrollment') }}" method="POST" novalidate>
                 @csrf
 
                 <section class="enrollment-form-section">
@@ -48,14 +59,17 @@
                     <div class="row g-3">
                         <div class="col-md-7">
                             <label for="student_id" class="form-label">Student</label>
-                            <select name="student_id" id="student_id" class="form-select @error('student_id') is-invalid @enderror" required>
+                            @if ($isPromotion)
+                                <input type="hidden" name="student_id" value="{{ $promotionEnrollment->student_id }}">
+                            @endif
+                            <select name="student_id" id="student_id" class="form-select @error('student_id') is-invalid @enderror" required {{ $isPromotion ? 'disabled' : '' }}>
                                 <option value="">Select student</option>
                                 @foreach ($students as $student)
                                     <option value="{{ $student->id }}"
                                         data-registration="{{ $student->registration_no }}"
                                         data-department="{{ $student->department->name ?? 'Not assigned' }}"
                                         data-section="{{ $student->section->name ?? 'Not assigned' }}"
-                                        {{ old('student_id', request('student_id')) == $student->id ? 'selected' : '' }}>
+                                        {{ old('student_id', $isPromotion ? $promotionEnrollment->student_id : request('student_id')) == $student->id ? 'selected' : '' }}>
                                         {{ $student->name }} ({{ $student->registration_no ?? 'No registration no.' }})
                                     </option>
                                 @endforeach
@@ -92,11 +106,13 @@
 
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label for="semester" class="form-label">Semester</label>
+                            <label for="semester" class="form-label">{{ $isPromotion ? 'Next Semester' : 'Semester' }}</label>
                             <select name="semester" id="semester" class="form-select @error('semester') is-invalid @enderror" required>
                                 <option value="">Select semester</option>
                                 @for ($semester = 1; $semester <= 8; $semester++)
-                                    <option value="Semester {{ $semester }}" {{ old('semester') === "Semester $semester" ? 'selected' : '' }}>
+                                    <option value="Semester {{ $semester }}"
+                                        {{ old('semester', $isPromotion ? $nextSemester : null) === "Semester $semester" ? 'selected' : '' }}
+                                        {{ $isPromotion && $nextSemester !== "Semester $semester" ? 'disabled' : '' }}>
                                         Semester {{ $semester }}
                                     </option>
                                 @endfor
@@ -105,9 +121,12 @@
                         </div>
                     </div>
 
-                    <label class="form-label d-block mt-4 mb-2">Assign active courses</label>
+                    <label class="form-label d-block mt-4 mb-2">{{ $isPromotion ? 'Select next-semester and repeat/improvement courses' : 'Assign active courses' }}</label>
+                    @if ($isPromotion)
+                        <p class="text-muted small mb-2">All selections are explicit. Include any approved repeat or improvement course only when it belongs to the next-semester plan.</p>
+                    @endif
                     <div class="enrollment-course-grid">
-                        @php($selectedCourses = old('course_ids', []))
+                        @php($selectedCourses = old('course_ids', $isPromotion ? $promotionSelectedCourses : []))
                         @forelse ($courses as $course)
                             <label class="enrollment-course-option">
                                 <input type="checkbox" name="course_ids[]" value="{{ $course->id }}"
@@ -130,8 +149,10 @@
                     <a href="{{ route('allEnrollments') }}" class="cancel__btn">
                         <i class="bi bi-arrow-left me-1"></i> Back
                     </a>
-                    <button type="submit" class="update__btn">
-                        <i class="bi bi-journal-check me-1"></i> Create Enrollment
+                    <button type="submit" class="update__btn"
+                        {{ $isPromotion && (! $promotionEligibility['allowed'] || ! $nextSemester) ? 'disabled' : '' }}>
+                        <i class="bi {{ $isPromotion ? 'bi-arrow-up-right-circle' : 'bi-journal-check' }} me-1"></i>
+                        {{ $isPromotion ? 'Promote Student' : 'Create Enrollment' }}
                     </button>
                 </div>
             </form>

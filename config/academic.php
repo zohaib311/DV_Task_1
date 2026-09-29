@@ -69,4 +69,11 @@ return [
         'require_all_course_marks_to_publish' => true,
         'allow_published_result_edits' => (bool) env('ACADEMIC_ALLOW_PUBLISHED_RESULT_EDITS', false),
     ],
+
+    'promotion' => [
+        // A promotion creates a new active enrollment only after the current
+        // semester has a published passing result. Repeat/improvement courses
+        // are selected explicitly in the promotion form.
+        'require_published_pass_result' => env('ACADEMIC_PROMOTION_REQUIRE_PUBLISHED_PASS_RESULT', true),
+    ],
 ];

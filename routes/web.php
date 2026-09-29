@@ -73,6 +73,10 @@ Route::prefix('enrollment')->controller(StudentSemesterEnrollmentController::cla
     Route::get('/add', 'create')->name('addEnrollmentForm');
 
     Route::post('/add', 'store')->name('addEnrollment');
+
+    Route::get('/{enrollment}/promote', 'promote')->name('promoteEnrollmentForm');
+
+    Route::post('/{enrollment}/promote', 'storePromotion')->name('promoteEnrollment');
 });
 
 Route::prefix('teacher')->controller(TeacherController::class)->middleware('auth')->group(function () {

@@ -39,8 +39,10 @@
                                     <th>Semester</th>
                                     <th>Department / Section</th>
                                     <th>Courses</th>
+                                    <th>Result</th>
                                     <th>Status</th>
                                     <th>Enrolled On</th>
+                                    <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -59,15 +61,33 @@
                                         </td>
                                         <td>{{ $enrollment->courses_count }}</td>
                                         <td>
+                                            @if ($enrollment->semesterResult)
+                                                <span class="enrollment-result-state {{ $enrollment->semesterResult->status === 'Pass' ? 'is-pass' : ($enrollment->semesterResult->status === 'Fail' ? 'is-fail' : 'is-draft') }}">
+                                                    {{ $enrollment->semesterResult->published_at ? 'Published · ' : '' }}{{ $enrollment->semesterResult->status }}
+                                                </span>
+                                            @else
+                                                <span class="text-muted small">Not entered</span>
+                                            @endif
+                                        </td>
+                                        <td>
                                             <span class="badge {{ $enrollment->status === 'active' ? 'bg-success' : 'bg-secondary' }}">
                                                 {{ ucfirst($enrollment->status) }}
                                             </span>
                                         </td>
                                         <td>{{ $enrollment->enrolled_at->format('d M Y') }}</td>
+                                        <td class="text-center">
+                                            @if ($enrollment->status === 'active')
+                                                <a href="{{ route('promoteEnrollmentForm', $enrollment) }}" class="promotion-action">
+                                                    <i class="bi bi-arrow-up-right-circle"></i> Promote
+                                                </a>
+                                            @else
+                                                <span class="text-muted small">History preserved</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center py-5 text-muted">
+                                        <td colspan="10" class="text-center py-5 text-muted">
                                             <i class="bi bi-journal-x d-block fs-3 mb-2"></i>
                                             No semester enrollments created yet.
                                         </td>
