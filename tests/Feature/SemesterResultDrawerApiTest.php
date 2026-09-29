@@ -11,6 +11,7 @@ use App\Models\Section\Section;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class SemesterResultDrawerApiTest extends TestCase
@@ -40,7 +41,7 @@ class SemesterResultDrawerApiTest extends TestCase
             ->assertJsonFragment(['course_id' => $secondCourse->id]);
     }
 
-    public function test_results_list_api_exposes_an_existing_active_semester_result_before_the_drawer_is_opened(): void
+    public function test_results_list_api_exposes_the_selected_semester_enrollment_before_the_drawer_is_opened(): void
     {
         [$user, $student, $enrollment] = $this->makeAcademicRecord();
         SemesterResult::create([
@@ -53,8 +54,8 @@ class SemesterResultDrawerApiTest extends TestCase
         $this->actingAs($user)
             ->getJson(route('getStudentsBySection', $student->section_id))
             ->assertOk()
-            ->assertJsonPath('0.active_semester_enrollment.id', $enrollment->id)
-            ->assertJsonPath('0.active_semester_enrollment.semester_result.status', 'Pass');
+            ->assertJsonPath('0.listed_enrollment.id', $enrollment->id)
+            ->assertJsonPath('0.listed_enrollment.semester_result.status', 'Pass');
     }
 
     public function test_publish_endpoint_creates_the_semester_header_and_server_calculated_items(): void
@@ -204,6 +205,51 @@ class SemesterResultDrawerApiTest extends TestCase
         $this->actingAs($user)
             ->getJson(route('result.semester.data', $result))
             ->assertForbidden();
+    }
+
+    public function test_phase_seven_filters_result_sheet_history_and_delete_policy_are_available(): void
+    {
+        [$user, $student, $enrollment] = $this->makeAcademicRecord();
+        $result = SemesterResult::create([
+            'student_semester_enrollment_id' => $enrollment->id,
+            'student_id' => $student->id,
+            'semester_percentage' => 82.50,
+            'sgpa' => 3.85,
+            'cgpa' => 3.85,
+            'status' => 'Pass',
+            'published_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->getJson(route('result.filter.options', $student->section_id))
+            ->assertOk()
+            ->assertJsonFragment(['academic_year' => '2026-2027', 'semester' => 'Semester 1']);
+
+        $this->actingAs($user)
+            ->getJson(route('getStudentsBySection', [
+                'section_id' => $student->section_id,
+                'academic_year' => '2026-2027',
+                'semester' => 'Semester 1',
+                'status' => 'Published',
+            ]))
+            ->assertOk()
+            ->assertJsonCount(1)
+            ->assertJsonPath('0.listed_enrollment.course_count', 2)
+            ->assertJsonPath('0.listed_enrollment.semester_result.id', $result->id);
+
+        $this->actingAs($user)
+            ->getJson(route('result.semester.sheet', $result))
+            ->assertOk()
+            ->assertJsonPath('sheet.semester', 'Semester 1')
+            ->assertJsonPath('sheet.sgpa', '3.85')
+            ->assertJsonCount(1, 'history');
+
+        $this->actingAs($user)
+            ->getJson(route('result.student.history', $student))
+            ->assertOk()
+            ->assertJsonPath('history.0.result_id', $result->id);
+
+        $this->assertFalse(Route::has('deleteResult'));
     }
 
     public function test_editing_an_earlier_published_semester_recalculates_later_semester_cgpa(): void

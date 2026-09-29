@@ -677,11 +677,11 @@ Yahan se user purane semester ka result kabhi bhi dekh sakega.
 
 ### Phase 7 completion checklist
 
-- [ ] Semester-aware filters added
-- [ ] Result list API updated
-- [ ] View result details updated
-- [ ] Student academic history view added
-- [ ] Direct delete disabled/removed
+- [x] Semester-aware filters added
+- [x] Result list API updated
+- [x] View result details updated
+- [x] Student academic history view added
+- [x] Direct delete disabled/removed
 
 ---
 

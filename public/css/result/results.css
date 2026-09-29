@@ -93,6 +93,43 @@
 .semester-result-list-status.is-pass { background: #e7f8f0; color: #087f55; }
 .semester-result-list-status.is-fail { background: #fff0f0; color: #c53737; }
 .semester-result-list-status.is-draft { background: #eeedff; color: #655bd1; }
+.result-list-semester { display: grid; gap: 2px; }
+.result-list-semester strong { color: #34415a; font-size: 12px; }
+.result-list-semester small { color: #818ba0; font-size: 10.5px; }
+.result-list-number { color: #3e4a62; font-weight: 800; white-space: nowrap; }
+.result-list-empty { color: #97a0b1; font-size: 12px; }
+
+.semester-sheet-modal .modal-content { overflow: hidden; border: 0; border-radius: 16px; box-shadow: 0 20px 55px rgba(15, 23, 42, .2); }
+.semester-sheet-modal .modal-header { align-items: flex-start; padding: 16px 22px; border: 0; background: var(--gradient-primary, linear-gradient(135deg, #6c63ff, #8b5cf6)); color: #fff; }
+.semester-sheet-modal .modal-title { margin-top: 2px; color: #fff; font-size: 18px; font-weight: 800; }
+.sheet-eyebrow { display: block; color: rgba(255,255,255,.76); font-size: 9.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.semester-sheet-modal .modal-body { min-height: 260px; padding: 22px 24px 26px; background: #fbfcff; }
+.semester-sheet-modal .modal-footer { padding: 10px 22px; border-top: 1px solid #e5e8f0; background: #fff; }
+.semester-sheet-loading { display: flex; min-height: 210px; align-items: center; justify-content: center; gap: 10px; color: #665ad3; font-size: 13px; font-weight: 750; }
+.semester-sheet-student { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; padding-bottom: 16px; border-bottom: 1px solid #e3e7ef; }
+.semester-sheet-student > div { min-width: 180px; }
+.semester-sheet-student strong { color: #2d3950; font-size: 17px; font-weight: 800; }
+.semester-sheet-student dl { display: grid; grid-template-columns: repeat(3, minmax(110px, 1fr)); gap: 18px; flex: 1; margin: 0; }
+.semester-sheet-student dt { margin-bottom: 3px; color: #8a94a7; font-size: 9.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.semester-sheet-student dd { margin: 0; color: #475569; font-size: 12px; font-weight: 700; }
+.semester-sheet-record { padding-top: 20px; }
+.semester-sheet-record-heading, .semester-history-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.semester-sheet-record h6, .semester-history-heading h6 { margin: 0; color: #2d3950; font-size: 15px; font-weight: 800; }
+.semester-sheet-record small { color: #778197; font-size: 11px; font-weight: 650; }
+.semester-sheet-metrics { display: grid; grid-template-columns: repeat(4, minmax(110px, 1fr)); margin-bottom: 17px; border-left: 1px solid #e2e6ee; }
+.semester-sheet-metrics > div { padding: 0 14px; border-right: 1px solid #e2e6ee; }
+.semester-sheet-metrics span { display: block; margin-bottom: 3px; color: #8a94a7; font-size: 9.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.semester-sheet-metrics strong { color: #34415a; font-size: 15px; font-weight: 800; }
+.semester-sheet-table-wrap, .semester-history-table-wrap { overflow-x: auto; border-top: 1px solid #dfe3ee; border-bottom: 1px solid #dfe3ee; }
+.semester-sheet-table { width: 100%; min-width: 900px; border-collapse: collapse; }
+.semester-sheet-table th, .semester-history-table th { padding: 10px 9px; background: #f2f1ff; color: #5b5781; font-size: 9.5px; font-weight: 800; letter-spacing: .05em; text-align: left; text-transform: uppercase; white-space: nowrap; }
+.semester-sheet-table td, .semester-history-table td { padding: 10px 9px; border-top: 1px solid #eaecf2; color: #46536b; font-size: 12px; vertical-align: middle; }
+.semester-sheet-table td:not(:first-child), .semester-history-table td:not(:first-child) { text-align: center; }
+.semester-sheet-table td:first-child strong { display: block; color: #2d3950; }
+.semester-sheet-table td:first-child small { color: #8a94a7; font-size: 10px; }
+.semester-history-section { padding-top: 23px; }
+.semester-history-table { width: 100%; border-collapse: collapse; }
+.semester-history-table .action__btn { width: 28px; height: 28px; }
 
 /* Add and edit result use the same right-side drawer pattern as student creation. */
 .result-drawer {
@@ -229,6 +266,9 @@
     .semester-saved-summary > span { text-align: left; }
     .semester-live-summary { align-items: flex-start; flex-direction: column; gap: 12px; }
     .semester-summary-metrics { width: 100%; grid-template-columns: repeat(2, 1fr); row-gap: 15px; }
+    .semester-sheet-student { align-items: flex-start; flex-direction: column; gap: 12px; }
+    .semester-sheet-student dl { width: 100%; grid-template-columns: repeat(2, 1fr); }
+    .semester-sheet-metrics { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
 }
 
 @media (max-width: 460px) {

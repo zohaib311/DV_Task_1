@@ -54,7 +54,7 @@
                         <span class="results-step-hint"><i class="bi bi-sliders"></i> Required selection</span>
                     </div>
                     <div class="row g-3">
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-lg">
                             <label for="department_id" class="form-label"><span>01</span> Department</label>
                             <div class="results-select-wrap">
                                 <i class="bi bi-building"></i>
@@ -67,12 +67,43 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-lg">
                             <label for="section_id" class="form-label"><span>02</span> Section</label>
                             <div class="results-select-wrap">
                                 <i class="bi bi-diagram-3"></i>
                                 <select id="section_id" class="form-select" disabled>
                                     <option value="">-- Select Department First --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-lg">
+                            <label for="academic_year_filter" class="form-label"><span>03</span> Academic Year</label>
+                            <div class="results-select-wrap">
+                                <i class="bi bi-calendar3"></i>
+                                <select id="academic_year_filter" class="form-select" disabled>
+                                    <option value="">All Academic Years</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-lg">
+                            <label for="semester_filter" class="form-label"><span>04</span> Semester</label>
+                            <div class="results-select-wrap">
+                                <i class="bi bi-layers"></i>
+                                <select id="semester_filter" class="form-select" disabled>
+                                    <option value="">All Semesters</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-lg">
+                            <label for="result_status_filter" class="form-label"><span>05</span> Result Status</label>
+                            <div class="results-select-wrap">
+                                <i class="bi bi-funnel"></i>
+                                <select id="result_status_filter" class="form-select" disabled>
+                                    <option value="all">All Result States</option>
+                                    <option value="Draft">Draft</option>
+                                    <option value="Published">Published</option>
+                                    <option value="Pass">Pass</option>
+                                    <option value="Fail">Fail</option>
                                 </select>
                             </div>
                         </div>
@@ -110,8 +141,13 @@
                                         <th width="120">REG NO</th>
                                         <th>Student Name</th>
                                         <th>Email</th>
-                                        <th>Result / Course Summary</th>
-                                        <th width="180" class="text-center">Actions</th>
+                                        <th>Semester</th>
+                                        <th>Courses</th>
+                                        <th>Percentage</th>
+                                        <th>SGPA</th>
+                                        <th>CGPA</th>
+                                        <th>Status</th>
+                                        <th width="150" class="text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="students_table_body">
@@ -217,6 +253,87 @@
                     <button type="button" class="btn btn-secondary px-4 rounded-3 fw-semibold" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle me-1"></i> Close
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade semester-sheet-modal" id="semesterResultSheetModal" tabindex="-1"
+        aria-labelledby="semesterResultSheetModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <span class="sheet-eyebrow"><i class="bi bi-mortarboard-fill"></i> Academic record</span>
+                        <h5 class="modal-title" id="semesterResultSheetModalLabel">Semester Result Sheet</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="semester_sheet_loading" class="semester-sheet-loading">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                        <span>Academic record load ho raha hai…</span>
+                    </div>
+                    <div id="semester_sheet_content" hidden>
+                        <section class="semester-sheet-student">
+                            <div>
+                                <span class="summary-kicker">Student academic profile</span>
+                                <strong id="sheet_student_name">—</strong>
+                            </div>
+                            <dl>
+                                <div><dt>Registration No.</dt><dd id="sheet_registration_no">—</dd></div>
+                                <div><dt>Department</dt><dd id="sheet_department">—</dd></div>
+                                <div><dt>Section</dt><dd id="sheet_section">—</dd></div>
+                            </dl>
+                        </section>
+
+                        <section id="semester_sheet_record" class="semester-sheet-record" hidden>
+                            <div class="semester-sheet-record-heading">
+                                <div>
+                                    <span class="summary-kicker">Semester result</span>
+                                    <h6 id="sheet_semester">—</h6>
+                                    <small id="sheet_academic_year">—</small>
+                                </div>
+                                <span id="sheet_status" class="semester-status is-draft">—</span>
+                            </div>
+                            <div class="semester-sheet-metrics">
+                                <div><span>Percentage</span><strong id="sheet_percentage">—</strong></div>
+                                <div><span>SGPA</span><strong id="sheet_sgpa">—</strong></div>
+                                <div><span>CGPA</span><strong id="sheet_cgpa">—</strong></div>
+                                <div><span>Record state</span><strong id="sheet_record_state">—</strong></div>
+                            </div>
+                            <div class="semester-sheet-table-wrap">
+                                <table class="semester-sheet-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Course</th><th>Cr.</th><th>Attendance</th><th>Midterm</th><th>Final</th>
+                                            <th>Obtained</th><th>%</th><th>Grade</th><th>GP</th><th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sheet_course_rows"></tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                        <section class="semester-history-section">
+                            <div class="semester-history-heading">
+                                <div>
+                                    <span class="summary-kicker">Academic history</span>
+                                    <h6 id="sheet_history_heading">All semester records</h6>
+                                </div>
+                                <span id="sheet_history_count" class="course-count">0 semesters</span>
+                            </div>
+                            <div class="semester-history-table-wrap">
+                                <table class="semester-history-table">
+                                    <thead><tr><th>Semester</th><th>Academic Year</th><th>SGPA</th><th>CGPA</th><th>Status</th><th></th></tr></thead>
+                                    <tbody id="sheet_history_rows"></tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

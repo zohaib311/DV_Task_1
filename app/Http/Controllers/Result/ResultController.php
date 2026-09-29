@@ -43,14 +43,109 @@ class ResultController extends Controller
         return response()->json($sections);
     }
 
-    public function getStudentsBySection($section_id)
+    /**
+     * Semester-aware student/result rows for the Results Management listing.
+     */
+    public function getStudentsBySection(Request $request, $section_id)
     {
-        $students = Student::with(['results.course', 'department', 'section'])
-            ->with(['activeSemesterEnrollment.semesterResult'])
-            ->where('section_id', $section_id)
-            ->get();
+        $validated = $request->validate([
+            'department_id' => ['nullable', 'integer', 'exists:departments,id'],
+            'academic_year' => ['nullable', 'string', 'max:20'],
+            'semester' => ['nullable', 'string', 'max:80'],
+            'status' => ['nullable', 'in:all,Draft,Published,Pass,Fail'],
+        ]);
 
-        return response()->json($students);
+        $enrollments = StudentSemesterEnrollment::query()
+            ->with(['student', 'department', 'section', 'courses', 'semesterResult'])
+            ->where('section_id', $section_id)
+            ->when($validated['department_id'] ?? null, fn ($query, $departmentId) => $query->where('department_id', $departmentId))
+            ->when($validated['academic_year'] ?? null, fn ($query, $year) => $query->where('academic_year', $year))
+            ->when($validated['semester'] ?? null, fn ($query, $semester) => $query->where('semester', $semester))
+            ->when(($validated['status'] ?? 'all') !== 'all', function ($query) use ($validated) {
+                $status = $validated['status'];
+
+                $query->whereHas('semesterResult', function ($resultQuery) use ($status) {
+                    if ($status === 'Published') {
+                        $resultQuery->whereNotNull('published_at');
+                    } else {
+                        $resultQuery->where('status', $status);
+                    }
+                });
+            })
+            ->orderBy('academic_year')
+            ->orderBy('semester')
+            ->orderBy('id')
+            ->get()
+            ->sortBy(fn (StudentSemesterEnrollment $enrollment) => sprintf(
+                '%s-%03d-%010d',
+                $enrollment->academic_year,
+                $this->semesterNumber($enrollment->semester),
+                $enrollment->id,
+            ))
+            ->values();
+
+        return response()->json($enrollments->map(fn (StudentSemesterEnrollment $enrollment) => [
+            'id' => $enrollment->student->id,
+            'registration_no' => $enrollment->student->registration_no,
+            'name' => $enrollment->student->name,
+            'email' => $enrollment->student->email,
+            'listed_enrollment' => $this->listingEnrollment($enrollment),
+        ])->values());
+    }
+
+    /**
+     * Available academic year/semester combinations for a selected section.
+     */
+    public function getResultFilterOptions($section_id)
+    {
+        $enrollments = StudentSemesterEnrollment::query()
+            ->where('section_id', $section_id)
+            ->orderBy('academic_year')
+            ->orderBy('semester')
+            ->get(['academic_year', 'semester']);
+
+        return response()->json([
+            'academic_years' => $enrollments->pluck('academic_year')->unique()->values(),
+            'enrollments' => $enrollments
+                ->unique(fn (StudentSemesterEnrollment $enrollment) => $enrollment->academic_year.'|'.$enrollment->semester)
+                ->map(fn (StudentSemesterEnrollment $enrollment) => [
+                    'academic_year' => $enrollment->academic_year,
+                    'semester' => $enrollment->semester,
+                ])->values(),
+        ]);
+    }
+
+    /**
+     * Full semester result sheet plus the student's academic history.
+     */
+    public function getSemesterResultSheet(SemesterResult $semesterResult)
+    {
+        $semesterResult->load([
+            'student.department',
+            'student.section',
+            'enrollment.department',
+            'enrollment.section',
+            'items',
+        ]);
+
+        return response()->json([
+            'student' => $this->resultStudent($semesterResult->student),
+            'sheet' => $this->resultSheet($semesterResult),
+            'history' => $this->studentAcademicHistory($semesterResult->student_id),
+        ]);
+    }
+
+    /**
+     * Academic history can be opened even when the selected enrollment has no result yet.
+     */
+    public function getStudentAcademicHistory(Student $student)
+    {
+        $student->load(['department', 'section']);
+
+        return response()->json([
+            'student' => $this->resultStudent($student),
+            'history' => $this->studentAcademicHistory($student->id),
+        ]);
     }
 
     /**
@@ -331,6 +426,107 @@ class ResultController extends Controller
         ]);
     }
 
+    /** @return array<string, mixed> */
+    private function listingEnrollment(StudentSemesterEnrollment $enrollment): array
+    {
+        $result = $enrollment->semesterResult;
+
+        return [
+            'id' => $enrollment->id,
+            'semester' => $enrollment->semester,
+            'academic_year' => $enrollment->academic_year,
+            'course_count' => $enrollment->courses->count(),
+            'semester_result' => $result ? [
+                'id' => $result->id,
+                'semester_percentage' => $result->semester_percentage,
+                'sgpa' => $result->sgpa,
+                'cgpa' => $result->cgpa,
+                'status' => $result->status,
+                'published_at' => $result->published_at?->toIso8601String(),
+            ] : null,
+        ];
+    }
+
+    /** @return array<string, mixed> */
+    private function resultStudent(Student $student): array
+    {
+        return [
+            'id' => $student->id,
+            'registration_no' => $student->registration_no,
+            'name' => $student->name,
+            'email' => $student->email,
+            'department_name' => $student->department?->name,
+            'section_name' => $student->section?->name,
+        ];
+    }
+
+    /** @return array<string, mixed> */
+    private function resultSheet(SemesterResult $semesterResult): array
+    {
+        return [
+            'id' => $semesterResult->id,
+            'semester' => $semesterResult->enrollment->semester,
+            'academic_year' => $semesterResult->enrollment->academic_year,
+            'semester_percentage' => $semesterResult->semester_percentage,
+            'sgpa' => $semesterResult->sgpa,
+            'cgpa' => $semesterResult->cgpa,
+            'status' => $semesterResult->status,
+            'published_at' => $semesterResult->published_at?->toIso8601String(),
+            'items' => $semesterResult->items->map(fn (SemesterResultItem $item) => [
+                'course_code' => $item->course_code,
+                'course_name' => $item->course_name,
+                'credit_hours' => $item->credit_hours,
+                'attendance_marks' => $item->attendance_marks,
+                'attendance_obtained_marks' => $item->attendance_obtained_marks,
+                'mid_marks' => $item->mid_marks,
+                'mid_obtained_marks' => $item->mid_obtained_marks,
+                'final_marks' => $item->final_marks,
+                'final_obtained_marks' => $item->final_obtained_marks,
+                'obtained_marks' => $item->obtained_marks,
+                'total_marks' => $item->total_marks,
+                'percentage' => $item->percentage,
+                'grade' => $item->grade,
+                'grade_point' => $item->grade_point,
+                'status' => $item->status,
+            ])->values(),
+        ];
+    }
+
+    /** @return \Illuminate\Support\Collection<int, array<string, mixed>> */
+    private function studentAcademicHistory(int $studentId)
+    {
+        return StudentSemesterEnrollment::query()
+            ->where('student_id', $studentId)
+            ->with(['semesterResult', 'courses'])
+            ->get()
+            ->sortBy(fn (StudentSemesterEnrollment $enrollment) => sprintf(
+                '%s-%03d-%010d',
+                $enrollment->academic_year,
+                $this->semesterNumber($enrollment->semester),
+                $enrollment->id,
+            ))
+            ->values()
+            ->map(fn (StudentSemesterEnrollment $enrollment) => [
+                'enrollment_id' => $enrollment->id,
+                'semester' => $enrollment->semester,
+                'academic_year' => $enrollment->academic_year,
+                'course_count' => $enrollment->courses->count(),
+                'result_id' => $enrollment->semesterResult?->id,
+                'semester_percentage' => $enrollment->semesterResult?->semester_percentage,
+                'sgpa' => $enrollment->semesterResult?->sgpa,
+                'cgpa' => $enrollment->semesterResult?->cgpa,
+                'status' => $enrollment->semesterResult?->status ?? 'Not entered',
+                'published_at' => $enrollment->semesterResult?->published_at?->toIso8601String(),
+            ])->values();
+    }
+
+    private function semesterNumber(?string $semester): int
+    {
+        preg_match('/\d+/', $semester ?? '', $matches);
+
+        return (int) ($matches[0] ?? 0);
+    }
+
     private function semesterResultRules(): array
     {
         return [
@@ -438,13 +634,4 @@ class ResultController extends Controller
             ->with('success', 'Result added successfully!');
     }
 
-    public function deleteResult($id)
-    {
-        $result = Result::findOrFail($id);
-        $result->delete();
-
-        return redirect()
-            ->route('allResults')
-            ->with('success', 'Result deleted successfully!');
-    }
 }

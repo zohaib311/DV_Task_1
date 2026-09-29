@@ -148,10 +148,19 @@ Route::prefix('result')->controller(ResultController::class)->middleware('auth')
     Route::get('/semester-enrollment/{enrollment}/data', 'getEnrollmentResultData')
         ->name('result.enrollment.data');
 
+    Route::get('/get-filter-options/{section}', 'getResultFilterOptions')
+        ->name('result.filter.options');
+
     Route::post('/semester-result', 'storeSemesterResult')->name('result.semester.store');
 
     Route::get('/semester-result/{semesterResult}/data', 'getSemesterResultData')
         ->name('result.semester.data');
+
+    Route::get('/semester-result/{semesterResult}/sheet', 'getSemesterResultSheet')
+        ->name('result.semester.sheet');
+
+    Route::get('/student/{student}/academic-history', 'getStudentAcademicHistory')
+        ->name('result.student.history');
 
     Route::put('/semester-result/{semesterResult}', 'updateSemesterResult')
         ->name('result.semester.update');
@@ -159,8 +168,6 @@ Route::prefix('result')->controller(ResultController::class)->middleware('auth')
     Route::get('/get-sections/{department_id}', 'getSectionsByDepartment')->name('getSectionsByDepartment');
 
     Route::get('/get-students/{section_id}', 'getStudentsBySection')->name('getStudentsBySection');
-
-    Route::delete('/delete/{id}', 'deleteResult')->name('deleteResult');
 
     Route::get('/show', 'allResults')->name('allResults');
 });

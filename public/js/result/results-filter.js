@@ -1,12 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
     const department = document.getElementById('department_id');
     const section = document.getElementById('section_id');
+    const year = document.getElementById('academic_year_filter');
+    const semester = document.getElementById('semester_filter');
+    const resultStatus = document.getElementById('result_status_filter');
     const initial = document.getElementById('initial_state_msg');
     const loading = document.getElementById('loading_spinner');
     const table = document.getElementById('students_table_wrapper');
     const tbody = document.getElementById('students_table_body');
     const empty = document.getElementById('no_students_msg');
     const drawer = document.getElementById('semesterResultDrawer');
+    const sheetModal = document.getElementById('semesterResultSheetModal');
+    let filterOptions = [];
     let currentSectionId = null;
 
     const s = drawer ? {
@@ -19,58 +24,106 @@ document.addEventListener('DOMContentLoaded', () => {
     } : null;
 
     department?.addEventListener('change', async () => {
-        section.innerHTML = '<option value="">-- Select Section --</option>'; section.disabled = true; resetStudentViews();
+        section.innerHTML = '<option value="">-- Select Section --</option>'; section.disabled = true; resetAcademicFilters(); resetStudentViews();
         if (!department.value) { section.innerHTML = '<option value="">-- Select Department First --</option>'; return; }
         try {
             const response = await fetch(`/result/get-sections/${department.value}`); const sections = await response.json();
             if (sections.length) { section.disabled = false; sections.forEach((item) => section.add(new Option(item.name, item.id))); }
             else section.innerHTML = '<option value="">No Sections in this Department</option>';
-        } catch (error) { console.error(error); showPageNotice('Sections load nahi ho sakin. Please try again.', 'danger'); }
+        } catch (error) { console.error(error); pageNotice('Sections load nahi ho sakin. Please try again.', 'danger'); }
     });
-    section?.addEventListener('change', () => { currentSectionId = section.value || null; if (!currentSectionId) { resetStudentViews(); initial.style.display = 'block'; return; } loadStudents(currentSectionId); });
+    section?.addEventListener('change', async () => {
+        currentSectionId = section.value || null; resetAcademicFilters(); resetStudentViews();
+        if (!currentSectionId) { initial.style.display = 'block'; return; }
+        await loadAcademicFilters(); loadStudents();
+    });
+    year?.addEventListener('change', () => { populateSemesters(); loadStudents(); });
+    semester?.addEventListener('change', loadStudents);
+    resultStatus?.addEventListener('change', loadStudents);
 
-    async function loadStudents(sectionId) {
-        resetStudentViews(); loading.style.display = 'block';
+    async function loadAcademicFilters() {
         try {
-            const response = await fetch(`/result/get-students/${sectionId}`); if (!response.ok) throw new Error('Students request failed');
-            const students = await response.json(); loading.style.display = 'none';
-            if (!students.length) { empty.style.display = 'flex'; return; }
-            tbody.innerHTML = students.map(renderStudentRow).join(''); table.style.display = 'block';
-        } catch (error) { loading.style.display = 'none'; console.error(error); showPageNotice('Students load nahi ho sakay. Please try again.', 'danger'); }
+            const response = await fetch(`/result/get-filter-options/${currentSectionId}`); if (!response.ok) throw new Error('Filter options request failed');
+            const data = await response.json(); filterOptions = data.enrollments || [];
+            year.innerHTML = '<option value="">All Academic Years</option>'; (data.academic_years || []).forEach((value) => year.add(new Option(value, value)));
+            year.disabled = semester.disabled = resultStatus.disabled = false; populateSemesters();
+        } catch (error) { console.error(error); pageNotice('Academic filters load nahi ho sakay.', 'danger'); }
     }
-
+    function resetAcademicFilters() {
+        filterOptions = []; year.innerHTML = '<option value="">All Academic Years</option>'; semester.innerHTML = '<option value="">All Semesters</option>'; resultStatus.value = 'all';
+        year.disabled = semester.disabled = resultStatus.disabled = true;
+    }
+    function populateSemesters() {
+        const selected = semester.value; semester.innerHTML = '<option value="">All Semesters</option>';
+        [...new Set(filterOptions.filter((item) => !year.value || item.academic_year === year.value).map((item) => item.semester))].forEach((value) => semester.add(new Option(value, value)));
+        semester.value = [...semester.options].some((option) => option.value === selected) ? selected : '';
+    }
+    async function loadStudents() {
+        if (!currentSectionId) return;
+        resetStudentViews(); loading.style.display = 'block';
+        const query = new URLSearchParams({ department_id: department.value, academic_year: year.value, semester: semester.value, status: resultStatus.value });
+        try {
+            const response = await fetch(`/result/get-students/${currentSectionId}?${query.toString()}`); if (!response.ok) throw new Error('Result rows request failed');
+            const rows = await response.json(); loading.style.display = 'none';
+            if (!rows.length) { empty.querySelector('strong').textContent = 'No academic records found'; empty.querySelector('span').textContent = 'Try another semester, academic year, or result status.'; empty.style.display = 'flex'; return; }
+            tbody.innerHTML = rows.map(renderStudentRow).join(''); table.style.display = 'block';
+        } catch (error) { loading.style.display = 'none'; console.error(error); pageNotice('Student results load nahi ho sakay. Please try again.', 'danger'); }
+    }
     function renderStudentRow(student, index) {
-        const legacy = student.results?.[student.results.length - 1];
-        const enrollment = student.active_semester_enrollment;
-        const result = enrollment?.semester_result;
-        const status = result ? `<div class="semester-result-list-state"><span class="semester-result-list-label"><i class="bi bi-journal-check"></i> Semester result added</span><strong>${escapeHtml(enrollment.semester)} &middot; ${escapeHtml(enrollment.academic_year)}</strong><small>${result.published_at ? 'Published' : 'Draft saved'} <span class="semester-result-list-status is-${escapeAttribute(result.status.toLowerCase())}">${escapeHtml(result.status)}</span></small></div>` : legacy ? `<div><div class="fw-bold text-dark">${escapeHtml(legacy.course?.name || 'N/A')}</div><small class="text-muted">Grade: <strong>${escapeHtml(legacy.grade || 'N/A')}</strong> | GPA: <strong>${escapeHtml(legacy.gpa || '0')}</strong></small></div>` : '<span class="badge bg-secondary">No semester result</span>';
-        const legacyActions = legacy ? `<button type="button" class="action__btn action__info btn-view-result" title="View legacy result" data-bs-toggle="modal" data-bs-target="#viewResultModal" data-result-id="${legacy.id}" data-student-name="${escapeAttribute(student.name)}" data-student-email="${escapeAttribute(student.email || 'N/A')}" data-student-phone="${escapeAttribute(student.phone || 'N/A')}" data-student-image="${escapeAttribute(student.image || 'default-user.png')}" data-percentage="${legacy.percentage}" data-gpa="${legacy.gpa}" data-cgpa="${legacy.cgpa}" data-grade="${escapeAttribute(legacy.grade)}" data-status="${escapeAttribute(legacy.status)}" data-course-name="${escapeAttribute(legacy.course?.name || 'N/A')}" data-course-code="${escapeAttribute(legacy.course?.code || '')}" data-section-name="${escapeAttribute(student.section?.name || '')}"><i class="bi bi-info-circle"></i></button><button type="button" class="action__btn action__edit btn-edit-result" title="Edit legacy result" data-bs-toggle="offcanvas" data-bs-target="#editResultModal" data-result-id="${legacy.id}" data-student-id="${student.id}" data-section-id="${currentSectionId}" data-course-id="${legacy.course_id}" data-percentage="${legacy.percentage}" data-gpa="${legacy.gpa}" data-cgpa="${legacy.cgpa}" data-grade="${escapeAttribute(legacy.grade)}" data-status="${escapeAttribute(legacy.status)}" data-student-name="${escapeAttribute(student.name)}" data-student-email="${escapeAttribute(student.email || 'N/A')}"><i class="bi bi-pencil-square"></i></button>` : '';
+        const enrollment = student.listed_enrollment; const result = enrollment.semester_result;
         const canEdit = result && (!result.published_at || s?.allowPublishedEdits);
-        const addAction = `<button type="button" class="action__btn ${result ? 'action__info' : 'action__add'} btn-add-semester-result" title="${result ? 'Semester result already added' : 'Add semester result'}" data-bs-toggle="offcanvas" data-bs-target="#semesterResultDrawer" data-student-id="${student.id}" data-existing-result="${result ? 'true' : 'false'}"><i class="bi ${result ? 'bi-journal-check' : 'bi-plus-circle'}"></i></button>`;
-        const editAction = canEdit ? `<button type="button" class="action__btn action__edit btn-edit-semester-result" title="Edit semester result" data-bs-toggle="offcanvas" data-bs-target="#semesterResultDrawer" data-result-id="${result.id}"><i class="bi bi-pencil-square"></i></button>` : '';
-        const resultAction = `${addAction}${editAction}`;
-        return `<tr><td>${index + 1}</td><td><span class="student-id-badge">${escapeHtml(student.registration_no || '—')}</span></td><td class="fw-bold text-dark">${escapeHtml(student.name)}</td><td class="text-muted">${escapeHtml(student.email || 'N/A')}</td><td>${status}</td><td class="text-center"><div class="action__buttons">${legacyActions}${resultAction}</div></td></tr>`;
+        const add = `<button type="button" class="action__btn ${result ? 'action__info' : 'action__add'} btn-add-semester-result" title="${result ? 'Semester result already added' : 'Add semester result'}" data-bs-toggle="offcanvas" data-bs-target="#semesterResultDrawer" data-student-id="${student.id}" data-enrollment-id="${enrollment.id}" data-existing-result="${result ? 'true' : 'false'}"><i class="bi ${result ? 'bi-journal-check' : 'bi-plus-circle'}"></i></button>`;
+        const view = result ? `<button type="button" class="action__btn action__info btn-view-semester-result" title="View semester result sheet" data-bs-toggle="modal" data-bs-target="#semesterResultSheetModal" data-result-id="${result.id}"><i class="bi bi-eye"></i></button>` : '';
+        const edit = canEdit ? `<button type="button" class="action__btn action__edit btn-edit-semester-result" title="Edit semester result" data-bs-toggle="offcanvas" data-bs-target="#semesterResultDrawer" data-result-id="${result.id}"><i class="bi bi-pencil-square"></i></button>` : '';
+        const history = `<button type="button" class="action__btn action__info btn-view-academic-history" title="View academic history" data-bs-toggle="modal" data-bs-target="#semesterResultSheetModal" data-student-id="${student.id}"><i class="bi bi-clock-history"></i></button>`;
+        const state = !result ? '<span class="result-list-empty">Not entered</span>' : `<div class="semester-result-list-state"><span class="semester-result-list-label">${result.published_at ? 'Published' : 'Draft saved'}</span><span class="semester-result-list-status is-${escapeAttribute(result.status.toLowerCase())}">${escapeHtml(result.status)}</span></div>`;
+        return `<tr><td>${index + 1}</td><td><span class="student-id-badge">${escapeHtml(student.registration_no || '—')}</span></td><td class="fw-bold text-dark">${escapeHtml(student.name)}</td><td class="text-muted">${escapeHtml(student.email || 'N/A')}</td><td><div class="result-list-semester"><strong>${escapeHtml(enrollment.semester)}</strong><small>${escapeHtml(enrollment.academic_year)}</small></div></td><td class="text-center result-list-number">${enrollment.course_count}</td><td class="text-center result-list-number">${result?.semester_percentage !== null && result ? `${format(result.semester_percentage, 2)}%` : '—'}</td><td class="text-center result-list-number">${result?.sgpa !== null && result ? format(result.sgpa, 2) : '—'}</td><td class="text-center result-list-number">${result?.cgpa !== null && result ? format(result.cgpa, 2) : '—'}</td><td>${state}</td><td class="text-center"><div class="action__buttons">${view}${add}${edit}${history}</div></td></tr>`;
     }
-
     function resetStudentViews() { initial.style.display = 'none'; loading.style.display = 'none'; table.style.display = 'none'; empty.style.display = 'none'; tbody.innerHTML = ''; }
+
     document.addEventListener('click', (event) => {
-        const view = event.target.closest('.btn-view-result'); if (view) fillLegacyView(view);
-        const add = event.target.closest('.btn-add-semester-result'); if (add && s) openCreateDrawer(add.dataset.studentId, add.dataset.existingResult === 'true');
-        const editSemester = event.target.closest('.btn-edit-semester-result'); if (editSemester && s) openEditDrawer(editSemester.dataset.resultId);
+        const add = event.target.closest('.btn-add-semester-result'); if (add && s) openCreateDrawer(add.dataset.studentId, add.dataset.enrollmentId, add.dataset.existingResult === 'true');
+        const edit = event.target.closest('.btn-edit-semester-result'); if (edit && s) openEditDrawer(edit.dataset.resultId);
+        const view = event.target.closest('.btn-view-semester-result'); if (view) loadResultSheet(view.dataset.resultId);
+        const history = event.target.closest('.btn-view-academic-history'); if (history) loadAcademicHistory(history.dataset.studentId);
+        const historySheet = event.target.closest('.btn-history-sheet'); if (historySheet) loadResultSheet(historySheet.dataset.resultId);
     });
-    function fillLegacyView(button) {
-        setText('view_student_name', button.dataset.studentName); setText('view_student_email', button.dataset.studentEmail); setText('view_student_phone', button.dataset.studentPhone);
-        const image = document.getElementById('view_student_image'); if (image) image.src = `/storage/images/${button.dataset.studentImage}`;
-        setText('view_percentage', `${button.dataset.percentage}%`); setText('view_gpa', button.dataset.gpa); setText('view_cgpa', button.dataset.cgpa); setText('view_grade', button.dataset.grade); setText('view_record_id', `#${button.dataset.resultId}`); setText('view_course_name', button.dataset.courseName); setText('view_course_code', button.dataset.courseCode ? `(${button.dataset.courseCode})` : ''); setText('view_section_name', button.dataset.sectionName);
-        const badge = document.getElementById('view_status_badge'); if (badge) { badge.textContent = button.dataset.status; badge.className = `status-badge ${button.dataset.status.toLowerCase() === 'pass' ? 'pass' : 'fail'}`; }
+
+    function showSheetLoading() { sheetModal.querySelector('#semester_sheet_loading').hidden = false; sheetModal.querySelector('#semester_sheet_content').hidden = true; }
+    async function loadResultSheet(resultId) {
+        showSheetLoading();
+        try { const response = await fetch(`/result/semester-result/${resultId}/sheet`, { headers: { Accept: 'application/json' } }); if (!response.ok) throw new Error('Sheet request failed'); renderSheet(await response.json()); }
+        catch (error) { console.error(error); pageNotice('Semester result sheet load nahi ho saka.', 'danger'); }
     }
-    async function openCreateDrawer(studentId, knownExisting) {
+    async function loadAcademicHistory(studentId) {
+        showSheetLoading();
+        try { const response = await fetch(`/result/student/${studentId}/academic-history`, { headers: { Accept: 'application/json' } }); if (!response.ok) throw new Error('History request failed'); const data = await response.json(); renderSheet({ ...data, sheet: null }); }
+        catch (error) { console.error(error); pageNotice('Academic history load nahi ho saki.', 'danger'); }
+    }
+    function renderSheet(data) {
+        const student = data.student; const sheet = data.sheet;
+        setText('sheet_student_name', student.name); setText('sheet_registration_no', student.registration_no); setText('sheet_department', student.department_name); setText('sheet_section', student.section_name);
+        const record = document.getElementById('semester_sheet_record'); record.hidden = !sheet;
+        if (sheet) {
+            setText('sheet_semester', sheet.semester); setText('sheet_academic_year', sheet.academic_year); setText('sheet_percentage', sheet.semester_percentage !== null ? `${format(sheet.semester_percentage, 2)}%` : '—'); setText('sheet_sgpa', optionalNumber(sheet.sgpa)); setText('sheet_cgpa', optionalNumber(sheet.cgpa)); setText('sheet_record_state', sheet.published_at ? 'Published' : 'Draft');
+            const status = document.getElementById('sheet_status'); status.textContent = sheet.status; status.className = `semester-status is-${sheet.status.toLowerCase()}`;
+            document.getElementById('sheet_course_rows').innerHTML = sheet.items.map((item) => `<tr><td><strong>${escapeHtml(item.course_name)}</strong><small>${escapeHtml(item.course_code)}</small></td><td>${format(item.credit_hours, 1)}</td><td>${component(item.attendance_obtained_marks, item.attendance_marks)}</td><td>${component(item.mid_obtained_marks, item.mid_marks)}</td><td>${component(item.final_obtained_marks, item.final_marks)}</td><td>${optionalNumber(item.obtained_marks)} / ${format(item.total_marks, 0)}</td><td>${item.percentage !== null ? `${format(item.percentage, 2)}%` : '—'}</td><td>${escapeHtml(item.grade || '—')}</td><td>${optionalNumber(item.grade_point)}</td><td><span class="course-status is-${escapeAttribute((item.status || 'Draft').toLowerCase())}">${escapeHtml(item.status || 'Draft')}</span></td></tr>`).join('');
+        }
+        document.getElementById('sheet_history_heading').textContent = sheet ? 'Academic history' : 'All semester records';
+        document.getElementById('sheet_history_count').textContent = `${data.history.length} ${data.history.length === 1 ? 'semester' : 'semesters'}`;
+        document.getElementById('sheet_history_rows').innerHTML = data.history.map((item) => `<tr><td><strong>${escapeHtml(item.semester)}</strong></td><td>${escapeHtml(item.academic_year)}</td><td>${optionalNumber(item.sgpa)}</td><td>${optionalNumber(item.cgpa)}</td><td>${historyState(item)}</td><td>${item.result_id ? `<button type="button" class="action__btn action__info btn-history-sheet" title="View semester sheet" data-result-id="${item.result_id}"><i class="bi bi-eye"></i></button>` : '—'}</td></tr>`).join('');
+        sheetModal.querySelector('#semester_sheet_loading').hidden = true; sheetModal.querySelector('#semester_sheet_content').hidden = false;
+    }
+    function component(value, maximum) { return value === null ? '—' : `${format(value, 2)} / ${format(maximum, 0)}`; }
+    function historyState(item) { if (item.status === 'Not entered') return '<span class="result-list-empty">Not entered</span>'; return `<span class="semester-result-list-status is-${escapeAttribute(item.status.toLowerCase())}">${escapeHtml(item.published_at ? 'Published · ' : '')}${escapeHtml(item.status)}</span>`; }
+
+    async function openCreateDrawer(studentId, preferredEnrollmentId, knownExisting) {
         resetDrawer(); s.loading.hidden = false; s.content.hidden = true; if (knownExisting) s.actionState.textContent = 'Result already added';
         try {
             const response = await fetch(`${drawer.dataset.studentEnrollmentsUrl}/${studentId}/semester-enrollments`, { headers: { Accept: 'application/json' } }); if (!response.ok) throw new Error('Student enrollments request failed');
             const data = await response.json(); s.student = data.student; s.studentId.value = data.student.id; s.studentName.textContent = data.student.name; s.registrationNo.textContent = data.student.registration_no || '—';
             s.enrollmentSelect.innerHTML = ''; data.enrollments.forEach((item) => { const label = item.existing_result ? ` — ${item.existing_result.published_at ? 'Published' : 'Draft saved'}` : ' — Ready for result'; s.enrollmentSelect.add(new Option(`${item.semester} · ${item.academic_year}${label}`, item.id)); });
-            const active = data.enrollments.find((item) => item.enrollment_status === 'active'); if (active) s.enrollmentSelect.value = active.id; else if (data.enrollments[0]) s.enrollmentSelect.value = data.enrollments[0].id;
+            const active = data.enrollments.find((item) => item.enrollment_status === 'active'); s.enrollmentSelect.value = preferredEnrollmentId || active?.id || data.enrollments[0]?.id || '';
             s.loading.hidden = true; s.content.hidden = false; if (s.enrollmentSelect.value) await loadEnrollment(s.enrollmentSelect.value); else showDrawerError('This student has no semester enrollment yet. Create an enrollment before adding a result.');
         } catch (error) { s.loading.hidden = true; showDrawerError('Student academic record load nahi ho saka. Please try again.'); console.error(error); }
     }
@@ -79,66 +132,51 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`${drawer.dataset.resultUrl}/${resultId}/data`, { headers: { Accept: 'application/json' } }); const data = await response.json();
             if (!response.ok) { s.loading.hidden = true; s.content.hidden = false; showDrawerError(data.message || 'Result edit ke liye available nahi hai.'); if (response.status === 403) setDrawerLocked(true, 'Published result edits are disabled by academic policy.'); return; }
-            s.student = data.student; s.enrollment = data.enrollment; s.courses = data.courses; s.priorItems = data.prior_result_items || []; s.studentId.value = data.student.id; s.enrollmentId.value = data.enrollment.id;
-            s.studentName.textContent = data.student.name; s.registrationNo.textContent = data.student.registration_no || '—'; setEnrollmentInfo(data.enrollment); s.enrollmentSelect.innerHTML = ''; s.enrollmentSelect.add(new Option(`${data.enrollment.semester} · ${data.enrollment.academic_year}`, data.enrollment.id)); s.enrollmentSelect.disabled = true;
-            renderCourses(); Object.entries(data.result.items || {}).forEach(([courseId, marks]) => ['attendance', 'mid', 'final'].forEach((component) => { const input = s.coursesBody.querySelector(`[data-course-id="${courseId}"] [data-component="${component}_obtained_marks"]`); if (input && marks[`${component}_obtained_marks`] !== null) input.value = marks[`${component}_obtained_marks`]; }));
+            s.student = data.student; s.enrollment = data.enrollment; s.courses = data.courses; s.priorItems = data.prior_result_items || []; s.studentId.value = data.student.id; s.enrollmentId.value = data.enrollment.id; s.studentName.textContent = data.student.name; s.registrationNo.textContent = data.student.registration_no || '—'; setEnrollmentInfo(data.enrollment);
+            s.enrollmentSelect.innerHTML = ''; s.enrollmentSelect.add(new Option(`${data.enrollment.semester} · ${data.enrollment.academic_year}`, data.enrollment.id)); s.enrollmentSelect.disabled = true; renderCourses();
+            Object.entries(data.result.items || {}).forEach(([courseId, marks]) => ['attendance', 'mid', 'final'].forEach((part) => { const input = s.coursesBody.querySelector(`[data-course-id="${courseId}"] [data-component="${part}_obtained_marks"]`); if (input && marks[`${part}_obtained_marks`] !== null) input.value = marks[`${part}_obtained_marks`]; }));
             s.savedSummary.hidden = false; s.savedStatus.textContent = data.result.published_at ? 'Published semester result' : 'Saved draft result'; s.savedNote.textContent = data.result.published_at ? `Saved: ${format(data.result.semester_percentage, 2)}% · SGPA ${format(data.result.sgpa, 2)} · CGPA ${format(data.result.cgpa, 2)}` : 'Saved component marks are loaded below. Complete or revise them before publishing.';
             s.actionState.textContent = data.result.published_at ? 'Editing published result' : 'Editing draft'; updateSummary(); s.loading.hidden = true; s.content.hidden = false;
         } catch (error) { s.loading.hidden = true; s.content.hidden = false; showDrawerError('Result edit data load nahi ho saka. Please try again.'); console.error(error); }
     }
     s?.enrollmentSelect.addEventListener('change', () => { if (s.mode === 'create') loadEnrollment(s.enrollmentSelect.value); });
-    async function loadEnrollment(enrollmentId) {
-        clearErrors(); s.coursesBody.innerHTML = ''; s.enrollmentId.value = enrollmentId; setDrawerLocked(false);
-        try {
-            const response = await fetch(`${drawer.dataset.enrollmentUrl}/${enrollmentId}/data`, { headers: { Accept: 'application/json' } }); if (!response.ok) throw new Error('Enrollment courses request failed');
-            const data = await response.json(); s.enrollment = data.enrollment; s.courses = data.courses; s.priorItems = data.prior_result_items || []; setEnrollmentInfo(data.enrollment); renderCourses(); updateSummary();
-            if (data.enrollment.existing_result) setDrawerLocked(true, data.enrollment.existing_result.published_at ? 'This semester result is already published.' : 'A draft already exists for this semester. Use the edit button in the student list.');
-        } catch (error) { showDrawerError('Enrollment courses load nahi ho sakay. Please select the semester again.'); console.error(error); }
+    async function loadEnrollment(id) {
+        clearErrors(); s.coursesBody.innerHTML = ''; s.enrollmentId.value = id; setDrawerLocked(false);
+        try { const response = await fetch(`${drawer.dataset.enrollmentUrl}/${id}/data`, { headers: { Accept: 'application/json' } }); if (!response.ok) throw new Error('Enrollment request failed'); const data = await response.json(); s.enrollment = data.enrollment; s.courses = data.courses; s.priorItems = data.prior_result_items || []; setEnrollmentInfo(data.enrollment); renderCourses(); updateSummary(); if (data.enrollment.existing_result) setDrawerLocked(true, data.enrollment.existing_result.published_at ? 'This semester result is already published.' : 'A draft already exists for this semester. Use the edit button in the student list.'); }
+        catch (error) { showDrawerError('Enrollment courses load nahi ho sakay. Please select the semester again.'); console.error(error); }
     }
-    function setEnrollmentInfo(enrollment) { s.department.textContent = enrollment.department_name || '—'; s.section.textContent = enrollment.section_name || '—'; s.academicYear.textContent = enrollment.academic_year || '—'; }
+    function setEnrollmentInfo(data) { s.department.textContent = data.department_name || '—'; s.section.textContent = data.section_name || '—'; s.academicYear.textContent = data.academic_year || '—'; }
     function renderCourses() {
         s.courseCount.textContent = `${s.courses.length} ${s.courses.length === 1 ? 'course' : 'courses'}`;
-        s.coursesBody.innerHTML = s.courses.map((course, index) => `<tr data-course-id="${course.student_enrollment_course_id}"><td>${index + 1}</td><td><strong>${escapeHtml(course.course_name)}</strong></td><td>${escapeHtml(course.course_code)}</td><td>${format(course.credit_hours, 1)}</td>${componentField(course, 'attendance', 'Attendance')}${componentField(course, 'mid', 'Midterm')}${componentField(course, 'final', 'Final')}<td class="result-row-obtained">—</td><td class="result-row-percentage">—</td><td class="result-row-grade">—</td><td class="result-row-gp">—</td><td class="result-row-status"><span class="course-status is-draft">Draft</span></td></tr>`).join('');
+        s.coursesBody.innerHTML = s.courses.map((course, i) => `<tr data-course-id="${course.student_enrollment_course_id}"><td>${i + 1}</td><td><strong>${escapeHtml(course.course_name)}</strong></td><td>${escapeHtml(course.course_code)}</td><td>${format(course.credit_hours, 1)}</td>${markField(course, 'attendance', 'Attendance')}${markField(course, 'mid', 'Midterm')}${markField(course, 'final', 'Final')}<td class="result-row-obtained">—</td><td class="result-row-percentage">—</td><td class="result-row-grade">—</td><td class="result-row-gp">—</td><td class="result-row-status"><span class="course-status is-draft">Draft</span></td></tr>`).join('');
         s.coursesBody.querySelectorAll('.assessment-mark-input').forEach((input) => input.addEventListener('input', updateSummary));
     }
-    function componentField(course, component, label) { const maximum = Number(course[`${component}_marks`]); const disabled = maximum === 0 ? 'disabled value="0"' : ''; return `<td><div class="assessment-mark-entry"><small>${label} / ${format(maximum, 0)}</small><input class="form-control assessment-mark-input" type="number" inputmode="decimal" min="0" max="${maximum}" step="0.01" ${disabled} aria-label="${label} marks for ${escapeAttribute(course.course_name)}" data-component="${component}_obtained_marks"></div></td>`; }
+    function markField(course, part, label) { const max = Number(course[`${part}_marks`]); return `<td><div class="assessment-mark-entry"><small>${label} / ${format(max, 0)}</small><input class="form-control assessment-mark-input" type="number" min="0" max="${max}" step="0.01" ${max === 0 ? 'disabled value="0"' : ''} data-component="${part}_obtained_marks"></div></td>`; }
     function updateSummary() {
-        if (!s?.courses.length) return;
-        let earned = 0, total = 0, credits = 0, points = 0, complete = true, failed = false; const items = [];
-        s.courses.forEach((course) => {
-            const row = s.coursesBody.querySelector(`[data-course-id="${course.student_enrollment_course_id}"]`); const marks = {}; let ready = true; total += Number(course.total_marks);
-            ['attendance', 'mid', 'final'].forEach((component) => { const maximum = Number(course[`${component}_marks`]); const input = row.querySelector(`[data-component="${component}_obtained_marks"]`); const raw = input.value.trim(); input.classList.remove('is-invalid'); if (!maximum) { marks[component] = 0; return; } if (raw === '' || Number(raw) < 0 || Number(raw) > maximum || !Number.isFinite(Number(raw))) { ready = false; if (raw !== '') input.classList.add('is-invalid'); return; } marks[component] = Number(raw); });
-            if (!ready) { complete = false; preview(row, null); return; }
-            const obtained = marks.attendance + marks.mid + marks.final; const outcome = outcomeFor(obtained, Number(course.total_marks), marks.final, Number(course.final_marks)); earned += obtained; credits += Number(course.credit_hours); points += outcome.point * Number(course.credit_hours); failed ||= outcome.status === 'Fail'; items.push({ course_id: course.course_id, course_code: course.course_code, credit_hours: Number(course.credit_hours), grade_point: outcome.point, attempted_at: new Date().toISOString() }); preview(row, outcome);
-        });
-        s.total.textContent = complete ? `${format(earned, 2)} / ${format(total, 0)}` : `— / ${format(total, 0)}`;
-        if (!complete) { setSummaryStatus('Draft'); s.percentage.textContent = s.sgpa.textContent = s.cgpa.textContent = '—'; return; }
-        s.percentage.textContent = `${format((earned / total) * 100, 2)}%`; s.sgpa.textContent = format(points / credits, 2); s.cgpa.textContent = calculateCgpa([...s.priorItems, ...items]); setSummaryStatus(failed ? 'Fail' : 'Pass');
+        if (!s?.courses.length) return; let earned = 0, total = 0, credits = 0, points = 0, complete = true, fail = false; const current = [];
+        s.courses.forEach((course) => { const row = s.coursesBody.querySelector(`[data-course-id="${course.student_enrollment_course_id}"]`); const marks = {}; let ready = true; total += Number(course.total_marks); ['attendance', 'mid', 'final'].forEach((part) => { const max = Number(course[`${part}_marks`]); const input = row.querySelector(`[data-component="${part}_obtained_marks"]`); const value = input.value.trim(); input.classList.remove('is-invalid'); if (!max) { marks[part] = 0; return; } if (value === '' || Number(value) < 0 || Number(value) > max) { ready = false; if (value !== '') input.classList.add('is-invalid'); return; } marks[part] = Number(value); }); if (!ready) { complete = false; preview(row, null); return; } const obtained = marks.attendance + marks.mid + marks.final; const out = outcome(obtained, Number(course.total_marks), marks.final, Number(course.final_marks)); earned += obtained; credits += Number(course.credit_hours); points += out.point * Number(course.credit_hours); fail ||= out.status === 'Fail'; current.push({ course_id: course.course_id, course_code: course.course_code, credit_hours: course.credit_hours, grade_point: out.point, attempted_at: new Date().toISOString() }); preview(row, out); });
+        s.total.textContent = complete ? `${format(earned, 2)} / ${format(total, 0)}` : `— / ${format(total, 0)}`; if (!complete) { setSummaryStatus('Draft'); s.percentage.textContent = s.sgpa.textContent = s.cgpa.textContent = '—'; return; } s.percentage.textContent = `${format((earned / total) * 100, 2)}%`; s.sgpa.textContent = format(points / credits, 2); s.cgpa.textContent = cgpa([...s.priorItems, ...current]); setSummaryStatus(fail ? 'Fail' : 'Pass');
     }
-    function outcomeFor(obtained, total, final, finalMaximum) { const percent = (obtained / total) * 100; const grade = s.gradeScale.find((item) => percent >= Number(item.minimum_percentage)); const failFinal = s.finalMinimumEnabled && finalMaximum > 0 && (final / finalMaximum) * 100 < s.finalMinimumPercentage; return failFinal ? { obtained, percent, grade: 'F', point: 0, status: 'Fail' } : { obtained, percent, grade: grade.grade, point: Number(grade.grade_point), status: grade.status }; }
-    function preview(row, data) { const [obtained, percent, grade, point, status] = ['.result-row-obtained', '.result-row-percentage', '.result-row-grade', '.result-row-gp', '.result-row-status'].map((selector) => row.querySelector(selector)); if (!data) { obtained.textContent = percent.textContent = grade.textContent = point.textContent = '—'; status.innerHTML = '<span class="course-status is-draft">Draft</span>'; return; } obtained.textContent = format(data.obtained, 2); percent.textContent = `${format(data.percent, 2)}%`; grade.textContent = data.grade; point.textContent = format(data.point, 2); status.innerHTML = `<span class="course-status is-${data.status.toLowerCase()}">${data.status}</span>`; }
-    function calculateCgpa(items) { const attempts = new Map(); [...items].sort((a, b) => new Date(a.attempted_at || 0) - new Date(b.attempted_at || 0)).forEach((item) => attempts.set(item.course_id ? `id:${item.course_id}` : `code:${item.course_code}`, item)); let credits = 0, points = 0; attempts.forEach((item) => { credits += Number(item.credit_hours); points += Number(item.grade_point) * Number(item.credit_hours); }); return credits ? format(points / credits, 2) : '—'; }
+    function outcome(obtained, total, final, finalMax) { const percentage = obtained / total * 100; const grade = s.gradeScale.find((item) => percentage >= Number(item.minimum_percentage)); const finalFail = s.finalMinimumEnabled && finalMax > 0 && final / finalMax * 100 < s.finalMinimumPercentage; return finalFail ? { obtained, percentage, grade: 'F', point: 0, status: 'Fail' } : { obtained, percentage, grade: grade.grade, point: Number(grade.grade_point), status: grade.status }; }
+    function preview(row, data) { const cells = ['.result-row-obtained', '.result-row-percentage', '.result-row-grade', '.result-row-gp', '.result-row-status'].map((x) => row.querySelector(x)); if (!data) { cells.slice(0, 4).forEach((cell) => cell.textContent = '—'); cells[4].innerHTML = '<span class="course-status is-draft">Draft</span>'; return; } cells[0].textContent = format(data.obtained, 2); cells[1].textContent = `${format(data.percentage, 2)}%`; cells[2].textContent = data.grade; cells[3].textContent = format(data.point, 2); cells[4].innerHTML = `<span class="course-status is-${data.status.toLowerCase()}">${data.status}</span>`; }
+    function cgpa(items) { const latest = new Map(); [...items].sort((a, b) => new Date(a.attempted_at || 0) - new Date(b.attempted_at || 0)).forEach((item) => latest.set(item.course_id ? `id:${item.course_id}` : `code:${item.course_code}`, item)); let credits = 0, points = 0; latest.forEach((item) => { credits += Number(item.credit_hours); points += Number(item.grade_point) * Number(item.credit_hours); }); return credits ? format(points / credits, 2) : '—'; }
     function setSummaryStatus(value) { s.status.textContent = value; s.status.className = `semester-status is-${value.toLowerCase()}`; if (s.mode === 'create') s.actionState.textContent = value === 'Draft' ? 'Draft' : 'Ready to publish'; }
-    function setDrawerLocked(locked, message = '') { s.isLocked = locked; s.locked.hidden = !locked; s.locked.innerHTML = locked ? `<i class="bi bi-shield-check"></i><div><strong>Result already added</strong><span>${escapeHtml(message)}</span></div>` : ''; s.form.querySelectorAll('[data-result-action]').forEach((button) => { button.disabled = locked; }); s.coursesBody.querySelectorAll('.assessment-mark-input').forEach((input) => { input.disabled = locked; }); }
+    function setDrawerLocked(locked, message = '') { s.isLocked = locked; s.locked.hidden = !locked; s.locked.innerHTML = locked ? `<i class="bi bi-shield-check"></i><div><strong>Result already added</strong><span>${escapeHtml(message)}</span></div>` : ''; s.form.querySelectorAll('[data-result-action]').forEach((button) => button.disabled = locked); s.coursesBody.querySelectorAll('.assessment-mark-input').forEach((input) => input.disabled = locked); }
     s?.form.addEventListener('submit', async (event) => {
-        event.preventDefault(); const action = event.submitter?.dataset.resultAction; if (!action || !s.enrollment?.id || s.isLocked) return;
-        clearErrors(); const buttons = s.form.querySelectorAll('[data-result-action]'); buttons.forEach((button) => { button.disabled = true; });
-        const courses = s.courses.map((course) => { const row = s.coursesBody.querySelector(`[data-course-id="${course.student_enrollment_course_id}"]`); const mark = (component) => { const value = row.querySelector(`[data-component="${component}_obtained_marks"]`).value.trim(); return value === '' ? null : Number(value); }; return { student_enrollment_course_id: course.student_enrollment_course_id, attendance_obtained_marks: mark('attendance'), mid_obtained_marks: mark('mid'), final_obtained_marks: mark('final') }; });
-        try {
-            const url = s.mode === 'edit' ? `${drawer.dataset.resultUrl}/${s.resultId}` : drawer.dataset.storeUrl; const response = await fetch(url, { method: s.mode === 'edit' ? 'PUT' : 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': s.form.querySelector('[name="_token"]').value }, body: JSON.stringify({ student_id: Number(s.studentId.value), enrollment_id: Number(s.enrollmentId.value), action, courses }) }); const data = await response.json();
-            if (!response.ok) { const duplicate = data.errors?.result?.find((message) => message.toLowerCase().includes('already exists')); if (duplicate) setDrawerLocked(true, duplicate); displayErrors(data.errors || { result: data.message || 'Result save nahi ho saka.' }); return; }
-            bootstrap.Offcanvas.getOrCreateInstance(drawer).hide(); showPageNotice(data.message, 'success'); if (currentSectionId) loadStudents(currentSectionId);
-        } catch (error) { console.error(error); showDrawerError('Network issue ki wajah se result save nahi ho saka. Please try again.'); }
-        finally { if (!s.isLocked) buttons.forEach((button) => { button.disabled = false; }); }
+        event.preventDefault(); const action = event.submitter?.dataset.resultAction; if (!action || !s.enrollment?.id || s.isLocked) return; clearErrors(); const buttons = s.form.querySelectorAll('[data-result-action]'); buttons.forEach((button) => button.disabled = true);
+        const courses = s.courses.map((course) => { const row = s.coursesBody.querySelector(`[data-course-id="${course.student_enrollment_course_id}"]`); const mark = (part) => { const value = row.querySelector(`[data-component="${part}_obtained_marks"]`).value.trim(); return value === '' ? null : Number(value); }; return { student_enrollment_course_id: course.student_enrollment_course_id, attendance_obtained_marks: mark('attendance'), mid_obtained_marks: mark('mid'), final_obtained_marks: mark('final') }; });
+        try { const url = s.mode === 'edit' ? `${drawer.dataset.resultUrl}/${s.resultId}` : drawer.dataset.storeUrl; const response = await fetch(url, { method: s.mode === 'edit' ? 'PUT' : 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': s.form.querySelector('[name="_token"]').value }, body: JSON.stringify({ student_id: Number(s.studentId.value), enrollment_id: Number(s.enrollmentId.value), action, courses }) }); const data = await response.json(); if (!response.ok) { displayErrors(data.errors || { result: data.message || 'Result save nahi ho saka.' }); return; } bootstrap.Offcanvas.getOrCreateInstance(drawer).hide(); pageNotice(data.message, 'success'); loadStudents(); }
+        catch (error) { console.error(error); showDrawerError('Network issue ki wajah se result save nahi ho saka. Please try again.'); } finally { if (!s.isLocked) buttons.forEach((button) => button.disabled = false); }
     });
-    function resetDrawer() { clearErrors(); s.form.reset(); s.mode = 'create'; s.resultId = null; s.isLocked = false; s.title.textContent = 'Add Semester Result'; s.enrollmentSelect.disabled = false; s.enrollmentId.value = ''; s.courses = []; s.priorItems = []; s.coursesBody.innerHTML = ''; s.courseCount.textContent = '0 courses'; s.savedSummary.hidden = true; s.savedStatus.textContent = '—'; s.savedNote.textContent = 'Existing calculated result is loaded below.'; ['department', 'section', 'academicYear'].forEach((key) => { s[key].textContent = '—'; }); s.total.textContent = '— / —'; s.percentage.textContent = s.sgpa.textContent = s.cgpa.textContent = '—'; setSummaryStatus('Draft'); setDrawerLocked(false); setButtonLabels(); }
+    function resetDrawer() { clearErrors(); s.form.reset(); s.mode = 'create'; s.resultId = null; s.isLocked = false; s.title.textContent = 'Add Semester Result'; s.enrollmentSelect.disabled = false; s.enrollmentId.value = ''; s.courses = []; s.priorItems = []; s.coursesBody.innerHTML = ''; s.courseCount.textContent = '0 courses'; s.savedSummary.hidden = true; ['department', 'section', 'academicYear'].forEach((key) => s[key].textContent = '—'); s.total.textContent = '— / —'; s.percentage.textContent = s.sgpa.textContent = s.cgpa.textContent = '—'; setSummaryStatus('Draft'); setDrawerLocked(false); setButtonLabels(); }
     function setButtonLabels() { if (s.draftButton) s.draftButton.innerHTML = s.mode === 'edit' ? '<i class="bi bi-save2"></i> Update Draft' : '<i class="bi bi-save2"></i> Save Draft'; if (s.publishButton) s.publishButton.innerHTML = s.mode === 'edit' ? '<i class="bi bi-check2-circle"></i> Update &amp; Publish' : '<i class="bi bi-check2-circle"></i> Save &amp; Publish'; }
     function displayErrors(errors) { const messages = Object.values(errors).flat().map(escapeHtml); s.errors.innerHTML = `<i class="bi bi-exclamation-circle-fill"></i><div><strong>Please review the result entry.</strong><ul>${messages.map((message) => `<li>${message}</li>`).join('')}</ul></div>`; s.errors.hidden = false; }
     function showDrawerError(message) { displayErrors({ result: message }); }
     function clearErrors() { if (s) { s.errors.hidden = true; s.errors.innerHTML = ''; } }
-    function showPageNotice(message, type) { document.querySelector('.results-page .results-alert.dynamic-notice')?.remove(); const notice = document.createElement('div'); notice.className = `alert alert-${type} results-alert dynamic-notice`; notice.setAttribute('role', 'status'); notice.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'exclamation-circle-fill'} me-2"></i>${escapeHtml(message)}`; document.querySelector('.results-main-card-body')?.prepend(notice); window.setTimeout(() => notice.remove(), 4500); }
-    function setText(id, value) { const element = document.getElementById(id); if (element) element.textContent = value || '—'; }
+    function pageNotice(message, type) { document.querySelector('.results-page .results-alert.dynamic-notice')?.remove(); const notice = document.createElement('div'); notice.className = `alert alert-${type} results-alert dynamic-notice`; notice.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'exclamation-circle-fill'} me-2"></i>${escapeHtml(message)}`; document.querySelector('.results-main-card-body')?.prepend(notice); window.setTimeout(() => notice.remove(), 4500); }
+    function setText(id, value) { const el = document.getElementById(id); if (el) el.textContent = value || '—'; }
+    function optionalNumber(value) { return value === null || value === undefined ? '—' : format(value, 2); }
     function format(value, decimals) { return Number(value).toFixed(decimals); }
-    function escapeHtml(value) { const element = document.createElement('div'); element.textContent = value ?? ''; return element.innerHTML; }
+    function escapeHtml(value) { const el = document.createElement('div'); el.textContent = value ?? ''; return el.innerHTML; }
     function escapeAttribute(value) { return escapeHtml(value).replace(/"/g, '&quot;'); }
 });
