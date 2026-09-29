@@ -77,11 +77,15 @@ class CourseController extends Controller
 
     private function validateAssessmentScheme(array $validated): void
     {
-        $assessmentTotal = $validated['attendance_marks'] + $validated['mid_marks'] + $validated['final_marks'];
+        $attendanceMarks = (int) $validated['attendance_marks'];
+        $midMarks = (int) $validated['mid_marks'];
+        $finalMarks = (int) $validated['final_marks'];
+        $totalMarks = (int) $validated['total_marks'];
+        $assessmentTotal = $attendanceMarks + $midMarks + $finalMarks;
 
-        if ($assessmentTotal !== $validated['total_marks']) {
+        if ($assessmentTotal !== $totalMarks) {
             throw ValidationException::withMessages([
-                'assessment_scheme' => "Attendance, Midterm and Final marks must equal the course total ({$validated['total_marks']}). Current assessment total is {$assessmentTotal}.",
+                'assessment_scheme' => "Attendance, Midterm and Final marks must equal the course total ({$totalMarks}). Current assessment total is {$assessmentTotal}.",
             ]);
         }
     }

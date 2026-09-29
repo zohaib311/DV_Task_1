@@ -36,7 +36,9 @@ class AssessmentBreakdownTest extends TestCase
             ->assertSessionHasErrors('assessment_scheme');
 
         $baseCourse['final_marks'] = 60;
-        $this->actingAs($user)->post(route('addCourse'), $baseCourse)
+        // HTML number inputs are submitted as strings, so this mirrors the real form request.
+        $browserPayload = array_map('strval', $baseCourse);
+        $this->actingAs($user)->post(route('addCourse'), $browserPayload)
             ->assertRedirect(route('allCourses'));
 
         $this->assertDatabaseHas('courses', [
