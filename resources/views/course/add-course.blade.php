@@ -41,7 +41,7 @@
                         <div class="assessment-scheme-heading">
                             <div>
                                 <span>Assessment scheme</span>
-                                <small>Attendance, Midterm aur Final ka total course marks ke barabar hona chahiye.</small>
+                                <small>The combined Attendance, Midterm, and Final marks must equal the course total.</small>
                             </div>
                             <strong id="assessment_scheme_total">0 / {{ old('total_marks', config('academic.marks.default_total')) }}</strong>
                         </div>

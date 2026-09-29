@@ -28,7 +28,7 @@
 
             <div id="semester_result_loading" class="semester-result-loading">
                 <div class="spinner-border spinner-border-sm" role="status"></div>
-                <span>Academic record load ho raha hai…</span>
+                <span>Loading academic record…</span>
             </div>
 
             <div id="semester_result_content" hidden>

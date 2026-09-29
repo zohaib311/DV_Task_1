@@ -129,7 +129,7 @@
                         <div class="spinner-border" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
-                        <p class="mt-2 text-muted mb-0 fw-medium">Students load ho rahy hain...</p>
+                        <p class="mt-2 text-muted mb-0 fw-medium">Loading student records…</p>
                     </div>
 
                     <div id="students_table_wrapper" style="display: none;">
@@ -272,7 +272,7 @@
                 <div class="modal-body">
                     <div id="semester_sheet_loading" class="semester-sheet-loading">
                         <div class="spinner-border spinner-border-sm" role="status"></div>
-                        <span>Academic record load ho raha hai…</span>
+                        <span>Loading academic record…</span>
                     </div>
                     <div id="semester_sheet_content" hidden>
                         <section class="semester-sheet-student">

@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`/result/get-sections/${department.value}`); const sections = await response.json();
             if (sections.length) { section.disabled = false; sections.forEach((item) => section.add(new Option(item.name, item.id))); }
             else section.innerHTML = '<option value="">No Sections in this Department</option>';
-        } catch (error) { console.error(error); pageNotice('Sections load nahi ho sakin. Please try again.', 'danger'); }
+        } catch (error) { console.error(error); pageNotice('Unable to load sections. Please try again.', 'danger'); }
     });
     section?.addEventListener('change', async () => {
         currentSectionId = section.value || null; resetAcademicFilters(); resetStudentViews();
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json(); filterOptions = data.enrollments || [];
             year.innerHTML = '<option value="">All Academic Years</option>'; (data.academic_years || []).forEach((value) => year.add(new Option(value, value)));
             year.disabled = semester.disabled = resultStatus.disabled = false; populateSemesters();
-        } catch (error) { console.error(error); pageNotice('Academic filters load nahi ho sakay.', 'danger'); }
+        } catch (error) { console.error(error); pageNotice('Unable to load academic filters. Please try again.', 'danger'); }
     }
     function resetAcademicFilters() {
         filterOptions = []; year.innerHTML = '<option value="">All Academic Years</option>'; semester.innerHTML = '<option value="">All Semesters</option>'; resultStatus.value = 'all';
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const rows = await response.json(); loading.style.display = 'none';
             if (!rows.length) { empty.querySelector('strong').textContent = 'No academic records found'; empty.querySelector('span').textContent = 'Try another semester, academic year, or result status.'; empty.style.display = 'flex'; return; }
             tbody.innerHTML = rows.map(renderStudentRow).join(''); table.style.display = 'block';
-        } catch (error) { loading.style.display = 'none'; console.error(error); pageNotice('Student results load nahi ho sakay. Please try again.', 'danger'); }
+        } catch (error) { loading.style.display = 'none'; console.error(error); pageNotice('Unable to load student results. Please try again.', 'danger'); }
     }
     function renderStudentRow(student, index) {
         const enrollment = student.listed_enrollment; const result = enrollment.semester_result;
@@ -93,12 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadResultSheet(resultId) {
         showSheetLoading();
         try { const response = await fetch(`/result/semester-result/${resultId}/sheet`, { headers: { Accept: 'application/json' } }); if (!response.ok) throw new Error('Sheet request failed'); renderSheet(await response.json()); }
-        catch (error) { console.error(error); pageNotice('Semester result sheet load nahi ho saka.', 'danger'); }
+        catch (error) { console.error(error); pageNotice('Unable to load the semester result sheet.', 'danger'); }
     }
     async function loadAcademicHistory(studentId) {
         showSheetLoading();
         try { const response = await fetch(`/result/student/${studentId}/academic-history`, { headers: { Accept: 'application/json' } }); if (!response.ok) throw new Error('History request failed'); const data = await response.json(); renderSheet({ ...data, sheet: null }); }
-        catch (error) { console.error(error); pageNotice('Academic history load nahi ho saki.', 'danger'); }
+        catch (error) { console.error(error); pageNotice('Unable to load academic history.', 'danger'); }
     }
     function renderSheet(data) {
         const student = data.student; const sheet = data.sheet;
@@ -125,25 +125,25 @@ document.addEventListener('DOMContentLoaded', () => {
             s.enrollmentSelect.innerHTML = ''; data.enrollments.forEach((item) => { const label = item.existing_result ? ` — ${item.existing_result.published_at ? 'Published' : 'Draft saved'}` : ' — Ready for result'; s.enrollmentSelect.add(new Option(`${item.semester} · ${item.academic_year}${label}`, item.id)); });
             const active = data.enrollments.find((item) => item.enrollment_status === 'active'); s.enrollmentSelect.value = preferredEnrollmentId || active?.id || data.enrollments[0]?.id || '';
             s.loading.hidden = true; s.content.hidden = false; if (s.enrollmentSelect.value) await loadEnrollment(s.enrollmentSelect.value); else showDrawerError('This student has no semester enrollment yet. Create an enrollment before adding a result.');
-        } catch (error) { s.loading.hidden = true; showDrawerError('Student academic record load nahi ho saka. Please try again.'); console.error(error); }
+        } catch (error) { s.loading.hidden = true; showDrawerError('Unable to load the student academic record. Please try again.'); console.error(error); }
     }
     async function openEditDrawer(resultId) {
         resetDrawer(); s.mode = 'edit'; s.resultId = Number(resultId); s.title.textContent = 'Edit Semester Result'; s.actionState.textContent = 'Loading edit'; setButtonLabels(); s.loading.hidden = false; s.content.hidden = true;
         try {
             const response = await fetch(`${drawer.dataset.resultUrl}/${resultId}/data`, { headers: { Accept: 'application/json' } }); const data = await response.json();
-            if (!response.ok) { s.loading.hidden = true; s.content.hidden = false; showDrawerError(data.message || 'Result edit ke liye available nahi hai.'); if (response.status === 403) setDrawerLocked(true, 'Published result edits are disabled by academic policy.'); return; }
+            if (!response.ok) { s.loading.hidden = true; s.content.hidden = false; showDrawerError(data.message || 'This result is not available for editing.'); if (response.status === 403) setDrawerLocked(true, 'Published result edits are disabled by academic policy.'); return; }
             s.student = data.student; s.enrollment = data.enrollment; s.courses = data.courses; s.priorItems = data.prior_result_items || []; s.studentId.value = data.student.id; s.enrollmentId.value = data.enrollment.id; s.studentName.textContent = data.student.name; s.registrationNo.textContent = data.student.registration_no || '—'; setEnrollmentInfo(data.enrollment);
             s.enrollmentSelect.innerHTML = ''; s.enrollmentSelect.add(new Option(`${data.enrollment.semester} · ${data.enrollment.academic_year}`, data.enrollment.id)); s.enrollmentSelect.disabled = true; renderCourses();
             Object.entries(data.result.items || {}).forEach(([courseId, marks]) => ['attendance', 'mid', 'final'].forEach((part) => { const input = s.coursesBody.querySelector(`[data-course-id="${courseId}"] [data-component="${part}_obtained_marks"]`); if (input && marks[`${part}_obtained_marks`] !== null) input.value = marks[`${part}_obtained_marks`]; }));
             s.savedSummary.hidden = false; s.savedStatus.textContent = data.result.published_at ? 'Published semester result' : 'Saved draft result'; s.savedNote.textContent = data.result.published_at ? `Saved: ${format(data.result.semester_percentage, 2)}% · SGPA ${format(data.result.sgpa, 2)} · CGPA ${format(data.result.cgpa, 2)}` : 'Saved component marks are loaded below. Complete or revise them before publishing.';
             s.actionState.textContent = data.result.published_at ? 'Editing published result' : 'Editing draft'; updateSummary(); s.loading.hidden = true; s.content.hidden = false;
-        } catch (error) { s.loading.hidden = true; s.content.hidden = false; showDrawerError('Result edit data load nahi ho saka. Please try again.'); console.error(error); }
+        } catch (error) { s.loading.hidden = true; s.content.hidden = false; showDrawerError('Unable to load result details for editing. Please try again.'); console.error(error); }
     }
     s?.enrollmentSelect.addEventListener('change', () => { if (s.mode === 'create') loadEnrollment(s.enrollmentSelect.value); });
     async function loadEnrollment(id) {
         clearErrors(); s.coursesBody.innerHTML = ''; s.enrollmentId.value = id; setDrawerLocked(false);
         try { const response = await fetch(`${drawer.dataset.enrollmentUrl}/${id}/data`, { headers: { Accept: 'application/json' } }); if (!response.ok) throw new Error('Enrollment request failed'); const data = await response.json(); s.enrollment = data.enrollment; s.courses = data.courses; s.priorItems = data.prior_result_items || []; setEnrollmentInfo(data.enrollment); renderCourses(); updateSummary(); if (data.enrollment.existing_result) setDrawerLocked(true, data.enrollment.existing_result.published_at ? 'This semester result is already published.' : 'A draft already exists for this semester. Use the edit button in the student list.'); }
-        catch (error) { showDrawerError('Enrollment courses load nahi ho sakay. Please select the semester again.'); console.error(error); }
+        catch (error) { showDrawerError('Unable to load enrollment courses. Please select the semester again.'); console.error(error); }
     }
     function setEnrollmentInfo(data) { s.department.textContent = data.department_name || '—'; s.section.textContent = data.section_name || '—'; s.academicYear.textContent = data.academic_year || '—'; }
     function renderCourses() {
@@ -165,8 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
     s?.form.addEventListener('submit', async (event) => {
         event.preventDefault(); const action = event.submitter?.dataset.resultAction; if (!action || !s.enrollment?.id || s.isLocked) return; clearErrors(); const buttons = s.form.querySelectorAll('[data-result-action]'); buttons.forEach((button) => button.disabled = true);
         const courses = s.courses.map((course) => { const row = s.coursesBody.querySelector(`[data-course-id="${course.student_enrollment_course_id}"]`); const mark = (part) => { const value = row.querySelector(`[data-component="${part}_obtained_marks"]`).value.trim(); return value === '' ? null : Number(value); }; return { student_enrollment_course_id: course.student_enrollment_course_id, attendance_obtained_marks: mark('attendance'), mid_obtained_marks: mark('mid'), final_obtained_marks: mark('final') }; });
-        try { const url = s.mode === 'edit' ? `${drawer.dataset.resultUrl}/${s.resultId}` : drawer.dataset.storeUrl; const response = await fetch(url, { method: s.mode === 'edit' ? 'PUT' : 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': s.form.querySelector('[name="_token"]').value }, body: JSON.stringify({ student_id: Number(s.studentId.value), enrollment_id: Number(s.enrollmentId.value), action, courses }) }); const data = await response.json(); if (!response.ok) { displayErrors(data.errors || { result: data.message || 'Result save nahi ho saka.' }); return; } bootstrap.Offcanvas.getOrCreateInstance(drawer).hide(); pageNotice(data.message, 'success'); loadStudents(); }
-        catch (error) { console.error(error); showDrawerError('Network issue ki wajah se result save nahi ho saka. Please try again.'); } finally { if (!s.isLocked) buttons.forEach((button) => button.disabled = false); }
+        try { const url = s.mode === 'edit' ? `${drawer.dataset.resultUrl}/${s.resultId}` : drawer.dataset.storeUrl; const response = await fetch(url, { method: s.mode === 'edit' ? 'PUT' : 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': s.form.querySelector('[name="_token"]').value }, body: JSON.stringify({ student_id: Number(s.studentId.value), enrollment_id: Number(s.enrollmentId.value), action, courses }) }); const data = await response.json(); if (!response.ok) { displayErrors(data.errors || { result: data.message || 'Unable to save the result.' }); return; } bootstrap.Offcanvas.getOrCreateInstance(drawer).hide(); pageNotice(data.message, 'success'); loadStudents(); }
+        catch (error) { console.error(error); showDrawerError('A network issue prevented the result from being saved. Please try again.'); } finally { if (!s.isLocked) buttons.forEach((button) => button.disabled = false); }
     });
     function resetDrawer() { clearErrors(); s.form.reset(); s.mode = 'create'; s.resultId = null; s.isLocked = false; s.title.textContent = 'Add Semester Result'; s.enrollmentSelect.disabled = false; s.enrollmentId.value = ''; s.courses = []; s.priorItems = []; s.coursesBody.innerHTML = ''; s.courseCount.textContent = '0 courses'; s.savedSummary.hidden = true; ['department', 'section', 'academicYear'].forEach((key) => s[key].textContent = '—'); s.total.textContent = '— / —'; s.percentage.textContent = s.sgpa.textContent = s.cgpa.textContent = '—'; setSummaryStatus('Draft'); setDrawerLocked(false); setButtonLabels(); }
     function setButtonLabels() { if (s.draftButton) s.draftButton.innerHTML = s.mode === 'edit' ? '<i class="bi bi-save2"></i> Update Draft' : '<i class="bi bi-save2"></i> Save Draft'; if (s.publishButton) s.publishButton.innerHTML = s.mode === 'edit' ? '<i class="bi bi-check2-circle"></i> Update &amp; Publish' : '<i class="bi bi-check2-circle"></i> Save &amp; Publish'; }

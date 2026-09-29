@@ -9,7 +9,10 @@ class SemesterResultPolicy
 {
     public function update(User $user, SemesterResult $semesterResult): bool
     {
-        return $semesterResult->published_at === null
+        // A draft must remain editable even if legacy or manually corrected
+        // data contains an accidental publication timestamp.
+        return $semesterResult->status === 'Draft'
+            || $semesterResult->published_at === null
             || config('academic.results.allow_published_result_edits');
     }
 }

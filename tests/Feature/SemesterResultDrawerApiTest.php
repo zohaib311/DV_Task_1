@@ -207,6 +207,22 @@ class SemesterResultDrawerApiTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_a_draft_remains_editable_when_legacy_data_has_a_publication_timestamp(): void
+    {
+        [$user, $student, $enrollment] = $this->makeAcademicRecord();
+        $draft = SemesterResult::create([
+            'student_semester_enrollment_id' => $enrollment->id,
+            'student_id' => $student->id,
+            'status' => 'Draft',
+            'published_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->getJson(route('result.semester.data', $draft))
+            ->assertOk()
+            ->assertJsonPath('result.status', 'Draft');
+    }
+
     public function test_phase_seven_filters_result_sheet_history_and_delete_policy_are_available(): void
     {
         [$user, $student, $enrollment] = $this->makeAcademicRecord();
