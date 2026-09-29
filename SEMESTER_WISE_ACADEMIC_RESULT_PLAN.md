@@ -431,6 +431,172 @@ User only `Obtained Marks` enter karega. Baqi columns live update honge.
 
 ---
 
+# Phase 5A — Course Assessment Breakdown: Attendance, Midterm and Final
+
+Har course ka result sirf aik `obtained_marks` field se enter nahi hoga. University-style assessment structure mein marks ke components clear aur separately auditable hone chahiye:
+
+| Component | Recommended default | Meaning |
+|---|---:|---|
+| Attendance | `10` | Attendance-based score |
+| Midterm | `30` | Mid examination score |
+| Final | `60` | Final examination score |
+| Total | `100` | Course maximum marks |
+
+Is default mein `Attendance + Midterm = 40` aur `Final = 60` hai. Lekin **yeh values hard-code nahi hongi**: har course ke liye admin/academic staff apni approved marking scheme set kar sakega.
+
+> Attendance ko Midterm ke 40 marks mein hidden/manual mix nahi karna. Attendance, Midterm aur Final teen separate components rahenge; unka sum course total banayega. Is se result sheet, audit aur future attendance automation clear rehti hai.
+
+## 5A.1 Academic policy decisions
+
+`config/academic.php` mein configurable rules add honge:
+
+- `attendance`, `midterm`, aur `final` default maxima.
+- Har course component total ka validation rule.
+- Kya publish ke liye teeno component marks required hain.
+- Overall course passing percentage (current baseline: `50%`).
+- Optional final-exam minimum rule, for example `final ke 60 marks mein minimum 30`. Yeh rule default mein disabled hoga jab tak university policy confirm na kare.
+- Attendance score manual entry hai ya attendance module se auto-calculate hota hai.
+
+## 5A.2 Course assessment scheme
+
+`courses` table mein course-level configuration fields add honge:
+
+| Field | Example | Purpose |
+|---|---:|---|
+| `attendance_marks` | `10` | Attendance component maximum |
+| `mid_marks` | `30` | Midterm component maximum |
+| `final_marks` | `60` | Final component maximum |
+| `total_marks` | `100` | Existing course total |
+
+### Course validation
+
+```text
+attendance_marks + mid_marks + final_marks = total_marks
+```
+
+- Har component zero ya positive numeric value hoga.
+- `total_marks` se zyada component marks allow nahi honge.
+- Course create aur edit form mein live total/check shown hoga.
+- Invalid distribution save nahi hogi.
+- Default scheme initially `10 + 30 + 60 = 100` hogi, lekin course-wise editable rahegi.
+
+## 5A.3 Historical snapshots are mandatory
+
+Future course configuration change se old semester result kabhi change nahi hona chahiye. Isliye new scheme enroll karte waqt snapshot hogi:
+
+| Table | New snapshot fields |
+|---|---|
+| `student_enrollment_courses` | `attendance_marks`, `mid_marks`, `final_marks` |
+| `semester_result_items` | component maxima aur obtained component marks |
+
+`semester_result_items` mein yeh values store hongi:
+
+| Field | Purpose |
+|---|---|
+| `attendance_marks`, `mid_marks`, `final_marks` | Maximum marks snapshot |
+| `attendance_obtained_marks` | Attendance score entered/calculated for that result |
+| `mid_obtained_marks` | Midterm score |
+| `final_obtained_marks` | Final score |
+| `obtained_marks` | Server-derived sum of the three components |
+
+Existing `obtained_marks`, percentage, grade, GP aur status fields remain rahenge; koi old result overwrite/delete nahi hoga. Old Phase-5 results ke component fields nullable rahenge unless a verified manual migration assigns a breakdown.
+
+## 5A.4 Calculation changes
+
+Per-course total server-side derive hoga:
+
+```text
+obtained_marks = attendance_obtained_marks + mid_obtained_marks + final_obtained_marks
+percentage = (obtained_marks / total_marks) × 100
+```
+
+Uske baad existing grade scale, grade point, SGPA aur CGPA rules use honge.
+
+### Pass/Fail rule
+
+Default rule:
+
+```text
+overall course percentage >= configured passing percentage → Pass
+otherwise → Fail
+```
+
+Optional policy enabled hone par additional rule:
+
+```text
+final_obtained_marks >= configured final minimum marks
+```
+
+Yani overall `50%` hone ke bawajood final-minimum policy fail ho to course `Fail` hoga. Is decision ko official university policy confirm karegi; UI aur calculator hard-code nahi karenge.
+
+### Component validation
+
+- Attendance obtained marks `0` se `attendance_marks` ke darmiyan.
+- Midterm obtained marks `0` se `mid_marks` ke darmiyan.
+- Final obtained marks `0` se `final_marks` ke darmiyan.
+- Published result ke liye all required components entered hon.
+- Draft mein blank components allowed hon, lekin result status `Draft` aur final metrics incomplete rahenge.
+- Browser se bheja hua total, percentage, grade, GP, SGPA aur CGPA ignore hoga; backend dobara calculate karega.
+
+## 5A.5 Attendance scope
+
+Is phase mein attendance component score result workflow mein separate field hoga. Proper lecture/day-wise attendance module future enhancement ke liye ready rakha jayega:
+
+1. Attendance records per class/session store honge.
+2. Attendance percentage calculate hogi.
+3. Approved conversion formula se `attendance_obtained_marks` auto-calculate honge.
+4. Manual override only authorized staff ke liye audit trail ke saath hoga.
+
+Pehle iteration mein score direct enter karna allowed hoga agar `attendance_mode = manual` ho. Automated module add hone par result calculation structure change nahi karna padega.
+
+## 5A.6 Add Result drawer update
+
+Phase 5 ka right drawer same clean layout retain karega, lekin marks table ki row yeh ho jayegi:
+
+| # | Course | Code | Cr. Hrs | Attendance | Mid | Final | Obtained | % | Grade | GP | Status |
+|---:|---|---|---:|---:|---:|---:|---:|---:|---|---:|---|
+
+- `Attendance`, `Mid`, aur `Final` hi editable inputs honge.
+- Input labels mein maximum clearly show hoga, for example `Mid / 30`.
+- `Obtained`, percentage, grade, GP aur status live calculated/read-only honge.
+- Bottom summary mein total earned/possible marks, percentage, SGPA, CGPA aur overall status existing design ke mutabiq live update honge.
+- Existing result drawer ko Phase 6 ke edit workflow mein same component values prefilled milengi.
+
+## 5A.7 Backend/API and data safety
+
+- Enrollment course API component maxima snapshots return karegi.
+- Save Draft / Publish API nested component marks accept karegi, not a trusted combined total.
+- DB transaction header result aur all course items save karegi.
+- Duplicate result, student/enrollment/course ownership, published-result policy aur all current Phase 4 protections remain rahengi.
+- Component configuration ya grade policy change ke baad historical published item snapshots unchanged rahenge.
+
+## 5A.8 Tests required
+
+- Course scheme accepts `10 + 30 + 60 = 100`.
+- Course scheme rejects a distribution whose sum differs from total marks.
+- Enrollment preserves component maxima after course config later changes.
+- Result item preserves component maxima and obtained component marks.
+- Calculator derives total/percentage/grade correctly from all three components.
+- Component boundary validation rejects marks greater than their individual maximum.
+- Draft/publish completeness behaves correctly.
+- Optional final-minimum policy Pass/Fail test.
+- Existing legacy and old single-total result records remain readable.
+
+### Phase 5A completion checklist
+
+- [ ] Assessment policy configuration created
+- [ ] Course assessment-component fields and validation added
+- [ ] Enrollment component snapshots added
+- [ ] Result-item component snapshots and obtained fields added
+- [ ] Calculator updated for Attendance + Midterm + Final
+- [ ] Course add/edit/list UI updated
+- [ ] Add Result drawer updated with component inputs
+- [ ] Save Draft / Publish API updated
+- [ ] Historical-data compatibility preserved
+- [ ] Assessment calculation and validation tests written
+
+---
+
 # Phase 6 — Edit Semester Result Drawer
 
 Edit Result drawer Add Result drawer jaisa hoga, lekin existing stored data prefilled hoga.
@@ -620,10 +786,11 @@ Implementation ko isi order mein karna chahiye:
 4. **Phase 3:** New result header/item data structure.
 5. **Phase 4:** Backend calculation service and tests.
 6. **Phase 5:** Add Semester Result right drawer.
-7. **Phase 6:** Edit Semester Result right drawer.
-8. **Phase 7:** Filters, listing, view and academic history.
-9. **Phase 8:** Student promotion to next semester.
-10. **Phase 9 and 10:** Permissions, data safety and full testing.
+7. **Phase 5A:** Attendance, Midterm and Final assessment breakdown.
+8. **Phase 6:** Edit Semester Result right drawer.
+9. **Phase 7:** Filters, listing, view and academic history.
+10. **Phase 8:** Student promotion to next semester.
+11. **Phase 9 and 10:** Permissions, data safety and full testing.
 
 ---
 
