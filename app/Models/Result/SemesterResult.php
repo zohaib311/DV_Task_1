@@ -41,4 +41,9 @@ class SemesterResult extends Model
     {
         return $this->hasMany(SemesterResultItem::class);
     }
+
+    public function audits(): HasMany
+    {
+        return $this->hasMany(SemesterResultAudit::class);
+    }
 }

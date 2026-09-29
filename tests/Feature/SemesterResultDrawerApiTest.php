@@ -148,6 +148,126 @@ class SemesterResultDrawerApiTest extends TestCase
         ]);
     }
 
+    public function test_edit_api_prefills_a_draft_and_updates_it_with_an_audit_entry(): void
+    {
+        [$user, $student, $enrollment] = $this->makeAcademicRecord();
+        $enrollmentCourses = $enrollment->courses()->orderBy('id')->get();
+
+        $this->actingAs($user)->postJson(route('result.semester.store'), [
+            'student_id' => $student->id,
+            'enrollment_id' => $enrollment->id,
+            'action' => 'draft',
+            'courses' => [
+                ['student_enrollment_course_id' => $enrollmentCourses[0]->id, 'attendance_obtained_marks' => 8, 'mid_obtained_marks' => 20, 'final_obtained_marks' => 40],
+                ['student_enrollment_course_id' => $enrollmentCourses[1]->id, 'attendance_obtained_marks' => 9, 'mid_obtained_marks' => 20, 'final_obtained_marks' => 40],
+            ],
+        ])->assertCreated();
+
+        $result = SemesterResult::firstOrFail();
+        $this->actingAs($user)->getJson(route('result.semester.data', $result))
+            ->assertOk()
+            ->assertJsonPath("result.items.{$enrollmentCourses[0]->id}.attendance_obtained_marks", '8.00')
+            ->assertJsonPath('enrollment.id', $enrollment->id);
+
+        $this->actingAs($user)->putJson(route('result.semester.update', $result), [
+            'student_id' => $student->id,
+            'enrollment_id' => $enrollment->id,
+            'action' => 'publish',
+            'courses' => [
+                ['student_enrollment_course_id' => $enrollmentCourses[0]->id, 'attendance_obtained_marks' => 10, 'mid_obtained_marks' => 25, 'final_obtained_marks' => 50],
+                ['student_enrollment_course_id' => $enrollmentCourses[1]->id, 'attendance_obtained_marks' => 10, 'mid_obtained_marks' => 25, 'final_obtained_marks' => 45],
+            ],
+        ])->assertOk()->assertJsonPath('result.status', 'Pass');
+
+        $this->assertDatabaseHas('semester_result_items', [
+            'semester_result_id' => $result->id,
+            'student_enrollment_course_id' => $enrollmentCourses[0]->id,
+            'obtained_marks' => 85,
+        ]);
+        $this->assertDatabaseHas('semester_result_audits', [
+            'semester_result_id' => $result->id,
+            'updated_by' => $user->id,
+            'action' => 'saved_and_published',
+        ]);
+    }
+
+    public function test_published_result_edit_is_blocked_until_the_policy_is_explicitly_enabled(): void
+    {
+        [$user, $student, $enrollment] = $this->makeAcademicRecord();
+        $result = SemesterResult::create([
+            'student_semester_enrollment_id' => $enrollment->id,
+            'student_id' => $student->id,
+            'status' => 'Pass',
+            'published_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->getJson(route('result.semester.data', $result))
+            ->assertForbidden();
+    }
+
+    public function test_editing_an_earlier_published_semester_recalculates_later_semester_cgpa(): void
+    {
+        [$user, $student, $firstEnrollment] = $this->makeAcademicRecord();
+        $firstEnrollmentCourses = $firstEnrollment->courses()->orderBy('id')->get();
+        $this->actingAs($user)->postJson(route('result.semester.store'), [
+            'student_id' => $student->id,
+            'enrollment_id' => $firstEnrollment->id,
+            'action' => 'publish',
+            'courses' => $firstEnrollmentCourses->map(fn ($course) => [
+                'student_enrollment_course_id' => $course->id,
+                'attendance_obtained_marks' => 10,
+                'mid_obtained_marks' => 30,
+                'final_obtained_marks' => 60,
+            ])->all(),
+        ])->assertCreated();
+
+        $firstEnrollment->update(['status' => 'completed']);
+        $thirdCourse = Course::create([
+            'code' => 'CS103', 'name' => 'Networks', 'description' => 'Network fundamentals.',
+            'credit_hours' => 3, 'total_marks' => 100, 'attendance_marks' => 10, 'mid_marks' => 30, 'final_marks' => 60, 'is_active' => true,
+        ]);
+        $secondEnrollment = StudentSemesterEnrollment::create([
+            'student_id' => $student->id, 'department_id' => $student->department_id, 'section_id' => $student->section_id,
+            'academic_year' => '2026-2027', 'semester' => 'Semester 2', 'status' => 'active', 'enrolled_at' => today(),
+        ]);
+        $secondEnrollmentCourse = StudentEnrollmentCourse::create([
+            'student_semester_enrollment_id' => $secondEnrollment->id, 'course_id' => $thirdCourse->id,
+            'credit_hours' => 3, 'total_marks' => 100, 'attendance_marks' => 10, 'mid_marks' => 30, 'final_marks' => 60,
+        ]);
+        $this->actingAs($user)->postJson(route('result.semester.store'), [
+            'student_id' => $student->id,
+            'enrollment_id' => $secondEnrollment->id,
+            'action' => 'publish',
+            'courses' => [[
+                'student_enrollment_course_id' => $secondEnrollmentCourse->id,
+                'attendance_obtained_marks' => 10,
+                'mid_obtained_marks' => 20,
+                'final_obtained_marks' => 40,
+            ]],
+        ])->assertCreated();
+
+        $secondResult = SemesterResult::where('student_semester_enrollment_id', $secondEnrollment->id)->firstOrFail();
+        $this->assertSame('3.67', $secondResult->cgpa);
+
+        config()->set('academic.results.allow_published_result_edits', true);
+        $firstResult = SemesterResult::where('student_semester_enrollment_id', $firstEnrollment->id)->firstOrFail();
+        $this->actingAs($user)->putJson(route('result.semester.update', $firstResult), [
+            'student_id' => $student->id,
+            'enrollment_id' => $firstEnrollment->id,
+            'action' => 'publish',
+            'courses' => $firstEnrollmentCourses->map(fn ($course) => [
+                'student_enrollment_course_id' => $course->id,
+                'attendance_obtained_marks' => 0,
+                'mid_obtained_marks' => 0,
+                'final_obtained_marks' => 0,
+            ])->all(),
+        ])->assertOk();
+
+        $this->assertSame('0.00', $firstResult->refresh()->cgpa);
+        $this->assertSame('1.00', $secondResult->refresh()->cgpa);
+    }
+
     private function makeAcademicRecord(): array
     {
         $user = User::create([

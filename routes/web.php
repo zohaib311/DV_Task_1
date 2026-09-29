@@ -150,6 +150,12 @@ Route::prefix('result')->controller(ResultController::class)->middleware('auth')
 
     Route::post('/semester-result', 'storeSemesterResult')->name('result.semester.store');
 
+    Route::get('/semester-result/{semesterResult}/data', 'getSemesterResultData')
+        ->name('result.semester.data');
+
+    Route::put('/semester-result/{semesterResult}', 'updateSemesterResult')
+        ->name('result.semester.update');
+
     Route::get('/get-sections/{department_id}', 'getSectionsByDepartment')->name('getSectionsByDepartment');
 
     Route::get('/get-students/{section_id}', 'getStudentsBySection')->name('getStudentsBySection');

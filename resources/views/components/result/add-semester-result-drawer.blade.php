@@ -1,8 +1,10 @@
 <div class="offcanvas offcanvas-end result-drawer semester-result-drawer" tabindex="-1" id="semesterResultDrawer"
     aria-labelledby="semesterResultDrawerLabel" data-student-enrollments-url="{{ url('/result/student') }}"
     data-enrollment-url="{{ url('/result/semester-enrollment') }}" data-store-url="{{ route('result.semester.store') }}"
+    data-result-url="{{ url('/result/semester-result') }}"
     data-grade-scale='@json(config('academic.grade_scale'))'
     data-allow-drafts="{{ config('academic.results.allow_drafts') ? 'true' : 'false' }}"
+    data-allow-published-edits="{{ config('academic.results.allow_published_result_edits') ? 'true' : 'false' }}"
     data-final-minimum-enabled="{{ config('academic.assessment.final_minimum.enabled') ? 'true' : 'false' }}"
     data-final-minimum-percentage="{{ config('academic.assessment.final_minimum.minimum_percentage') }}">
     <div class="drawer-header">
@@ -100,11 +102,11 @@
         <div class="drawer-footer semester-result-footer">
             <button type="button" class="btn-cancel" data-bs-dismiss="offcanvas">Cancel</button>
             @if (config('academic.results.allow_drafts'))
-                <button type="submit" class="btn-save-draft" data-result-action="draft">
+                <button type="submit" id="semester_result_draft_button" class="btn-save-draft" data-result-action="draft">
                     <i class="bi bi-save2"></i> Save Draft
                 </button>
             @endif
-            <button type="submit" class="btn-submit-result" data-result-action="publish">
+            <button type="submit" id="semester_result_publish_button" class="btn-submit-result" data-result-action="publish">
                 <i class="bi bi-check2-circle"></i> Save &amp; Publish
             </button>
         </div>

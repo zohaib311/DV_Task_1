@@ -615,11 +615,18 @@ Semester 1 ka result change hone par Semester 2, 3 aur baad ke CGPA depend karte
 
 ### Phase 6 completion checklist
 
-- [ ] Edit drawer prefill implemented
-- [ ] Permission policy added
-- [ ] Result update transaction added
-- [ ] Later semester CGPA recalculation added
-- [ ] Update audit/history policy decided
+### Implemented edit and audit policy
+
+- Draft results can be edited by authenticated academic users.
+- Published results are protected by default. An authorized academic deployment may explicitly enable them through `ACADEMIC_ALLOW_PUBLISHED_RESULT_EDITS=true`; the `SemesterResultPolicy` remains the single authorization checkpoint for both prefill and update requests.
+- Every update creates a `semester_result_audits` record containing the editor, action, and before/after calculated result snapshots. Published academic records are therefore corrected through an auditable update rather than direct deletion.
+- Editing a published earlier semester rebuilds CGPA for that student in academic semester order, including every later published semester.
+
+- [x] Edit drawer prefill implemented
+- [x] Permission policy added
+- [x] Result update transaction added
+- [x] Later semester CGPA recalculation added
+- [x] Update audit/history policy decided
 
 ---
 

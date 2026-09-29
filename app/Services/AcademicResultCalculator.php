@@ -409,6 +409,39 @@ class AcademicResultCalculator
         return $this->calculateCgpa([...$items, ...collect($pendingItems)->all()]);
     }
 
+    /**
+     * Rebuild every published result's cumulative GPA in academic order.
+     * This must run after a historical result edit because later semesters
+     * inherit all earlier quality points.
+     */
+    public function recalculatePublishedCgpas(int $studentId): void
+    {
+        $publishedResults = SemesterResult::query()
+            ->where('student_id', $studentId)
+            ->whereNotNull('published_at')
+            ->with(['items', 'enrollment'])
+            ->get()
+            ->sortBy(fn (SemesterResult $result) => $this->semesterSortKey($result))
+            ->values();
+        $attempts = [];
+
+        foreach ($publishedResults as $semesterResult) {
+            foreach ($semesterResult->items as $item) {
+                $attempts[] = [
+                    'course_id' => $item->course_id,
+                    'course_code' => $item->course_code,
+                    'credit_hours' => $item->credit_hours,
+                    'grade_point' => $item->grade_point,
+                    'attempted_at' => $semesterResult->published_at,
+                    'result_id' => $semesterResult->id,
+                    'item_id' => $item->id,
+                ];
+            }
+
+            $semesterResult->forceFill(['cgpa' => $this->calculateCgpa($attempts)])->saveQuietly();
+        }
+    }
+
     /** @return array{minimum_percentage: float, grade: string, grade_point: float, status: string} */
     private function gradeForPercentage(float $percentage): array
     {
@@ -449,6 +482,15 @@ class AcademicResultCalculator
         $number = (float) $value;
 
         return floor($number) === $number ? (int) $number : $number;
+    }
+
+    private function semesterSortKey(SemesterResult $result): string
+    {
+        $academicYear = $result->enrollment?->academic_year ?? '0000-0000';
+        preg_match('/\d+/', $result->enrollment?->semester ?? '', $matches);
+        $semesterNumber = (int) ($matches[0] ?? 0);
+
+        return sprintf('%s-%02d-%s-%010d', $academicYear, $semesterNumber, $result->published_at?->format('YmdHis') ?? '', $result->id);
     }
 
     /** @param array<string, mixed>|SemesterResultItem $item @return array<string, mixed> */
