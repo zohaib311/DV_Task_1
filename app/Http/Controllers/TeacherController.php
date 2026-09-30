@@ -100,6 +100,9 @@ class TeacherController extends Controller
     function deleteTeacher($id)
     {
         $teacher = Teacher::findOrFail($id);
+        if ($teacher->offerings()->exists()) {
+            return redirect()->route('allTeachers')->with('error', 'This teacher is assigned to a course offering and cannot be deleted. Teaching history must be preserved.');
+        }
         if ($teacher->image && $teacher->image !== 'default-user.png') {
             Storage::disk('public')->delete('images/' . $teacher->image);
         }

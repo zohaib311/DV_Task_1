@@ -3,6 +3,7 @@
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/addstudent.css') }}">
     <link rel="stylesheet" href="{{ asset('css/enrollment/enrollment.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/academic/academic.css') }}">
 @endsection
 
 @section('content')
@@ -13,180 +14,68 @@
                 <div class="enrollment-form-icon"><i class="bi {{ $isPromotion ? 'bi-arrow-up-right-circle' : 'bi-journal-plus' }}"></i></div>
                 <div>
                     <h2>{{ $isPromotion ? 'Promote Student to Next Semester' : 'New Semester Enrollment' }}</h2>
-                    <p>{{ $isPromotion ? 'Verify the completed result and select the next semester course plan.' : 'Assign a student to a semester and preserve their course record.' }}</p>
+                    <p>Select a teaching term and approved curriculum to load the assigned courses.</p>
                 </div>
             </div>
-
-            @if (session('success'))
-                <div class="alert alert-success enrollment-errors border-success text-success" role="status">
-                    <i class="bi bi-check-circle-fill me-1"></i>{{ session('success') }}
-                </div>
+            @if(session('success'))<div class="alert alert-success" role="status">{{ session('success') }}</div>@endif
+            @if($errors->any())
+                <div class="alert alert-danger enrollment-errors" role="alert"><strong>Please correct the following:</strong><ul class="mb-0 mt-1">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+            @endif
+            @if($isPromotion)
+                <div class="promotion-policy-note {{ $promotionEligibility['allowed'] ? 'is-allowed' : 'is-blocked' }}" role="status"><i class="bi bi-shield-check"></i><div><strong>{{ $promotionEnrollment->semester }} → {{ $nextSemester ?? 'Final semester' }}</strong><span>{{ $promotionEligibility['message'] }}</span></div></div>
+            @endif
+            @if($terms->isEmpty() || $curricula->isEmpty())
+                <p class="academic-note">Enrollment requires an active academic term, an approved curriculum, and active course offerings with assigned teachers.</p>
             @endif
 
-            @if ($errors->any())
-                <div class="alert alert-danger enrollment-errors" role="alert">
-                    <strong>Please correct the following:</strong>
-                    <ul class="mb-0 mt-1 ps-3">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            @if ($isPromotion)
-                <div class="promotion-policy-note {{ $promotionEligibility['allowed'] ? 'is-allowed' : 'is-blocked' }}" role="status">
-                    <i class="bi {{ $promotionEligibility['allowed'] ? 'bi-shield-check' : 'bi-shield-exclamation' }}"></i>
-                    <div>
-                        <strong>{{ $promotionEligibility['allowed'] ? 'Promotion check passed' : 'Promotion currently blocked' }}</strong>
-                        <span>{{ $promotionEligibility['message'] }}</span>
-                    </div>
-                </div>
-            @endif
-
-            <form action="{{ $isPromotion ? route('promoteEnrollment', $promotionEnrollment) : route('addEnrollment') }}" method="POST" novalidate>
+            <form action="{{ $isPromotion ? route('promoteEnrollment', $promotionEnrollment) : route('addEnrollment') }}" method="POST" id="academicEnrollmentForm"
+                data-offerings-url="{{ route('enrollment.offerings') }}" data-next-semester="{{ $isPromotion ? ($nextSemester ?? 'None') : '' }}"
+                data-blocked="{{ $isPromotion && !$promotionEligibility['allowed'] ? 'true' : 'false' }}">
                 @csrf
-
                 <section class="enrollment-form-section">
-                    <div class="enrollment-section-title">
-                        <i class="bi bi-person-vcard"></i>
-                        <div>
-                            <h5>Student placement</h5>
-                            <p>Select the student. Their current department and section are saved as a history snapshot.</p>
-                        </div>
-                    </div>
-
+                    <div class="enrollment-section-title"><i class="bi bi-person-vcard"></i><div><h5>Student placement</h5><p>The department and section determine the available course offerings.</p></div></div>
                     <div class="row g-3">
-                        <div class="col-md-7">
+                        <div class="col-12">
                             <label for="student_id" class="form-label">Student</label>
-                            @if ($isPromotion)
-                                <input type="hidden" name="student_id" value="{{ $promotionEnrollment->student_id }}">
-                            @endif
-                            <select name="student_id" id="student_id" class="form-select @error('student_id') is-invalid @enderror" required {{ $isPromotion ? 'disabled' : '' }}>
+                            @if($isPromotion)<input type="hidden" name="student_id" value="{{ $promotionEnrollment->student_id }}">@endif
+                            <select name="student_id" id="student_id" class="form-select" required @disabled($isPromotion)>
                                 <option value="">Select student</option>
-                                @foreach ($students as $student)
-                                    <option value="{{ $student->id }}"
-                                        data-registration="{{ $student->registration_no }}"
-                                        data-department="{{ $student->department->name ?? 'Not assigned' }}"
-                                        data-section="{{ $student->section->name ?? 'Not assigned' }}"
-                                        {{ old('student_id', $isPromotion ? $promotionEnrollment->student_id : request('student_id')) == $student->id ? 'selected' : '' }}>
-                                        {{ $student->name }} ({{ $student->registration_no ?? 'No registration no.' }})
-                                    </option>
+                                @foreach($students as $student)
+                                    <option value="{{ $student->id }}" data-department-id="{{ $student->department_id }}" data-placement="{{ $student->registration_no }} · {{ $student->department?->name }} / {{ $student->section?->name }}"
+                                        @selected(old('student_id', $isPromotion ? $promotionEnrollment->student_id : request('student_id')) == $student->id)>{{ $student->name }} ({{ $student->registration_no }})</option>
                                 @endforeach
                             </select>
-                            @error('student_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
-
+                        <div class="col-12"><div class="student-placement-summary" id="studentPlacementSummary" aria-live="polite">Select a student to see their current placement.</div></div>
                         <div class="col-md-5">
-                            <label for="academic_year" class="form-label">Academic Year</label>
-                            <input type="text" name="academic_year" id="academic_year"
-                                value="{{ old('academic_year', $defaultAcademicYear) }}"
-                                class="form-control @error('academic_year') is-invalid @enderror" placeholder="2026-2027"
-                                pattern="\d{4}-\d{4}" required>
-                            @error('academic_year') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="col-12">
-                            <div class="student-placement-summary" id="studentPlacementSummary" aria-live="polite">
-                                <i class="bi bi-person-badge"></i>
-                                <span>Select a student to view their registration number, department and section.</span>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="enrollment-form-section">
-                    <div class="enrollment-section-title">
-                        <i class="bi bi-mortarboard"></i>
-                        <div>
-                            <h5>Semester & courses</h5>
-                            <p>Only active courses are available. Credit hours and marks are copied into the enrollment history.</p>
-                        </div>
-                    </div>
-
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="semester" class="form-label">{{ $isPromotion ? 'Next Semester' : 'Semester' }}</label>
-                            <select name="semester" id="semester" class="form-select @error('semester') is-invalid @enderror" required>
-                                <option value="">Select semester</option>
-                                @for ($semester = 1; $semester <= 8; $semester++)
-                                    <option value="Semester {{ $semester }}"
-                                        {{ old('semester', $isPromotion ? $nextSemester : null) === "Semester $semester" ? 'selected' : '' }}
-                                        {{ $isPromotion && $nextSemester !== "Semester $semester" ? 'disabled' : '' }}>
-                                        Semester {{ $semester }}
-                                    </option>
-                                @endfor
+                            <label for="academic_term_id" class="form-label">Academic term</label>
+                            <select name="academic_term_id" id="academic_term_id" class="form-select" required>
+                                <option value="">Select active term</option>
+                                @foreach($terms as $term)<option value="{{ $term->id }}" @selected(old('academic_term_id') == $term->id)>{{ $term->name }} · {{ $term->academicYear->name }}</option>@endforeach
                             </select>
-                            @error('semester') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-7">
+                            <label for="semester_curriculum_id" class="form-label">{{ $isPromotion ? 'Next semester curriculum' : 'Semester curriculum' }}</label>
+                            <select name="semester_curriculum_id" id="semester_curriculum_id" class="form-select" required>
+                                <option value="">Select an approved curriculum</option>
+                                @foreach($curricula as $curriculum)<option value="{{ $curriculum->id }}" data-department-id="{{ $curriculum->department_id }}" data-semester="{{ $curriculum->semester }}" @selected(old('semester_curriculum_id') == $curriculum->id)>{{ $curriculum->semester }} · {{ $curriculum->version }} · {{ $curriculum->department->name }}</option>@endforeach
+                            </select>
                         </div>
                     </div>
-
-                    <label class="form-label d-block mt-4 mb-2">{{ $isPromotion ? 'Select next-semester and repeat/improvement courses' : 'Assign active courses' }}</label>
-                    @if ($isPromotion)
-                        <p class="text-muted small mb-2">All selections are explicit. Include any approved repeat or improvement course only when it belongs to the next-semester plan.</p>
-                    @endif
-                    <div class="enrollment-course-grid">
-                        @php($selectedCourses = old('course_ids', $isPromotion ? $promotionSelectedCourses : []))
-                        @forelse ($courses as $course)
-                            <label class="enrollment-course-option">
-                                <input type="checkbox" name="course_ids[]" value="{{ $course->id }}"
-                                    {{ in_array($course->id, $selectedCourses) ? 'checked' : '' }}>
-                                <span class="enrollment-course-check"><i class="bi bi-check-lg"></i></span>
-                                <span>
-                                    <strong>{{ $course->name }}</strong>
-                                    <small>{{ $course->code }} · {{ number_format((float) $course->credit_hours, 1) }} Cr. Hrs · {{ $course->total_marks }} marks</small>
-                                </span>
-                            </label>
-                        @empty
-                            <p class="text-muted mb-0">No active courses are available. Add or activate courses first.</p>
-                        @endforelse
-                    </div>
-                    @error('course_ids') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
-                    @error('course_ids.*') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
                 </section>
-
-                <div class="form__actions mt-4">
-                    <a href="{{ route('allEnrollments') }}" class="cancel__btn">
-                        <i class="bi bi-arrow-left me-1"></i> Back
-                    </a>
-                    <button type="submit" class="update__btn"
-                        {{ $isPromotion && (! $promotionEligibility['allowed'] || ! $nextSemester) ? 'disabled' : '' }}>
-                        <i class="bi {{ $isPromotion ? 'bi-arrow-up-right-circle' : 'bi-journal-check' }} me-1"></i>
-                        {{ $isPromotion ? 'Promote Student' : 'Create Enrollment' }}
-                    </button>
-                </div>
+                <section class="enrollment-form-section">
+                    <div class="enrollment-section-title"><i class="bi bi-journal-richtext"></i><div><h5>Registered courses &amp; teachers</h5><p>Required courses are preselected. Elective and repeat/improvement courses can be added explicitly.</p></div></div>
+                    <p id="offeringStatus" class="text-muted small" aria-live="polite">Select a student, term, and curriculum to load the course plan.</p>
+                    <div class="table-responsive"><table class="table academic-table align-middle"><thead><tr><th>Select</th><th>Course / Teacher</th><th>Type</th><th>Credits</th><th>Assessment</th></tr></thead><tbody id="enrollmentOfferingRows"></tbody></table></div>
+                    <p class="text-muted small mb-0">Assessment: Attendance / Midterm / Final. Approved credit hours and marking schemes are saved with this enrollment.</p>
+                    <script type="application/json" id="previousOfferingSelection">@json(old('offering_ids', []))</script>
+                </section>
+                <div class="form__actions mt-4"><a href="{{ route('allEnrollments') }}" class="cancel__btn">Back</a><button type="submit" class="update__btn" id="saveEnrollment" disabled>{{ $isPromotion ? 'Promote Student' : 'Create Enrollment' }}</button></div>
             </form>
         </div>
     </div>
 @endsection
 
 @section('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const studentSelect = document.getElementById('student_id');
-            const summary = document.getElementById('studentPlacementSummary');
-
-            function updateStudentSummary() {
-                const option = studentSelect.options[studentSelect.selectedIndex];
-                if (!option || !option.value) {
-                    summary.innerHTML = '<i class="bi bi-person-badge"></i><span>Select a student to view their registration number, department and section.</span>';
-                    return;
-                }
-
-                const icon = document.createElement('i');
-                icon.className = 'bi bi-person-badge';
-                const details = document.createElement('span');
-                const name = document.createElement('strong');
-                const meta = document.createElement('small');
-
-                name.textContent = option.textContent.trim();
-                meta.textContent = `Reg. No: ${option.dataset.registration || 'N/A'} · ${option.dataset.department} · Section ${option.dataset.section}`;
-                details.append(name, meta);
-                summary.replaceChildren(icon, details);
-            }
-
-            studentSelect.addEventListener('change', updateStudentSummary);
-            updateStudentSummary();
-        });
-    </script>
+    <script src="{{ asset('js/enrollment/academic-enrollment.js') }}"></script>
 @endsection

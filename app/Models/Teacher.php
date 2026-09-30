@@ -23,4 +23,9 @@ class Teacher extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function offerings()
+    {
+        return $this->belongsToMany(\App\Models\Academic\CourseOffering::class)->withTimestamps();
+    }
 }

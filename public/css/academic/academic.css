@@ -1,0 +1,40 @@
+.academic-page { max-width: 1440px; }
+.academic-shell { background: #fff; border: 1px solid #e8e8f4; border-radius: 16px; overflow: hidden; box-shadow: 0 12px 38px rgb(44 41 85 / 7%); }
+.academic-header { padding: 25px 28px; background: linear-gradient(120deg, #6255df, #8659ed); color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.academic-eyebrow { font-size: .7rem; letter-spacing: .08em; font-weight: 800; opacity: .85; }
+.academic-header h1 { font-size: 1.5rem; font-weight: 800; margin: 6px 0; }
+.academic-header p { margin: 0; font-size: .86rem; color: #ece8ff; }
+.academic-header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.academic-header-btn { color: #fff; background: rgb(255 255 255 / 15%); border: 1px solid rgb(255 255 255 / 35%); white-space: nowrap; font-weight: 600; font-size: .84rem; }
+.academic-header-btn:hover { color: #fff; background: rgb(255 255 255 / 25%); }
+.academic-tabs { display: flex; gap: 22px; border-bottom: 1px solid #ecebf5; padding: 0 28px; overflow-x: auto; }
+.academic-tabs a { display: flex; align-items: center; gap: 8px; padding: 17px 0; text-decoration: none; color: #7b8298; font-weight: 700; font-size: .84rem; white-space: nowrap; border-bottom: 2px solid transparent; }
+.academic-tabs a span { font-size: .68rem; color: #a09bc1; }
+.academic-tabs a.active { color: #6555d7; border-bottom-color: #7864ed; }
+.academic-body { padding: 26px 28px; }
+.academic-body h2 { font-size: 1.06rem; font-weight: 800; color: #353e58; margin-bottom: 12px; }
+.academic-body .form-label { color: #555f79; font-weight: 600; font-size: .83rem; }
+.academic-body :is(.form-control, .form-select) { border-color: #dfe2ef; border-radius: 9px; min-height: 43px; }
+.academic-body .btn-primary { background: #6b59df; border-color: #6b59df; border-radius: 9px; }
+.academic-body .btn-primary:hover { background: #5948cb; }
+.academic-body a:not(.btn) { color: #6758d5; }
+.academic-form-section { padding: 8px 0 25px; margin-bottom: 24px; border-bottom: 1px solid #ecebf5; }
+.academic-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.academic-note { color: #635c94; background: #f7f5ff; padding: 13px 16px; border-left: 3px solid #8a78ed; border-radius: 6px; font-size: .85rem; }
+.academic-note i { margin-right: 6px; }
+.academic-year-strip { display: flex; flex-wrap: wrap; gap: 12px 22px; color: #8b91a2; font-size: .78rem; padding-bottom: 18px; }
+.academic-year-strip strong { color: #535d78; margin-right: 5px; }
+.academic-table thead th { background: #f6f5fd; color: #727391; text-transform: uppercase; font-size: .67rem; letter-spacing: .04em; padding: 12px; border: 0; white-space: nowrap; }
+.academic-table td { padding: 15px 12px; color: #505a75; border-color: #eff0f6; font-size: .85rem; }
+.academic-table small { display: block; color: #8b92a6; font-size: .75rem; margin-top: 3px; }
+.academic-table .academic-empty { text-align: center; padding: 40px 20px; color: #8a91a6; }
+.academic-badge { padding: 4px 9px; border-radius: 20px; font-size: .72rem; background: #f0edfc; color: #7566b9; white-space: nowrap; }
+.academic-badge.is-active { color: #087f62; background: #e8f7f0; }
+.academic-check { width: 19px; height: 19px; accent-color: #715ce0; cursor: pointer; vertical-align: middle; }
+.academic-check:focus-visible { outline: 2px solid #715ce0; outline-offset: 3px; }
+.academic-teacher-choices { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.academic-teacher-choices label { display: flex; align-items: center; gap: 8px; min-height: 42px; font-size: .87rem; color: #566079; cursor: pointer; }
+.academic-approval { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #ecebf5; }
+.academic-approval p { color: #8b91a2; font-size: .8rem; margin: 5px 0 0; }
+.academic-filter { max-width: 360px; margin-bottom: 22px; }
+@media (max-width: 767px) { .academic-header, .academic-approval { flex-direction: column; align-items: flex-start; } .academic-body { padding: 20px 16px; } .academic-header { padding: 22px 18px; } .academic-tabs { padding: 0 16px; gap: 16px; } }

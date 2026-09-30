@@ -45,6 +45,10 @@
 
                 <div class="card-body">
 
+                    @if (session('error'))
+                        <div class="alert alert-danger" role="alert">{{ session('error') }}</div>
+                    @endif
+
                     <div class="table-responsive">
 
                         <table class="table table-hover table-bordered align-middle mb-0">

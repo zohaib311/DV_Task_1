@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Course;
 
 use App\Http\Controllers\Controller;
+use App\Models\Academic\CurriculumCourse;
 use App\Models\Course\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -93,6 +94,10 @@ class CourseController extends Controller
     public function deleteCourse($id)
     {
         $course = Course::findOrFail($id);
+
+        if (CurriculumCourse::where('course_id', $course->id)->exists() || $course->enrollmentCourses()->exists() || $course->semesterResultItems()->exists()) {
+            return redirect()->route('allCourses')->with('error', 'This course is part of a curriculum or academic record and cannot be deleted. Deactivate it to prevent new registrations.');
+        }
 
         // Delete image from storage
         if ($course->image && $course->image !== 'default-user.png') {

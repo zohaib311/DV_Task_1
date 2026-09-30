@@ -252,12 +252,40 @@ Required records:
 - The Admin Role & Permission screen supports role creation, permission assignment, and user-role assignment.
 - Existing administrative routes, result policies, and sidebar navigation enforce permissions server-side.
 
-### Phase 9B — Academic term, curriculum, and offering
+### Phase 9B — Academic term, curriculum, and offering (Completed)
 
-- Add Academic Year/Term model.
-- Add semester curriculum and curriculum-course records.
-- Add course offerings with department, section, term, and teacher assignment.
-- Connect student enrollment courses to offerings.
+- [x] Academic Year/Term models, migrations, administration screens, date validation, and term lifecycle guards.
+- [x] Department-semester curriculum versions with required/elective courses, saved credit/assessment snapshots, and approval locking.
+- [x] Section-specific course offerings linked to a term, department, curriculum course, and one or more login-linked teachers.
+- [x] Existing enrollment and promotion screens connected to active offerings, with server-side placement checks and student course snapshots.
+
+Implementation notes:
+
+- The sidebar now includes **Academic Terms**, **Semester Curriculum**, and **Course Offerings**. Management routes require `terms.manage`, `curriculum.manage`, or `offerings.manage`; Academic Admin receives these permissions, and Super Admin retains its existing bypass. These are global administration permissions, not department-scoped HOD access.
+- New enrollments require an active term, an approved curriculum in the student's department, and active teacher-assigned offerings in the student's section. Every required course must be available and selected. Electives are optional; out-of-curriculum repeat/improvement courses require a previous published attempt.
+- Enrollment stores the offering link plus course name/code, credit hours, assessment maxima, and registration type. Result entry and calculations use these saved values. Catalog edits do not rewrite the new enrollment snapshots.
+- Promotions keep the existing published-pass policy, use the next semester curriculum, and require a later teaching term when the previous enrollment has a term. Transactions prevent two concurrent active enrollments for the same student.
+- Existing enrollments/results are preserved without guessed term or teacher assignments. Older enrollments remain marked **Historical enrollment** until explicitly migrated in a future, separately reviewed backfill.
+- Approved curricula are read-only; create a new version for future changes. Planned offerings can be revised, but activation locks their scheme and teaching assignments. Used courses and assigned teachers cannot be deleted through their existing screens.
+- A term's identity/dates cannot change after offerings exist. Closed terms reject changes and new enrollment. Terms with unfinished offerings cannot close; offering completion/publication belongs to the later result lifecycle work.
+- The current Attendance + Midterm + Final scheme remains unchanged. Flexible assignments/quizzes belong to 9E; Teacher Panel to 9C; attendance to 9D; moderation to 9F; Student Portal to 9G.
+- Re-running the access-control seeder preserves existing role permission customizations instead of restoring every default permission.
+
+#### Phase 9B manual acceptance checklist
+
+Use an Academic Admin or Super Admin login. Start with test records; do not delete real academic history.
+
+1. **Prerequisites:** Create a department, a section in it, and active catalog courses with valid credit hours and assessment totals. Link each teacher profile to a User account in the existing teacher form. The old teacher `course` text field is not a teaching assignment; offerings are the assignment source.
+2. **Academic Terms:** Add year `2026-2027`, dates `2026-08-01` to `2027-07-31`. Add active term `Fall 2026`, dates `2026-09-01` to `2026-12-31`. Dates outside the year and duplicate term names in that year must show validation errors.
+3. **Semester Curriculum:** Create a Semester 1 version for the department, select courses, optionally mark electives, and save the draft. Review before approving; approval uses the saved draft and locks it. A subsequent catalog edit must not change the approved snapshot.
+4. **Course Offerings:** Choose the active term, matching section, approved curriculum course, and linked teacher(s). Create an active offering for every required course. Duplicate term/section/course combinations and department mismatches must fail. A planned offering can be edited before activation.
+5. **Enrollment:** In the existing New Enrollment form, select a student in that department/section, the active term, and approved curriculum. Check that the correct courses, teacher names, credit hours, and assessment maxima load. Save and verify the term and course/teacher details on the enrollment list.
+6. **Validation:** Missing required offerings/courses, wrong-section selections, an inactive term/offering, or a second active enrollment must be rejected. Electives may be omitted. Repeat/improvement courses require a prior published attempt and an eligible offering in the selected term/section.
+7. **Results:** Use the existing result drawer on the new enrollment. Save/publish a passing result. Verify saved course names, codes, and assessment maxima remain unchanged even after editing the catalog.
+8. **Promotion:** Create a later active term, approved Semester 2 curriculum, and its active offerings. Promote the passing enrollment through its existing action. Verify the previous record is preserved and only the new enrollment is active. Failed/unpublished results, the wrong next semester, and an earlier/equal term must be blocked.
+9. **Permissions/history:** Teacher and Student default roles must not open these academic-admin routes. Existing historical results must remain accessible through their existing authorized screens. Removing a role permission and re-running the seeder must not silently restore it.
+
+Automated coverage: `tests/Feature/AcademicSetupTest.php` and the updated `StudentSemesterEnrollmentTest.php` cover academic setup, enrollment, promotion, snapshot stability, deletion protection, and access restrictions. Run `php artisan test` for the complete regression suite.
 
 ### Phase 9C — Teacher Panel
 
@@ -323,11 +351,10 @@ Required records:
 
 ## Next implementation step
 
-Phase 9A is complete. Continue with Phase 9B — Academic Term, Curriculum, and Course Offering:
+Phases 9A and 9B are complete. Next is **Phase 9C — Teacher Panel**:
 
-1. Create academic year/term records.
-2. Define the department-semester curriculum and approved courses.
-3. Create section-specific course offerings and teacher assignments.
-4. Connect each student enrollment course to its live course offering.
+1. Build the teacher dashboard on the existing linked teacher/User identity.
+2. Show only assigned offerings and their enrolled student rosters.
+3. Add ownership checks and teacher-specific authorization tests.
 
-Attendance and teacher-mark modules must continue to wait until Phase 9B has established the live course-offering structure.
+Sections 1–8 above describe the overall requirements, not additional independent implementation phases. Their work is delivered through roadmap phases 9A–9H. Attendance and teacher-mark modules remain scheduled for 9D and 9E respectively.

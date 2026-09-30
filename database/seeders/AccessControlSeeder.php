@@ -18,6 +18,7 @@ class AccessControlSeeder extends Seeder
         'Academic Admin' => [
             'dashboard.view', 'roles.view', 'roles.manage', 'permissions.assign', 'users.assign-role', 'users.manage', 'students.manage', 'teachers.manage',
             'departments.manage', 'sections.manage', 'courses.manage', 'events.manage',
+            'terms.manage', 'curriculum.manage', 'offerings.manage',
             'enrollments.view', 'enrollments.create', 'enrollments.promote', 'enrollments.manage-courses',
             'results.view-all', 'results.create', 'results.edit', 'results.publish',
             'academic-history.view', 'audit.view',
@@ -43,7 +44,7 @@ class AccessControlSeeder extends Seeder
         'departments.manage', 'sections.manage', 'courses.manage', 'curriculum.manage', 'terms.manage',
         'students.manage', 'teachers.manage', 'events.manage',
         'enrollments.view', 'enrollments.create', 'enrollments.promote', 'enrollments.manage-courses',
-        'offerings.view-assigned', 'attendance.manage-assigned', 'assessments.manage-assigned', 'marks.manage-assigned',
+        'offerings.manage', 'offerings.view-assigned', 'attendance.manage-assigned', 'assessments.manage-assigned', 'marks.manage-assigned',
         'results.view-all', 'results.create', 'results.edit', 'results.submit', 'results.approve',
         'results.publish', 'results.edit-published',
         'student.profile.view-own', 'student.attendance.view-own', 'student.result.view-own',
@@ -60,7 +61,8 @@ class AccessControlSeeder extends Seeder
 
         foreach (self::ROLE_PERMISSIONS as $roleName => $permissions) {
             $role = Role::findOrCreate($roleName, 'web');
-            if ($roleName !== 'Super Admin') {
+            // Rerunning setup (including registration) must preserve admin customizations.
+            if ($roleName !== 'Super Admin' && $role->wasRecentlyCreated) {
                 $role->syncPermissions($permissions);
             }
         }

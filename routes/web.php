@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\AccessControlController;
+use App\Http\Controllers\Academic\AcademicTermController;
+use App\Http\Controllers\Academic\CurriculumController;
+use App\Http\Controllers\Academic\CourseOfferingController;
 use App\Http\Controllers\Course\CourseController;
 use App\Http\Controllers\Dashboard\DashbaordController;
 use App\Http\Controllers\Department\DepartmentController;
@@ -70,6 +73,8 @@ Route::prefix('student')->controller(StudentController::class)->middleware(['aut
 Route::prefix('enrollment')->controller(StudentSemesterEnrollmentController::class)->middleware(['auth', 'permission:enrollments.view'])->group(function () {
 
     Route::get('/show', 'index')->name('allEnrollments');
+
+    Route::get('/offerings', 'offerings')->middleware('permission:enrollments.create|enrollments.promote')->name('enrollment.offerings');
 
     Route::get('/add', 'create')->middleware('permission:enrollments.create')->name('addEnrollmentForm');
 
@@ -226,4 +231,29 @@ Route::prefix('access-control')->controller(AccessControlController::class)->mid
     Route::put('/roles/{role}', 'updateRole')->middleware('permission:permissions.assign')->name('access.roles.update');
     Route::post('/permissions', 'storePermission')->middleware('permission:permissions.assign')->name('access.permissions.store');
     Route::put('/users/{user}/roles', 'updateUserRoles')->middleware('permission:users.assign-role')->name('access.users.roles.update');
+});
+
+Route::prefix('academic')->name('academic.')->middleware('auth')->group(function () {
+    Route::middleware('permission:terms.manage')->controller(AcademicTermController::class)->group(function () {
+        Route::get('/terms', 'index')->name('terms.index');
+        Route::post('/years', 'storeYear')->name('years.store');
+        Route::post('/terms', 'store')->name('terms.store');
+        Route::get('/terms/{term}/edit', 'edit')->name('terms.edit');
+        Route::put('/terms/{term}', 'update')->name('terms.update');
+    });
+    Route::middleware('permission:curriculum.manage')->controller(CurriculumController::class)->group(function () {
+        Route::get('/curricula', 'index')->name('curricula.index');
+        Route::get('/curricula/create', 'create')->name('curricula.create');
+        Route::post('/curricula', 'store')->name('curricula.store');
+        Route::get('/curricula/{curriculum}/edit', 'edit')->name('curricula.edit');
+        Route::put('/curricula/{curriculum}', 'update')->name('curricula.update');
+        Route::post('/curricula/{curriculum}/approve', 'approve')->name('curricula.approve');
+    });
+    Route::middleware('permission:offerings.manage')->controller(CourseOfferingController::class)->group(function () {
+        Route::get('/offerings', 'index')->name('offerings.index');
+        Route::get('/offerings/create', 'create')->name('offerings.create');
+        Route::post('/offerings', 'store')->name('offerings.store');
+        Route::get('/offerings/{offering}/edit', 'edit')->name('offerings.edit');
+        Route::put('/offerings/{offering}', 'update')->name('offerings.update');
+    });
 });

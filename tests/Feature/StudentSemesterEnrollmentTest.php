@@ -16,6 +16,7 @@ use Tests\TestCase;
 class StudentSemesterEnrollmentTest extends TestCase
 {
     use RefreshDatabase;
+    use \Tests\Concerns\CreatesAcademicOfferings;
 
     public function test_a_semester_enrollment_preserves_course_snapshots_and_syncs_the_current_student_profile(): void
     {
@@ -63,12 +64,8 @@ class StudentSemesterEnrollmentTest extends TestCase
         ]);
         $user->save();
 
-        $response = $this->actingAs($user)->post(route('addEnrollment'), [
-            'student_id' => $student->id,
-            'academic_year' => '2026-2027',
-            'semester' => 'Semester 2',
-            'course_ids' => [$firstCourse->id, $secondCourse->id],
-        ]);
+        $plan = $this->offeringPlan($student, [$firstCourse, $secondCourse]);
+        $response = $this->actingAs($user)->post(route('addEnrollment'), $plan + ['student_id' => $student->id]);
 
         $response->assertRedirect(route('allEnrollments'));
         $this->assertDatabaseHas('student_semester_enrollments', [
@@ -137,11 +134,7 @@ class StudentSemesterEnrollmentTest extends TestCase
         [$user, $student, $currentEnrollment, $currentCourse, $nextCourse] = $this->makePromotionRecord('Pass');
 
         $this->actingAs($user)
-            ->post(route('promoteEnrollment', $currentEnrollment), [
-                'academic_year' => '2026-2027',
-                'semester' => 'Semester 2',
-                'course_ids' => [$nextCourse->id],
-            ])
+            ->post(route('promoteEnrollment', $currentEnrollment), $this->offeringPlan($student, [$nextCourse]))
             ->assertRedirect(route('allEnrollments'));
 
         $this->assertDatabaseHas('student_semester_enrollments', [
@@ -176,11 +169,7 @@ class StudentSemesterEnrollmentTest extends TestCase
         [$user, $student, $currentEnrollment, , $nextCourse] = $this->makePromotionRecord('Fail');
 
         $this->actingAs($user)
-            ->post(route('promoteEnrollment', $currentEnrollment), [
-                'academic_year' => '2026-2027',
-                'semester' => 'Semester 2',
-                'course_ids' => [$nextCourse->id],
-            ])
+            ->post(route('promoteEnrollment', $currentEnrollment), $this->offeringPlan($student, [$nextCourse]))
             ->assertSessionHasErrors('promotion');
 
         $this->assertDatabaseCount('student_semester_enrollments', 1);

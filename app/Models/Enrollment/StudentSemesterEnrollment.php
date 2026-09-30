@@ -22,6 +22,8 @@ class StudentSemesterEnrollment extends Model
         'status',
         'enrolled_at',
         'completed_at',
+        'academic_term_id',
+        'semester_curriculum_id',
     ];
 
     protected $casts = [
@@ -32,6 +34,16 @@ class StudentSemesterEnrollment extends Model
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
+    }
+
+    public function term(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Academic\AcademicTerm::class, 'academic_term_id');
+    }
+
+    public function curriculum(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Academic\SemesterCurriculum::class, 'semester_curriculum_id');
     }
 
     public function department(): BelongsTo

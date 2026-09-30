@@ -18,6 +18,10 @@ class StudentEnrollmentCourse extends Model
         'attendance_marks',
         'mid_marks',
         'final_marks',
+        'course_offering_id',
+        'course_code',
+        'course_name',
+        'registration_type',
     ];
 
     protected $casts = [
@@ -36,6 +40,11 @@ class StudentEnrollmentCourse extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function offering(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Academic\CourseOffering::class, 'course_offering_id');
     }
 
     public function resultItem(): HasOne

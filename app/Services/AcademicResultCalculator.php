@@ -285,8 +285,8 @@ class AcademicResultCalculator
             return [
                 'student_enrollment_course_id' => $enrollmentCourse->id,
                 'course_id' => $enrollmentCourse->course_id,
-                'course_code' => $enrollmentCourse->course->code,
-                'course_name' => $enrollmentCourse->course->name,
+                'course_code' => $enrollmentCourse->course_code ?? $enrollmentCourse->course->code,
+                'course_name' => $enrollmentCourse->course_name ?? $enrollmentCourse->course->name,
                 'credit_hours' => $enrollmentCourse->credit_hours,
                 'total_marks' => $enrollmentCourse->total_marks,
                 'attendance_marks' => $enrollmentCourse->attendance_marks,

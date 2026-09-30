@@ -15,10 +15,12 @@
                         <small class="text-white-50">Academic history and assigned-course snapshots</small>
                     </div>
                     <div class="add__user__btn">
+                        @can('enrollments.create')
                         <a href="{{ route('addEnrollmentForm') }}">
                             <i class="bi bi-journal-plus"></i>
                             <span>New Enrollment</span>
                         </a>
+                        @endcan
                     </div>
                 </div>
 
@@ -35,7 +37,7 @@
                                 <tr>
                                     <th>Reg. No.</th>
                                     <th>Student</th>
-                                    <th>Academic Year</th>
+                                    <th>Academic Year / Term</th>
                                     <th>Semester</th>
                                     <th>Department / Section</th>
                                     <th>Courses</th>
@@ -53,13 +55,17 @@
                                             <div class="fw-semibold">{{ $enrollment->student->name }}</div>
                                             <small class="text-muted">{{ $enrollment->student->email }}</small>
                                         </td>
-                                        <td>{{ $enrollment->academic_year }}</td>
+                                        <td>{{ $enrollment->academic_year }}<small class="d-block text-muted">{{ $enrollment->term?->name ?? 'Historical enrollment' }}</small></td>
                                         <td><span class="enrollment-semester">{{ $enrollment->semester }}</span></td>
                                         <td>
                                             {{ $enrollment->department->name }}
                                             <small class="text-muted d-block">Section {{ $enrollment->section->name }}</small>
                                         </td>
-                                        <td>{{ $enrollment->courses_count }}</td>
+                                        <td><details><summary>{{ $enrollment->courses_count }} courses</summary>
+                                            @foreach($enrollment->courses as $course)
+                                                <small class="d-block mt-2">{{ $course->course_name ?? $course->offering?->course_name ?? $course->course?->name ?? 'Course #'.$course->course_id }}<span class="d-block text-muted">{{ $course->offering?->teachers->pluck('name')->implode(', ') ?: 'No teaching assignment recorded' }}</span></small>
+                                            @endforeach
+                                        </details></td>
                                         <td>
                                             @if ($enrollment->semesterResult)
                                                 <span class="enrollment-result-state {{ $enrollment->semesterResult->status === 'Pass' ? 'is-pass' : ($enrollment->semesterResult->status === 'Fail' ? 'is-fail' : 'is-draft') }}">
@@ -76,7 +82,7 @@
                                         </td>
                                         <td>{{ $enrollment->enrolled_at->format('d M Y') }}</td>
                                         <td class="text-center">
-                                            @if ($enrollment->status === 'active')
+                                            @if ($enrollment->status === 'active' && auth()->user()->can('enrollments.promote'))
                                                 <a href="{{ route('promoteEnrollmentForm', $enrollment) }}" class="promotion-action">
                                                     <i class="bi bi-arrow-up-right-circle"></i> Promote
                                                 </a>

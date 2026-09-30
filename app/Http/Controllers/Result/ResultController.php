@@ -236,8 +236,8 @@ class ResultController extends Controller
             'courses' => $enrollment->courses->map(fn ($course) => [
                 'student_enrollment_course_id' => $course->id,
                 'course_id' => $course->course_id,
-                'course_name' => $course->course->name,
-                'course_code' => $course->course->code,
+                'course_name' => $course->course_name ?? $course->course->name,
+                'course_code' => $course->course_code ?? $course->course->code,
                 'credit_hours' => (float) $course->credit_hours,
                 'total_marks' => $course->total_marks,
                 'attendance_marks' => $course->attendance_marks,
@@ -280,8 +280,8 @@ class ResultController extends Controller
             'courses' => $enrollment->courses->map(fn ($course) => [
                 'student_enrollment_course_id' => $course->id,
                 'course_id' => $course->course_id,
-                'course_name' => $course->course->name,
-                'course_code' => $course->course->code,
+                'course_name' => $course->course_name ?? $course->course->name,
+                'course_code' => $course->course_code ?? $course->course->code,
                 'credit_hours' => (float) $course->credit_hours,
                 'total_marks' => $course->total_marks,
                 'attendance_marks' => $course->attendance_marks,
