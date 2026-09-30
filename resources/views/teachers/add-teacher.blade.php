@@ -22,6 +22,17 @@
 
                 <div class="row">
 
+                    <div class="col-12 mb-3">
+                        <label for="user_id" class="form-label">Login Account <small class="text-muted">(Optional)</small></label>
+                        <select name="user_id" id="user_id" class="form-select @error('user_id') is-invalid @enderror">
+                            <option value="">Create profile without portal access</option>
+                            @foreach ($users as $user)
+                                <option value="{{ $user->id }}" @selected(old('user_id') == $user->id)>{{ $user->name }} — {{ $user->email }}</option>
+                            @endforeach
+                        </select>
+                        @error('user_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label">Name</label>
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\AccessControlController;
 use App\Http\Controllers\Course\CourseController;
 use App\Http\Controllers\Dashboard\DashbaordController;
 use App\Http\Controllers\Department\DepartmentController;
@@ -36,7 +37,7 @@ Route::controller(AuthController::class)->middleware('guest')->group(function ()
 });
 
 
-Route::prefix('dashboard')->controller(DashbaordController::class)->middleware('auth')->group(function () {
+Route::prefix('dashboard')->controller(DashbaordController::class)->middleware(['auth', 'permission:dashboard.view'])->group(function () {
 
     // Route::get('/add', 'create')->name('addStudentForm');
 
@@ -51,7 +52,7 @@ Route::prefix('dashboard')->controller(DashbaordController::class)->middleware('
     Route::get('/dashboard', 'dashboardView')->name('dashboardView');
 });
 
-Route::prefix('student')->controller(StudentController::class)->middleware('auth')->group(function () {
+Route::prefix('student')->controller(StudentController::class)->middleware(['auth', 'permission:students.manage'])->group(function () {
 
     Route::get('/add', 'create')->name('addStudentForm');
 
@@ -66,20 +67,20 @@ Route::prefix('student')->controller(StudentController::class)->middleware('auth
     Route::get('/show', 'allStudents')->name('allStudents');
 });
 
-Route::prefix('enrollment')->controller(StudentSemesterEnrollmentController::class)->middleware('auth')->group(function () {
+Route::prefix('enrollment')->controller(StudentSemesterEnrollmentController::class)->middleware(['auth', 'permission:enrollments.view'])->group(function () {
 
     Route::get('/show', 'index')->name('allEnrollments');
 
-    Route::get('/add', 'create')->name('addEnrollmentForm');
+    Route::get('/add', 'create')->middleware('permission:enrollments.create')->name('addEnrollmentForm');
 
-    Route::post('/add', 'store')->name('addEnrollment');
+    Route::post('/add', 'store')->middleware('permission:enrollments.create')->name('addEnrollment');
 
-    Route::get('/{enrollment}/promote', 'promote')->name('promoteEnrollmentForm');
+    Route::get('/{enrollment}/promote', 'promote')->middleware('permission:enrollments.promote')->name('promoteEnrollmentForm');
 
-    Route::post('/{enrollment}/promote', 'storePromotion')->name('promoteEnrollment');
+    Route::post('/{enrollment}/promote', 'storePromotion')->middleware('permission:enrollments.promote')->name('promoteEnrollment');
 });
 
-Route::prefix('teacher')->controller(TeacherController::class)->middleware('auth')->group(function () {
+Route::prefix('teacher')->controller(TeacherController::class)->middleware(['auth', 'permission:teachers.manage'])->group(function () {
 
     Route::get('/add', 'create')->name('addTeacherForm');
 
@@ -94,7 +95,7 @@ Route::prefix('teacher')->controller(TeacherController::class)->middleware('auth
     Route::get('/show', 'allTeachers')->name('allTeachers');
 });
 
-Route::prefix('course')->controller(CourseController::class)->middleware('auth')->group(function () {
+Route::prefix('course')->controller(CourseController::class)->middleware(['auth', 'permission:courses.manage'])->group(function () {
 
     Route::get('/add', 'create')->name('addCourseForm');
 
@@ -109,7 +110,7 @@ Route::prefix('course')->controller(CourseController::class)->middleware('auth')
     Route::get('/show', 'allCourses')->name('allCourses');
 });
 
-Route::prefix('event')->controller(EventController::class)->middleware('auth')->group(function () {
+Route::prefix('event')->controller(EventController::class)->middleware(['auth', 'permission:events.manage'])->group(function () {
 
     Route::get('/add', 'eventForm')->name('addEventForm');
 
@@ -125,7 +126,7 @@ Route::prefix('event')->controller(EventController::class)->middleware('auth')->
 });
 
 
-Route::prefix('section')->controller(SectionController::class)->middleware('auth')->group(function () {
+Route::prefix('section')->controller(SectionController::class)->middleware(['auth', 'permission:sections.manage'])->group(function () {
 
     Route::get('/add', 'create')->name('addSectionForm');
 
@@ -142,17 +143,20 @@ Route::prefix('section')->controller(SectionController::class)->middleware('auth
 
 Route::prefix('result')->controller(ResultController::class)->middleware('auth')->group(function () {
 
-    Route::get('/add', 'create')->name('addResultForm');
+    Route::get('/add', 'create')->middleware('permission:results.create')->name('addResultForm');
 
-    Route::post('/add', 'addResult')->name('addResult');
+    Route::post('/add', 'addResult')->middleware('permission:results.create')->name('addResult');
 
     Route::get('/student/{student}/semester-enrollments', 'getStudentResultEnrollments')
+        ->middleware('permission:results.create')
         ->name('result.student.enrollments');
 
     Route::get('/semester-enrollment/{enrollment}/data', 'getEnrollmentResultData')
+        ->middleware('permission:results.create')
         ->name('result.enrollment.data');
 
     Route::get('/get-filter-options/{section}', 'getResultFilterOptions')
+        ->middleware('permission:results.view-all')
         ->name('result.filter.options');
 
     Route::post('/semester-result', 'storeSemesterResult')->name('result.semester.store');
@@ -161,23 +165,25 @@ Route::prefix('result')->controller(ResultController::class)->middleware('auth')
         ->name('result.semester.data');
 
     Route::get('/semester-result/{semesterResult}/sheet', 'getSemesterResultSheet')
+        ->middleware('permission:results.view-all')
         ->name('result.semester.sheet');
 
     Route::get('/student/{student}/academic-history', 'getStudentAcademicHistory')
+        ->middleware('permission:academic-history.view')
         ->name('result.student.history');
 
     Route::put('/semester-result/{semesterResult}', 'updateSemesterResult')
         ->name('result.semester.update');
 
-    Route::get('/get-sections/{department_id}', 'getSectionsByDepartment')->name('getSectionsByDepartment');
+    Route::get('/get-sections/{department_id}', 'getSectionsByDepartment')->middleware('permission:results.view-all')->name('getSectionsByDepartment');
 
-    Route::get('/get-students/{section_id}', 'getStudentsBySection')->name('getStudentsBySection');
+    Route::get('/get-students/{section_id}', 'getStudentsBySection')->middleware('permission:results.view-all')->name('getStudentsBySection');
 
-    Route::get('/show', 'allResults')->name('allResults');
+    Route::get('/show', 'allResults')->middleware('permission:results.view-all')->name('allResults');
 });
 
 
-Route::prefix('users')->controller(UserController::class)->middleware('auth')->group(function () {
+Route::prefix('users')->controller(UserController::class)->middleware(['auth', 'permission:users.manage'])->group(function () {
 
     Route::get('/add', 'addUserForm')->name('addUserForm');
 
@@ -192,7 +198,7 @@ Route::prefix('users')->controller(UserController::class)->middleware('auth')->g
     Route::get('/show', 'allUsers')->name('allUsers');
 });
 
-Route::prefix('department')->controller(DepartmentController::class)->middleware('auth')->group(function () {
+Route::prefix('department')->controller(DepartmentController::class)->middleware(['auth', 'permission:departments.manage'])->group(function () {
 
     Route::get('/add', 'create')->name('addDepartmentForm');
 
@@ -212,4 +218,12 @@ Route::prefix('user/profile')->controller(UserController::class)->middleware('au
     Route::get('/settings', 'userSettingForm')->name('profile.settings.form');
 
     Route::put('/update', 'updateProfile')->name('profile.settings.update');
+});
+
+Route::prefix('access-control')->controller(AccessControlController::class)->middleware(['auth', 'permission:roles.view'])->group(function () {
+    Route::get('/', 'index')->name('access.index');
+    Route::post('/roles', 'storeRole')->middleware('permission:roles.manage')->name('access.roles.store');
+    Route::put('/roles/{role}', 'updateRole')->middleware('permission:permissions.assign')->name('access.roles.update');
+    Route::post('/permissions', 'storePermission')->middleware('permission:permissions.assign')->name('access.permissions.store');
+    Route::put('/users/{user}/roles', 'updateUserRoles')->middleware('permission:users.assign-role')->name('access.users.roles.update');
 });

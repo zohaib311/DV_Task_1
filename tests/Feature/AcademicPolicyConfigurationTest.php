@@ -13,7 +13,6 @@ class AcademicPolicyConfigurationTest extends TestCase
         $this->assertSame(3.0, config('academic.courses.default_credit_hours'));
         $this->assertTrue(config('academic.results.allow_drafts'));
         $this->assertTrue(config('academic.results.require_all_course_marks_to_publish'));
-        $this->assertFalse(config('academic.results.allow_published_result_edits'));
         $this->assertSame(10, config('academic.assessment.defaults.attendance_marks'));
         $this->assertSame(30, config('academic.assessment.defaults.mid_marks'));
         $this->assertSame(60, config('academic.assessment.defaults.final_marks'));

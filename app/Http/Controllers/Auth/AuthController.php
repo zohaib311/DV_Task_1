@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Database\Seeders\AccessControlSeeder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -42,7 +43,7 @@ class AuthController extends Controller
         }
 
 
-        User::create([
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
@@ -50,11 +51,17 @@ class AuthController extends Controller
             'image' => $validated['image'] = $fileName,
         ]);
 
+        // On a fresh installation, the first account becomes the initial
+        // administrator. All later accounts remain unassigned until an
+        // authorized administrator assigns an appropriate role.
+        app(AccessControlSeeder::class)->run();
 
 
         return redirect()
             ->route('login')
-            ->with('success', 'Account created successfully. Please login.');
+            ->with('success', $user->hasRole('Super Admin')
+                ? 'Initial administrator account created successfully. Please sign in.'
+                : 'Account created successfully. An administrator must assign your system role before academic access is available.');
     }
 
     function loginSubmit(Request $request)
@@ -67,7 +74,14 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('allStudents'))->with('success', 'Logged in successfully!');
+            if (! $request->user()->roles()->exists()) {
+                return redirect()->route('profile.settings.form')->with(
+                    'success',
+                    'Your account is pending role assignment. Please contact a system administrator.'
+                );
+            }
+
+            return redirect()->intended(route('dashboardView'))->with('success', 'Logged in successfully!');
         }
 
         return back()->withErrors([

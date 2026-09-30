@@ -114,6 +114,10 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
+        if ($user->hasRole('Super Admin') && ! Auth::user()->hasRole('Super Admin')) {
+            abort(403, 'Only a Super Admin can update this account.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
@@ -146,6 +150,21 @@ class UserController extends Controller
     function deleteUser($id)
     {
         $user = User::findOrFail($id);
+
+        if ($user->id === Auth::id()) {
+            return back()->withErrors(['user' => 'You cannot delete the account currently signed in.']);
+        }
+
+        if ($user->hasRole('Super Admin')) {
+            if (! Auth::user()->hasRole('Super Admin')) {
+                abort(403, 'Only a Super Admin can delete this account.');
+            }
+
+            if (User::role('Super Admin')->count() === 1) {
+                return back()->withErrors(['user' => 'The last Super Admin account cannot be deleted.']);
+            }
+        }
+
         if ($user->image && $user->image !== 'default-user.png') {
             Storage::disk('public')->delete('images/' . $user->image);
         }

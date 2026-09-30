@@ -57,6 +57,7 @@
                                     <th>Email</th>
                                     <th>Phone</th>
                                     <th>Course</th>
+                                    <th>Login Account</th>
                                 </tr>
                             </thead>
 
@@ -94,6 +95,14 @@
                                         </td>
 
                                         <td>
+                                            @if ($teacher->user)
+                                                <span class="badge bg-success">Linked</span>
+                                            @else
+                                                <span class="text-muted small">Not linked</span>
+                                            @endif
+                                        </td>
+
+                                        <td>
                                             <div class="action__buttons">
 
                                                 <a href="{{ route('editTeacherForm', $teacher->id) }}"
@@ -115,7 +124,7 @@
                                 @empty
 
                                     <tr>
-                                        <td colspan="6" class="text-center py-4">
+                                        <td colspan="8" class="text-center py-4">
                                             No teachers found.
                                         </td>
                                     </tr>

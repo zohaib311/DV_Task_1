@@ -7,12 +7,36 @@ use App\Models\User;
 
 class SemesterResultPolicy
 {
+    public function viewAny(User $user): bool
+    {
+        return $user->can('results.view-all');
+    }
+
+    public function view(User $user, SemesterResult $semesterResult): bool
+    {
+        return $user->can('results.view-all');
+    }
+
+    public function create(User $user): bool
+    {
+        return $user->can('results.create');
+    }
+
+    public function publish(User $user): bool
+    {
+        return $user->can('results.publish');
+    }
+
     public function update(User $user, SemesterResult $semesterResult): bool
     {
-        // A draft must remain editable even if legacy or manually corrected
-        // data contains an accidental publication timestamp.
+        if (! $user->can('results.edit')) {
+            return false;
+        }
+
+        // A published result is historical data. Its correction needs a separate,
+        // explicitly assigned permission regardless of its calculated outcome.
         return $semesterResult->status === 'Draft'
             || $semesterResult->published_at === null
-            || config('academic.results.allow_published_result_edits');
+            || $user->can('results.edit-published');
     }
 }

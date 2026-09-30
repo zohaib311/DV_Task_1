@@ -67,7 +67,6 @@ return [
     'results' => [
         'allow_drafts' => (bool) env('ACADEMIC_ALLOW_RESULT_DRAFTS', true),
         'require_all_course_marks_to_publish' => true,
-        'allow_published_result_edits' => (bool) env('ACADEMIC_ALLOW_PUBLISHED_RESULT_EDITS', false),
     ],
 
     'promotion' => [

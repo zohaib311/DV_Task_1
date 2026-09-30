@@ -4,7 +4,7 @@
     data-result-url="{{ url('/result/semester-result') }}"
     data-grade-scale='@json(config('academic.grade_scale'))'
     data-allow-drafts="{{ config('academic.results.allow_drafts') ? 'true' : 'false' }}"
-    data-allow-published-edits="{{ config('academic.results.allow_published_result_edits') ? 'true' : 'false' }}"
+    data-allow-published-edits="{{ auth()->user()?->can('results.edit-published') ? 'true' : 'false' }}"
     data-final-minimum-enabled="{{ config('academic.assessment.final_minimum.enabled') ? 'true' : 'false' }}"
     data-final-minimum-percentage="{{ config('academic.assessment.final_minimum.minimum_percentage') }}">
     <div class="drawer-header">

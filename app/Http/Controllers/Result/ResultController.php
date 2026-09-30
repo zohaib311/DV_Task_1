@@ -313,6 +313,7 @@ class ResultController extends Controller
      */
     public function storeSemesterResult(Request $request, AcademicResultCalculator $calculator)
     {
+        Gate::authorize('create', SemesterResult::class);
         $validated = $request->validate($this->semesterResultRules());
 
         $enrollment = StudentSemesterEnrollment::query()
@@ -320,6 +321,9 @@ class ResultController extends Controller
             ->where('student_id', $validated['student_id'])
             ->firstOrFail();
         $publish = $validated['action'] === 'publish';
+        if ($publish) {
+            Gate::authorize('publish', SemesterResult::class);
+        }
 
         $prepared = $calculator->prepareEnrollmentResult(
             $enrollment,
@@ -377,6 +381,9 @@ class ResultController extends Controller
             'The selected enrollment does not belong to this semester result.'
         );
         $publish = $validated['action'] === 'publish';
+        if ($publish) {
+            Gate::authorize('publish', SemesterResult::class);
+        }
         $wasPublished = $semesterResult->published_at !== null;
 
         $prepared = $calculator->prepareEnrollmentResult(

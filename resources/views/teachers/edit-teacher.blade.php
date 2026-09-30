@@ -52,6 +52,18 @@
 
                 <div class="row g-4">
 
+                    <div class="col-12">
+                        <label for="user_id" class="form-label">Login Account <small class="text-muted">(Optional)</small></label>
+                        <select name="user_id" id="user_id" class="form-select @error('user_id') is-invalid @enderror">
+                            <option value="">No portal account linked</option>
+                            @foreach ($users as $user)
+                                <option value="{{ $user->id }}" @selected(old('user_id', $teacher->user_id) == $user->id)>{{ $user->name }} — {{ $user->email }}</option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted">A linked account will receive Teacher Panel access in Phase 9C.</small>
+                        @error('user_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
                     <div class="col-md-6">
 
                         <label for="name" class="form-label">
@@ -93,7 +105,7 @@
                             Course
                         </label>
 
-                        <input type="text" name="class" id="course" value="{{ old('course', $teacher->course) }}"
+                        <input type="text" name="course" id="course" value="{{ old('course', $teacher->course) }}"
                             class="form-control @error('course') is-invalid @enderror" placeholder="Enter course">
 
                         @error('course')

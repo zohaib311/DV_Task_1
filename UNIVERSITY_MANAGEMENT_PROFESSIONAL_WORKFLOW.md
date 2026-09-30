@@ -245,12 +245,12 @@ Required records:
 
 ## 9. Delivery roadmap
 
-### Phase 9A — Access control foundation
+### Phase 9A — Access control foundation (Completed)
 
-- Add database-backed roles and permissions.
-- Link teacher and student records to login accounts.
-- Build Admin Role & Permission screens.
-- Add Admin, Teacher, and Student policies/middleware.
+- Database-backed roles and permissions, default-role seeding, and Super Admin gate bypass are in place.
+- Student and teacher profiles can be linked to one User account; existing profiles are matched by email during seeding where safe.
+- The Admin Role & Permission screen supports role creation, permission assignment, and user-role assignment.
+- Existing administrative routes, result policies, and sidebar navigation enforce permissions server-side.
 
 ### Phase 9B — Academic term, curriculum, and offering
 
@@ -321,13 +321,13 @@ Required records:
 
 ---
 
-## First implementation step
+## Next implementation step
 
-Start with Phase 9A — Access Control Foundation:
+Phase 9A is complete. Continue with Phase 9B — Academic Term, Curriculum, and Course Offering:
 
-1. Introduce roles and permissions.
-2. Create Admin Role & Permission screens.
-3. Link teacher/student profiles to User accounts.
-4. Protect existing enrollment, result, promotion, and course actions with policies.
+1. Create academic year/term records.
+2. Define the department-semester curriculum and approved courses.
+3. Create section-specific course offerings and teacher assignments.
+4. Connect each student enrollment course to its live course offering.
 
-Attendance and teacher-mark modules should not be built before this access-control foundation is complete.
+Attendance and teacher-mark modules must continue to wait until Phase 9B has established the live course-offering structure.

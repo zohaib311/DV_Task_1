@@ -45,6 +45,17 @@
                 </div>
 
                 <div class="row g-3">
+                    <div class="col-12">
+                        <label for="user_id" class="form-label">Login account <span class="form-label-hint">Optional</span></label>
+                        <select name="user_id" id="user_id" class="form-select @error('user_id') is-invalid @enderror">
+                            <option value="">Create profile without portal access</option>
+                            @foreach ($users as $user)
+                                <option value="{{ $user->id }}" @selected(old('user_id') == $user->id)>{{ $user->name }} — {{ $user->email }}</option>
+                            @endforeach
+                        </select>
+                        <small class="student-field-hint">Link the student to an existing User account for the future Student Portal.</small>
+                        @error('user_id') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                    </div>
                     <div class="col-md-6">
                         <label for="name" class="form-label">Full name</label>
                         <div class="student-input-wrap">

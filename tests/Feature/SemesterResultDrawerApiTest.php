@@ -312,7 +312,7 @@ class SemesterResultDrawerApiTest extends TestCase
         $secondResult = SemesterResult::where('student_semester_enrollment_id', $secondEnrollment->id)->firstOrFail();
         $this->assertSame('3.67', $secondResult->cgpa);
 
-        config()->set('academic.results.allow_published_result_edits', true);
+        $user->givePermissionTo('results.edit-published');
         $firstResult = SemesterResult::where('student_semester_enrollment_id', $firstEnrollment->id)->firstOrFail();
         $this->actingAs($user)->putJson(route('result.semester.update', $firstResult), [
             'student_id' => $student->id,

@@ -15,6 +15,7 @@
 
     <ul class="nav nav-pills flex-column gap-2 px-3 flex-grow-1">
 
+        @can('dashboard.view')
         <li class="nav-item">
             <a href="{{ route('dashboardView') }}"
                 class="sidebar-link nav-link {{ request()->is('dashboard*') ? 'active' : '' }}">
@@ -22,7 +23,9 @@
                 <span class="fw-bold">Dashboard</span>
             </a>
         </li>
+        @endcan
 
+        @can('students.manage')
         <li class="nav-item">
             <a href="{{ route('allStudents') }}"
                 class="sidebar-link nav-link {{ request()->is('student*') ? 'active' : '' }}">
@@ -30,7 +33,9 @@
                 <span>Students</span>
             </a>
         </li>
+        @endcan
 
+        @can('enrollments.view')
         <li class="nav-item">
             <a href="{{ route('allEnrollments') }}"
                 class="sidebar-link nav-link {{ request()->is('enrollment*') ? 'active' : '' }}">
@@ -38,7 +43,9 @@
                 <span>Enrollments</span>
             </a>
         </li>
+        @endcan
 
+        @can('teachers.manage')
         <li class="nav-item">
             <a href="{{ route('allTeachers') }}"
                 class="sidebar-link nav-link {{ request()->is('teacher*') ? 'active' : '' }}">
@@ -46,7 +53,9 @@
                 <span>Teachers</span>
             </a>
         </li>
+        @endcan
 
+        @can('courses.manage')
         <li class="nav-item">
             <a href="{{ route('allCourses') }}"
                 class="sidebar-link nav-link {{ request()->is('course*') ? 'active' : '' }}">
@@ -54,7 +63,9 @@
                 <span>Courses</span>
             </a>
         </li>
+        @endcan
 
+        @can('events.manage')
         <li class="nav-item">
             <a href="{{ route('allEvents') }}"
                 class="sidebar-link nav-link {{ request()->is('event*') ? 'active' : '' }}">
@@ -62,7 +73,9 @@
                 <span>Events</span>
             </a>
         </li>
+        @endcan
 
+        @can('departments.manage')
         <li class="nav-item">
             <a href="{{ route('allDepartments') }}"
                 class="sidebar-link nav-link {{ request()->is('department*') ? 'active' : '' }}">
@@ -70,7 +83,9 @@
                 <span>Departments</span>
             </a>
         </li>
+        @endcan
 
+        @can('sections.manage')
         <li class="nav-item">
             <a href="{{ route('allSections') }}"
                 class="sidebar-link nav-link {{ request()->is('section*') ? 'active' : '' }}">
@@ -78,7 +93,9 @@
                 <span>Sections</span>
             </a>
         </li>
+        @endcan
 
+        @can('results.view-all')
         <li class="nav-item">
             <a href="{{ route('allResults') }}"
                 class="sidebar-link nav-link {{ request()->is('result*') ? 'active' : '' }}">
@@ -86,7 +103,9 @@
                 <span>Results</span>
             </a>
         </li>
+        @endcan
 
+        @can('users.manage')
         <li class="nav-item">
             <a href="{{ route('allUsers') }}"
                 class="sidebar-link nav-link {{ request()->is('users*') ? 'active' : '' }}">
@@ -94,6 +113,17 @@
                 <span>Users</span>
             </a>
         </li>
+        @endcan
+
+        @can('roles.view')
+        <li class="nav-item">
+            <a href="{{ route('access.index') }}"
+                class="sidebar-link nav-link {{ request()->is('access-control*') ? 'active' : '' }}">
+                <i class="bi bi-shield-lock me-2 fs-5"></i>
+                <span>Access Control</span>
+            </a>
+        </li>
+        @endcan
 
     </ul>
 

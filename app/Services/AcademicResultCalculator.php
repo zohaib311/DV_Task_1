@@ -249,10 +249,6 @@ class AcademicResultCalculator
             $errors['result'] = 'A semester result already exists for this enrollment.';
         }
 
-        if ($resultBeingUpdated?->published_at !== null && ! config('academic.results.allow_published_result_edits')) {
-            $errors['result'] = 'Published results cannot be edited under the current academic policy.';
-        }
-
         if (! $publish && ! config('academic.results.allow_drafts')) {
             $errors['result'] = 'Saving result drafts is disabled by the current academic policy.';
         }

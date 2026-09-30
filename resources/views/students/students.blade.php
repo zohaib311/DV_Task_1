@@ -339,7 +339,7 @@
         </div>
     @endforeach
 
-    <x-student.add-student-drawer :departments="$departments" :sections="$sections" />
+    <x-student.add-student-drawer :departments="$departments" :sections="$sections" :users="$users" />
 @endsection
 
 @section('scripts')

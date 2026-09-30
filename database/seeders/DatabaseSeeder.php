@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
             SectionSeeder::class,
             CourseSeeder::class,
+            AccessControlSeeder::class,
         ]);
     }
 }
