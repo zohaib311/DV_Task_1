@@ -13,5 +13,5 @@
     </dl>
     <div class="teaching-section-heading"><h2>Your classes</h2><span>Up to five offerings · active first</span></div>
     @include('teaching.partials.offering-table')
-    <p class="teaching-footnote"><i class="bi bi-shield-check" aria-hidden="true"></i> Only courses assigned to your linked teacher profile appear here. Authorized teachers can manage attendance from the sidebar or class roster. Assessment entry follows in the next phase.</p>
+    <p class="teaching-footnote"><i class="bi bi-shield-check" aria-hidden="true"></i> Only courses assigned to your linked teacher profile appear here. Use the sidebar to manage attendance, assessments and marks according to your permissions.</p>
 @endsection

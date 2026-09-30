@@ -333,6 +333,7 @@ class ResultController extends Controller
         );
 
         $semesterResult = DB::transaction(function () use ($calculator, $enrollment, $prepared, $publish) {
+            $calculator->guardLegacyWrite($enrollment);
             $resultData = $prepared['result'];
             $semesterResult = SemesterResult::create($resultData);
             $this->syncSemesterResultItems($semesterResult, $prepared['items']);
@@ -395,6 +396,7 @@ class ResultController extends Controller
         );
 
         $semesterResult = DB::transaction(function () use ($calculator, $semesterResult, $enrollment, $prepared, $publish, $wasPublished, $request) {
+            $calculator->guardLegacyWrite($enrollment);
             $semesterResult->load('items');
             $before = $this->resultAuditSnapshot($semesterResult);
             $resultData = $prepared['result'];

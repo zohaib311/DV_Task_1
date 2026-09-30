@@ -90,6 +90,11 @@ class CourseOfferingController extends Controller
                 if ($offering->status !== 'planned' || $offering->enrollmentCourses()->exists()) {
                     throw ValidationException::withMessages(['offering' => 'An activated or enrolled offering is locked to preserve its course scheme and teacher assignments.']);
                 }
+                if ($offering->assessment_scheme_approved_at && (
+                    $offering->curriculum_course_id !== $course->id || $offering->academic_term_id !== $term->id || $offering->section_id !== $section->id
+                )) {
+                    throw ValidationException::withMessages(['offering' => 'An approved assessment scheme locks the offering course, term and section. You may activate this planned offering without changing its academic identity.']);
+                }
             }
             if (CourseOffering::where('academic_term_id', $term->id)->where('section_id', $section->id)->where('course_id', $course->course_id)->when($offering->exists, fn ($query) => $query->whereKeyNot($offering->id))->exists()) {
                 throw ValidationException::withMessages(['curriculum_course_id' => 'This course already has an offering for the selected term and section.']);

@@ -344,12 +344,30 @@ Implementation and policy:
 
 Manual acceptance checklist: [Phase 9D testing guide](docs/testing/PHASE_9D_ATTENDANCE_GUIDE.md). Automated tests: `tests/Feature/Attendance/AttendanceWorkflowTest.php`. Browser visual acceptance remains manual.
 
-### Phase 9E — Assessments and teacher marks
+### Phase 9E — Assessments and teacher marks (Completed)
 
-- Flexible assessment components.
-- Assignment, quiz, midterm, final, and practical entries.
-- Teacher mark entry and validation.
-- Result submission/review workflow.
+- [x] Admin-approved offering-level component allocations: attendance, assignment, quiz, midterm, final, practical, and project.
+- [x] Individual assessment definitions, dates, raw maxima, and contribution weights within approved budgets.
+- [x] Assigned-teacher mark entry, incomplete/zero distinction, range/roster validation, optimistic revision checks, and correction audits.
+- [x] Course marks previews, immutable submission snapshots, reviewer return/approval, and editing locks.
+
+Implementation details:
+
+- **Academic Setup → Course Offerings → Assessment scheme** configures each offering's component allocation. Allocations must sum exactly to the saved course total; attendance retains the existing saved attendance maximum so Phase 9D/enrollment snapshots remain consistent. Zero disables a component. Approval is permanent for that offering, with actor/time recorded; it does not rewrite the catalog, curriculum, or old enrollment/result snapshots.
+- Schemes can be approved for planned or active offerings, but not for offerings already used in an existing semester result (including a draft). Approved schemes also lock planned offering academic identity; activation and pre-activation teacher assignment remain available.
+- **Teacher Panel → Assessments & Marks** lists only assigned offerings. Teachers create assessments under the approved non-attendance components. Definition changes are allowed only while all marks are blank, with version checks and audit history. No destructive assessment-delete endpoint is exposed.
+- Each assessment has a raw maximum and a course-mark weight. Example: two assignments, each out of 20, can each carry 5 marks in a 10-mark assignment component. Scoring 10/20 and 20/20 produces 2.5 + 5 = 7.5/10. Assessment weights cannot exceed the component budget and must exactly cover it before submission.
+- A blank mark is incomplete; numeric zero is a real score. Scores must be nonnegative, within the assessment maximum, and have at most two decimal places. Every current enrolled student must appear exactly once in a save payload. New enrollments produce unmarked rows until assessed; stale roster/version submissions are rejected.
+- Assessment dates must be within the term. Future assessments can be planned but cannot receive marks. Changing an existing nonblank score requires a correction reason; actors and before/after data are audited.
+- Attendance is calculated by the Phase 9D service, not entered manually as an assessment. Missing counted attendance, any draft attendance sessions, blank marks, missing component allocations, or an empty roster block submission. No automatic zero is invented for N/A attendance.
+- Submission freezes the component scheme, raw scores/maxima/weights, attendance policy/counts/marks, enrollment identities, and course totals in a JSON snapshot. It changes the offering to `marks_submitted`, blocking teacher marks/definitions, attendance changes, and new enrollment through the normal workflow.
+- **Academic Setup → Assessment Reviews** allows independent reviewers to return a submission with instructions (offering becomes active) or approve it (offering becomes reviewed/read-only). Assigned teachers cannot review their own class even if given the review permission. Returning never modifies the old snapshot; resubmission creates a new snapshot. Duplicate/stale reviews are rejected.
+- New global permission `assessments.review` is granted additively to Academic Admin; Super Admin retains its existing bypass. HOD is not granted unscoped global review access automatically. Teacher definitions, marks, and submission separately require `assessments.manage-assigned`, `marks.manage-assigned`, and `results.submit`, in addition to assignment/linked-profile checks.
+- Existing role customizations and demo passwords are preserved. For old **Demo Teacher (9C)** accounts, explicitly enable the three teacher permissions above in Access Control (plus attendance permission for recording sessions).
+- **Compatibility boundary:** offerings without an approved flexible scheme keep the existing manual result workflow. Once a flexible scheme is approved, the legacy result drawer cannot save/publish a result for an enrollment containing that offering. This prevents an inconsistent 3-component result bypass. Approval of a course submission does not publish a semester result or recalculate SGPA/CGPA; the Phase 9F integration remains to be implemented.
+- Models/services use `app/Models/Assessment` and `app/Services/Assessment`; teacher and academic controllers remain in their existing module folders. Routes are in `routes/assessments.php`; shared previews, teacher views, and admin views live in their respective assessment folders. Existing purple layouts/sidebar groups are reused.
+
+Manual acceptance checklist: [Phase 9E testing guide](docs/testing/PHASE_9E_ASSESSMENT_GUIDE.md). Automated coverage: `tests/Feature/Assessment/AssessmentWorkflowTest.php` plus the existing regression suite. Browser visual acceptance remains manual.
 
 ### Phase 9F — Result moderation and publication
 
@@ -395,10 +413,10 @@ Manual acceptance checklist: [Phase 9D testing guide](docs/testing/PHASE_9D_ATTE
 
 ## Next implementation step
 
-Phases 9A, 9B, 9C, and 9D are complete. Next is **Phase 9E — Assessments and teacher marks**:
+Phases 9A–9E are complete. Next is **Phase 9F — Result moderation and publication**:
 
-1. Add configurable assessment components and individual assignment/quiz/exam records.
-2. Add authorized teacher mark entry within approved component allocations.
-3. Build submission/review workflow, retaining the existing enrollment and attendance snapshots.
+1. Aggregate approved offering submissions into semester results without relying on manual component entry.
+2. Implement authorized final review/publication, grade/SGPA/CGPA calculation, and offering completion.
+3. Preserve flexible component/attendance snapshots in published result items and audit authorized corrections.
 
 Sections 1–8 above describe the overall requirements, not additional independent implementation phases. Their work is delivered through roadmap phases 9A–9H. Result aggregation and moderation remain scheduled for 9F.

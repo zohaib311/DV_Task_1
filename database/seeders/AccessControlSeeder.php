@@ -18,7 +18,7 @@ class AccessControlSeeder extends Seeder
         'Academic Admin' => [
             'dashboard.view', 'roles.view', 'roles.manage', 'permissions.assign', 'users.assign-role', 'users.manage', 'students.manage', 'teachers.manage',
             'departments.manage', 'sections.manage', 'courses.manage', 'events.manage',
-            'terms.manage', 'curriculum.manage', 'offerings.manage',
+            'terms.manage', 'curriculum.manage', 'offerings.manage', 'assessments.review',
             'enrollments.view', 'enrollments.create', 'enrollments.promote', 'enrollments.manage-courses',
             'results.view-all', 'results.create', 'results.edit', 'results.publish',
             'academic-history.view', 'audit.view',
@@ -48,7 +48,7 @@ class AccessControlSeeder extends Seeder
         'results.view-all', 'results.create', 'results.edit', 'results.submit', 'results.approve',
         'results.publish', 'results.edit-published',
         'student.profile.view-own', 'student.attendance.view-own', 'student.result.view-own',
-        'academic-history.view', 'audit.view',
+        'academic-history.view', 'audit.view', 'assessments.review',
     ];
 
     public function run(): void

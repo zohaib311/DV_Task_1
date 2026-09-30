@@ -12,7 +12,7 @@
             <td>{{ $offering->semester }}<small>{{ $offering->curriculumCourse->curriculum->version }}</small></td>
             <td>{{ $offering->teachers->pluck('name')->implode(', ') }}</td><td>{{ $offering->enrollment_courses_count }}</td>
             <td><span class="academic-badge {{ $offering->status === 'active' ? 'is-active' : '' }}">{{ ucfirst(str_replace('_', ' ', $offering->status)) }}</span></td>
-            <td><a href="{{ route('academic.offerings.edit', $offering) }}">{{ $offering->status === 'planned' ? 'Manage' : 'View' }}</a></td>
+            <td><a href="{{ route('academic.offerings.edit', $offering) }}">{{ $offering->status === 'planned' ? 'Manage' : 'View' }}</a><a class="d-block mt-2" href="{{ route('academic.assessment-schemes.edit', $offering) }}">Assessment scheme</a></td>
         </tr>@empty<tr><td colspan="7" class="academic-empty">No course offerings yet. Approve a curriculum, then assign its courses to a term, section, and teacher.</td></tr>@endforelse
     </tbody></table></div>{{ $offerings->links() }}
 @endsection

@@ -3,6 +3,9 @@
 @section('description', $offering->course_code.' · '.$offering->semester.' · '.$offering->term->name)
 @section('header-actions')<a href="{{ route('teaching.offerings.index') }}" class="btn academic-header-btn"><i class="bi bi-arrow-left" aria-hidden="true"></i> My courses</a>@endsection
 @section('teaching-content')
+    @canany(['assessments.manage-assigned', 'marks.manage-assigned', 'results.submit'])
+        <div class="academic-actions mb-3 mt-0"><a class="btn btn-primary" href="{{ route('teaching.assessments.show', $offering) }}">Assessments &amp; marks</a></div>
+    @endcanany
     @can('attendance.manage-assigned')
         <div class="academic-actions mb-4 mt-0"><a class="btn btn-primary" href="{{ route('teaching.attendance.offering', $offering) }}">Manage attendance</a></div>
     @endcan

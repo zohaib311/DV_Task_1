@@ -1,0 +1,6 @@
+<div class="row g-3">
+    <div class="col-md-6"><label for="assessment-title" class="form-label">Assessment title</label><input id="assessment-title" class="form-control" name="title" maxlength="120" value="{{ old('title', $assessment->title ?? '') }}" placeholder="Assignment 1" required></div>
+    <div class="col-md-6"><label for="assessment-date" class="form-label">Assessment date</label><input id="assessment-date" class="form-control" type="date" name="held_on" min="{{ $offering->term->starts_on->toDateString() }}" max="{{ $offering->term->ends_on->toDateString() }}" value="{{ old('held_on', isset($assessment) ? $assessment->held_on->toDateString() : today()->toDateString()) }}" required></div>
+    <div class="col-md-6"><label for="assessment-maximum" class="form-label">Raw maximum (paper marks)</label><input id="assessment-maximum" class="form-control" type="number" name="maximum" min="0.01" max="10000" step="0.01" value="{{ old('maximum', $assessment->maximum ?? '') }}" required></div>
+    <div class="col-md-6"><label for="assessment-weight" class="form-label">Weight (contribution to course marks)</label><input id="assessment-weight" class="form-control" type="number" name="weight" min="0.01" max="1000" step="0.01" value="{{ old('weight', $assessment->weight ?? '') }}" required></div>
+</div>

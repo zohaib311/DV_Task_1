@@ -3,6 +3,9 @@
         <details class="sidebar-group" @if(request()->routeIs('teaching.*')) open @endif>
             <summary class="sidebar-link"><i class="bi bi-person-workspace me-2 fs-5" aria-hidden="true"></i><span>Teacher Panel</span><i class="bi bi-chevron-down sidebar-group-arrow" aria-hidden="true"></i></summary>
             <ul class="sidebar-submenu">
+                @canany(['assessments.manage-assigned', 'marks.manage-assigned', 'results.submit'])
+                    <li><a href="{{ route('teaching.assessments.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('teaching.assessments.*')])>Assessments &amp; Marks</a></li>
+                @endcanany
                 @can('attendance.manage-assigned')
                     <li><a href="{{ route('teaching.attendance.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('teaching.attendance.*')]) @if(request()->routeIs('teaching.attendance.*')) aria-current="page" @endif>Attendance</a></li>
                 @endcan

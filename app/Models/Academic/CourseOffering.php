@@ -13,7 +13,22 @@ class CourseOffering extends Model
 {
     protected $fillable = ['academic_term_id', 'curriculum_course_id', 'course_id', 'department_id', 'section_id', 'semester', 'course_code', 'course_name', 'credit_hours', 'total_marks', 'attendance_marks', 'mid_marks', 'final_marks', 'status'];
 
-    protected $casts = ['credit_hours' => 'decimal:1', 'attendance_policy' => 'array'];
+    protected $casts = ['credit_hours' => 'decimal:1', 'attendance_policy' => 'array', 'assessment_scheme_approved_at' => 'datetime'];
+
+    public function assessmentComponents()
+    {
+        return $this->hasMany(\App\Models\Assessment\AssessmentComponent::class);
+    }
+
+    public function assessmentSubmissions()
+    {
+        return $this->hasMany(\App\Models\Assessment\AssessmentSubmission::class);
+    }
+
+    public function assessmentAudits()
+    {
+        return $this->hasMany(\App\Models\Assessment\AssessmentAudit::class);
+    }
 
     public function attendanceSessions()
     {

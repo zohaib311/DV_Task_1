@@ -58,6 +58,7 @@ class AttendanceService
     {
         DB::transaction(function () use ($user, $offeringId, $sessionId, $data, $cancel) {
             $offering = $this->offering($user, $offeringId);
+            $offering = CourseOffering::with('term')->lockForUpdate()->findOrFail($offering->id);
             $session = $offering->attendanceSessions()->lockForUpdate()->findOrFail($sessionId);
             $this->assertOpen($offering);
             if ($session->status === 'cancelled') {
