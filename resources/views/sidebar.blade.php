@@ -28,6 +28,14 @@
         @endcan
 
         @include('layouts.partials.sidebar-teaching')
+        @can('student.attendance.view-own')
+        <li class="nav-item">
+            <details class="sidebar-group" @if(request()->routeIs('student.attendance.*')) open @endif>
+                <summary class="sidebar-link"><i class="bi bi-mortarboard me-2" aria-hidden="true"></i> Student Portal <i class="bi bi-chevron-down sidebar-group-arrow" aria-hidden="true"></i></summary>
+                <ul class="sidebar-submenu"><li><a href="{{ route('student.attendance.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.attendance.*')])>My Attendance</a></li></ul>
+            </details>
+        </li>
+        @endcan
 
         @can('students.manage')
         <li class="nav-item">

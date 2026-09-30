@@ -13,7 +13,12 @@ class CourseOffering extends Model
 {
     protected $fillable = ['academic_term_id', 'curriculum_course_id', 'course_id', 'department_id', 'section_id', 'semester', 'course_code', 'course_name', 'credit_hours', 'total_marks', 'attendance_marks', 'mid_marks', 'final_marks', 'status'];
 
-    protected $casts = ['credit_hours' => 'decimal:1'];
+    protected $casts = ['credit_hours' => 'decimal:1', 'attendance_policy' => 'array'];
+
+    public function attendanceSessions()
+    {
+        return $this->hasMany(\App\Models\Attendance\AttendanceSession::class);
+    }
 
     public function term()
     {

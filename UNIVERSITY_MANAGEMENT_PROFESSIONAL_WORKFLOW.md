@@ -319,12 +319,30 @@ Implementation details:
 
 Automated coverage: `tests/Feature/Teaching/TeacherPanelTest.php`. Run `php artisan test` for the full regression suite. Browser visual acceptance remains a manual check.
 
-### Phase 9D — Attendance
+### Phase 9D — Attendance (Completed)
 
-- Attendance sessions and records.
-- Teacher attendance entry.
-- Student attendance view.
-- Attendance-to-marks calculation policy.
+- [x] Offering-based attendance sessions, per-enrollment-course records, and immutable audit entries.
+- [x] Assigned teacher entry for Present, Absent, Late, and Excused, with optional private notes.
+- [x] Student-owned attendance summary and session history, protected against other-student access.
+- [x] Server-calculated percentage and attendance marks using each enrollment course's saved attendance maximum.
+
+Implementation and policy:
+
+- Teacher Panel now includes **Attendance**; each class roster also links to its attendance workspace. Student Portal includes **My Attendance** (attendance only; the full portal remains Phase 9G).
+- Routes, controllers, services, models, views, and tests are grouped under attendance-specific folders/files. Existing purple academic layouts and sidebar dropdowns are reused.
+- A session is identified by offering, class date, type (lecture/lab/tutorial), and slot (1–20). A second genuine lecture on the same day uses another slot; duplicate combinations are blocked. Dates must be within the term and not in the future.
+- Creating a session snapshots its eligible roster: active, unpublished enrollments registered on/before that date. New students do not get silently added to an earlier session. Empty rosters are rejected.
+- New sessions are drafts and start with all statuses unmarked. Every saved roster entry must have an explicit valid status before the session becomes completed. Missing, foreign, or duplicated submitted records are rejected transactionally.
+- Only completed sessions count. Cancellation requires a reason, retains all records/audits, excludes the session from totals, and cannot be undone. Class dates/types/rosters cannot be rewritten after creation.
+- Configurable defaults in `config/attendance.php`: Present = 1 credit, Late = 0.5, Absent = 0, Excused excluded. These are implementation defaults, not a claimed official university policy; confirm them before live academic use. The policy is snapshotted on each offering's first session and is not editable through teacher forms.
+- Percentage = attendance credits / counted sessions × 100. Marks = credits / counted sessions × the enrollment course's saved attendance allocation, rounded to two decimals. No counted sessions (including all-excused sessions) displays N/A instead of zero.
+- Teachers with `offerings.view-assigned` AND `attendance.manage-assigned`, a linked teacher profile, and an explicit offering assignment can manage attendance. Co-teachers share access. Corrections to completed sessions require a reason and preserve before/after records plus the acting user in the audit. Revision checks reject stale submissions.
+- Non-active offerings/terms and sessions containing promoted/completed/withdrawn/published enrollments are read-only. Existing published semester result snapshots are never recalculated by attendance edits. Students with academic enrollment history cannot be deleted through the existing student screen.
+- Student access requires `student.attendance.view-own` and a linked student profile. Only that student's completed attendance records are exposed; drafts, cancellations, teacher notes, audits, and other students' records are excluded.
+- Attendance totals are currently **live calculated previews**, not an automatic replacement for the existing manual result drawer. Flexible assessment entry is 9E; aggregating teacher attendance/marks into moderated final results is 9F. No unrestricted manual override of the new calculated attendance totals is provided; corrections use the audited session workflow.
+- Existing roles and passwords are not reset. The standard Teacher role already includes attendance permission. The earlier **Demo Teacher (9C)** role intentionally has fewer permissions: explicitly enable `attendance.manage-assigned` in Access Control to test attendance with those demo logins.
+
+Manual acceptance checklist: [Phase 9D testing guide](docs/testing/PHASE_9D_ATTENDANCE_GUIDE.md). Automated tests: `tests/Feature/Attendance/AttendanceWorkflowTest.php`. Browser visual acceptance remains manual.
 
 ### Phase 9E — Assessments and teacher marks
 
@@ -377,10 +395,10 @@ Automated coverage: `tests/Feature/Teaching/TeacherPanelTest.php`. Run `php arti
 
 ## Next implementation step
 
-Phases 9A, 9B, and 9C are complete. Next is **Phase 9D — Attendance**:
+Phases 9A, 9B, 9C, and 9D are complete. Next is **Phase 9E — Assessments and teacher marks**:
 
-1. Add attendance sessions and per-enrollment student attendance records.
-2. Extend assigned teacher offerings with authorized attendance entry.
-3. Add student-specific attendance viewing and attendance-to-marks policy calculations.
+1. Add configurable assessment components and individual assignment/quiz/exam records.
+2. Add authorized teacher mark entry within approved component allocations.
+3. Build submission/review workflow, retaining the existing enrollment and attendance snapshots.
 
-Sections 1–8 above describe the overall requirements, not additional independent implementation phases. Their work is delivered through roadmap phases 9A–9H. Attendance and teacher-mark modules remain scheduled for 9D and 9E respectively.
+Sections 1–8 above describe the overall requirements, not additional independent implementation phases. Their work is delivered through roadmap phases 9A–9H. Result aggregation and moderation remain scheduled for 9F.

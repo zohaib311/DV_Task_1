@@ -115,6 +115,10 @@ class StudentController extends Controller
     {
         $student = Student::findOrFail($id);
 
+        if ($student->semesterEnrollments()->exists()) {
+            return redirect()->route('allStudents')->with('error', 'This student has academic enrollment history and cannot be deleted. Enrollment and attendance records must be preserved.');
+        }
+
         if ($student->image && $student->image !== 'default-user.png') {
             Storage::disk('public')->delete('images/' . $student->image);
         }
