@@ -81,7 +81,11 @@ class AuthController extends Controller
                 );
             }
 
-            return redirect()->intended(route('dashboardView'))->with('success', 'Logged in successfully!');
+            $landingRoute = $request->user()->can('offerings.view-assigned') && ! $request->user()->can('offerings.manage')
+                ? 'teaching.dashboard'
+                : 'dashboardView';
+
+            return redirect()->intended(route($landingRoute))->with('success', 'Logged in successfully!');
         }
 
         return back()->withErrors([

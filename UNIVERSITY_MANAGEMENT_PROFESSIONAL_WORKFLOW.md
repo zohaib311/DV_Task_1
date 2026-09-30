@@ -287,11 +287,37 @@ Use an Academic Admin or Super Admin login. Start with test records; do not dele
 
 Automated coverage: `tests/Feature/AcademicSetupTest.php` and the updated `StudentSemesterEnrollmentTest.php` cover academic setup, enrollment, promotion, snapshot stability, deletion protection, and access restrictions. Run `php artisan test` for the complete regression suite.
 
-### Phase 9C — Teacher Panel
+### Phase 9C — Teacher Panel (Completed)
 
-- Teacher dashboard.
-- Assigned offering list and student roster.
-- Teacher-only authorization tests.
+- [x] Teacher dashboard with assigned/active offering totals, distinct student count across assigned terms, and an active-first class overview.
+- [x] Searchable, paginated assigned offering list with scoped term/status filters and read-only student rosters.
+- [x] Server-side permission, linked-profile, and offering-ownership checks with teacher-specific authorization tests.
+
+Implementation details:
+
+- Teachers land at `/teaching` after sign-in. Existing generic dashboard links redirect teaching users there; administrators retain their existing dashboard.
+- Access uses the existing `offerings.view-assigned` permission, a linked teacher/User profile, and the offering's teacher assignments. Custom roles work through permissions; a role name alone does not grant access.
+- Every offering lookup is assignment-scoped, including searches and direct URLs. An unassigned/nonexistent offering returns 404. Even a Super Admin using this personal workspace must have a linked teacher profile and assignment; global administration stays under Academic Setup.
+- An unlinked account sees a styled setup-required screen (403). Linked teachers without assignments see an empty-state guide. Revoking the permission or removing an assignment removes access.
+- Rosters use the exact offering-to-enrollment-course link, retain promoted/completed enrollment history, and show name, registration number, semester, registration type, and enrollment status. Private contact details and semester-wide marks are not exposed.
+- Multiple assigned teachers can view the same roster. Counts and term choices use only the current teacher's assigned offerings. Assessment maxima are displayed from the offering snapshot, not the editable catalog.
+- Sidebar navigation groups **Teacher Panel → Overview / My Courses & Rosters** and **Academic Setup → Academic Terms / Semester Curriculum / Course Offerings**. Accessible native dropdowns open on the active section and respect permissions; no unfinished attendance/marks buttons are displayed.
+- UI reuses the existing purple academic shell with one main panel, a compact summary strip, responsive tables, filters, pagination, and English messages.
+- Code is grouped in `app/Http/Controllers/Teaching`, `app/Services/Teaching`, `routes/teaching.php`, `resources/views/teaching` (layouts, offerings, reusable partials), `resources/views/layouts/partials` (sidebar groups), `public/css/teaching`, and `tests/Feature/Teaching`.
+- No new database tables or default permission changes are required. Existing Phase 9B records and administrator-customized roles remain unchanged. Attendance, assessments, and result submission are not part of this phase.
+
+#### Phase 9C manual acceptance checklist
+
+1. As Admin, link a teacher profile to the intended User account. Give that account the Teacher role (or a custom role with `offerings.view-assigned`).
+2. In Academic Setup, assign that teacher to an offering and enroll students through the existing enrollment workflow. For a locked active offering, retain its existing teacher assignment; use a planned/new offering for a new setup.
+3. Sign in as that teacher. Check the overview totals and Teacher Panel dropdown. Open My Courses & Rosters and filter by name/code, term, and status.
+4. Open a class roster. Check its department/section, term, assigned teachers, saved assessment scheme, student names/registration numbers, and enrollment statuses. Search a registration number; clear the search. Lists paginate when there are enough rows.
+5. Sign in as another teacher. The first teacher's unassigned offering must not appear; its direct `/teaching/offerings/{id}` URL must return 404. Co-assigned teachers should both see their shared class.
+6. Check an account with no linked teacher profile (setup-required screen), a linked teacher without assignments (empty state), and a Student/default Academic Admin account (403 on teacher routes).
+7. Remove `offerings.view-assigned` in Access Control and retry: access must be denied. The default Teacher role must remain unable to open admin enrollment/result-management pages or publish results.
+8. Check the sidebar dropdown with keyboard and at mobile width. The current group stays open on navigation; Academic Setup children appear only for their respective permissions.
+
+Automated coverage: `tests/Feature/Teaching/TeacherPanelTest.php`. Run `php artisan test` for the full regression suite. Browser visual acceptance remains a manual check.
 
 ### Phase 9D — Attendance
 
@@ -351,10 +377,10 @@ Automated coverage: `tests/Feature/AcademicSetupTest.php` and the updated `Stude
 
 ## Next implementation step
 
-Phases 9A and 9B are complete. Next is **Phase 9C — Teacher Panel**:
+Phases 9A, 9B, and 9C are complete. Next is **Phase 9D — Attendance**:
 
-1. Build the teacher dashboard on the existing linked teacher/User identity.
-2. Show only assigned offerings and their enrolled student rosters.
-3. Add ownership checks and teacher-specific authorization tests.
+1. Add attendance sessions and per-enrollment student attendance records.
+2. Extend assigned teacher offerings with authorized attendance entry.
+3. Add student-specific attendance viewing and attendance-to-marks policy calculations.
 
 Sections 1–8 above describe the overall requirements, not additional independent implementation phases. Their work is delivered through roadmap phases 9A–9H. Attendance and teacher-mark modules remain scheduled for 9D and 9E respectively.

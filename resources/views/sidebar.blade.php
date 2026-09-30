@@ -16,6 +16,7 @@
     <ul class="nav nav-pills flex-column gap-2 px-3 flex-grow-1">
 
         @can('dashboard.view')
+        @if (!auth()->user()->can('offerings.view-assigned') || auth()->user()->can('offerings.manage'))
         <li class="nav-item">
             <a href="{{ route('dashboardView') }}"
                 class="sidebar-link nav-link {{ request()->is('dashboard*') ? 'active' : '' }}">
@@ -23,7 +24,10 @@
                 <span class="fw-bold">Dashboard</span>
             </a>
         </li>
+        @endif
         @endcan
+
+        @include('layouts.partials.sidebar-teaching')
 
         @can('students.manage')
         <li class="nav-item">
@@ -65,15 +69,7 @@
         </li>
         @endcan
 
-        @can('terms.manage')
-        <li class="nav-item"><a href="{{ route('academic.terms.index') }}" class="sidebar-link nav-link {{ request()->is('academic/terms*') ? 'active' : '' }}"><i class="bi bi-calendar-range me-2 fs-5"></i><span>Academic Terms</span></a></li>
-        @endcan
-        @can('curriculum.manage')
-        <li class="nav-item"><a href="{{ route('academic.curricula.index') }}" class="sidebar-link nav-link {{ request()->is('academic/curricula*') ? 'active' : '' }}"><i class="bi bi-journal-richtext me-2 fs-5"></i><span>Semester Curriculum</span></a></li>
-        @endcan
-        @can('offerings.manage')
-        <li class="nav-item"><a href="{{ route('academic.offerings.index') }}" class="sidebar-link nav-link {{ request()->is('academic/offerings*') ? 'active' : '' }}"><i class="bi bi-person-video3 me-2 fs-5"></i><span>Course Offerings</span></a></li>
-        @endcan
+        @include('layouts.partials.sidebar-academic')
 
         @can('events.manage')
         <li class="nav-item">
