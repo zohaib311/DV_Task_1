@@ -49,6 +49,10 @@ class AttendanceWorkflowTest extends TestCase
     {
         $session = $this->createSession();
         $this->assertSame(6, $session->records()->count());
+        $page = $this->get(route('teaching.attendance.show', [$this->offering, $session]));
+        $page->assertOk()->assertSee('css/teaching/attendance.css', false)->assertDontSee('<select', false);
+        $this->assertSame(24, substr_count($page->getContent(), 'type="radio"'));
+        $this->assertSame(0, substr_count($page->getContent(), 'checked'));
         foreach (['teaching.attendance.index' => [], 'teaching.attendance.offering' => [$this->offering], 'teaching.attendance.show' => [$this->offering, $session]] as $route => $params) {
             $this->get(route($route, $params))->assertOk();
         }

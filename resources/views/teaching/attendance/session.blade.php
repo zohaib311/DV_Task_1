@@ -1,4 +1,8 @@
 @extends('teaching.layout')
+@section('styles')
+    @parent
+    <link rel="stylesheet" href="{{ asset('css/teaching/attendance.css') }}">
+@endsection
 @section('heading', $offering->course_code.' — '.$session->held_on->format('d M Y'))
 @section('description', ucfirst($session->type).' · Slot '.$session->slot.' · '.ucfirst($session->status))
 @section('header-actions')<a class="btn academic-header-btn" href="{{ route('teaching.attendance.offering', $offering) }}">Back to attendance</a>@endsection
@@ -15,7 +19,7 @@
                     <tbody>@foreach($session->records as $index => $record)
                         <tr>
                             <td><strong>{{ $record->enrollmentCourse->enrollment->student->name }}</strong><small>{{ $record->enrollmentCourse->enrollment->student->registration_no }}</small><input type="hidden" name="records[{{ $index }}][id]" value="{{ $record->id }}"></td>
-                            <td><select name="records[{{ $index }}][status]" class="form-select" aria-label="Attendance for {{ $record->enrollmentCourse->enrollment->student->name }}" required><option value="">Choose status</option>@foreach(['present', 'absent', 'late', 'excused'] as $status)<option value="{{ $status }}" @selected(old('records.'.$index.'.status', $record->status) === $status)>{{ ucfirst($status) }}</option>@endforeach</select></td>
+                            <td>@include('teaching.attendance.partials.status-options')</td>
                             <td><input class="form-control" name="records[{{ $index }}][note]" maxlength="500" aria-label="Note for {{ $record->enrollmentCourse->enrollment->student->name }}" value="{{ old('records.'.$index.'.note', $record->note) }}"></td>
                         </tr>
                     @endforeach</tbody>

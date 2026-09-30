@@ -1,0 +1,75 @@
+.attendance-status-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 220px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+.attendance-status-option {
+    --status-color: #7157c9;
+    --status-tint: #f3efff;
+    position: relative;
+    cursor: pointer;
+}
+.attendance-status-present { --status-color: #16805e; --status-tint: #edf9f3; }
+.attendance-status-absent { --status-color: #c24759; --status-tint: #fff0f2; }
+.attendance-status-late { --status-color: #946413; --status-tint: #fff8e9; }
+.attendance-status-option > input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+.attendance-status-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 42px;
+    padding: 8px 11px;
+    border: 1px solid #e3e4ef;
+    border-radius: 9px;
+    background: #fff;
+    color: #727a8d;
+    font-size: .78rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color .15s ease, border-color .15s ease;
+}
+.attendance-status-indicator {
+    display: grid;
+    place-items: center;
+    width: 17px;
+    height: 17px;
+    border: 1.5px solid #cbd0df;
+    border-radius: 4px;
+    background: #fff;
+}
+.attendance-status-option > input:checked + .attendance-status-label {
+    color: var(--status-color);
+    background: var(--status-tint);
+    border-color: var(--status-color);
+}
+.attendance-status-option > input:checked + span .attendance-status-indicator {
+    background: var(--status-color);
+    border-color: var(--status-color);
+}
+.attendance-status-option > input:checked + span .attendance-status-indicator::after {
+    content: '';
+    width: 5px;
+    height: 9px;
+    margin-top: -2px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.attendance-status-option > input:focus-visible + span {
+    outline: 2px solid #7964db;
+    outline-offset: 3px;
+}
+.attendance-status-option:hover > input:not(:disabled) + span { border-color: var(--status-color); }
+.attendance-status-option > input:disabled + span { cursor: not-allowed; opacity: .75; }
+@media (prefers-reduced-motion: reduce) {
+    .attendance-status-label { transition: none; }
+}
