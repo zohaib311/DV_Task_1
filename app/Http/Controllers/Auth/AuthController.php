@@ -85,6 +85,7 @@ class AuthController extends Controller
                 ? 'teaching.dashboard'
                 : 'dashboardView';
 
+            $landingRoute = app(\App\Services\StudentPortal\StudentWorkspace::class)->landing($request->user()) ?? $landingRoute;
             return redirect()->intended(route($landingRoute))->with('success', 'Logged in successfully!');
         }
 

@@ -1,0 +1,7 @@
+@extends('student-portal.layout')
+@section('heading', 'My registered courses')
+@section('student-content')
+    <form method="GET" class="d-flex flex-wrap gap-2 mb-4"><label class="form-label" for="enrollment">Semester enrollment</label><select id="enrollment" name="enrollment" class="form-select w-auto"><option value="">All enrollments</option>@foreach($enrollments as $enrollment)<option value="{{ $enrollment->id }}" @selected(request('enrollment') == $enrollment->id)>{{ $enrollment->semester }} · {{ $enrollment->academic_year }} · {{ ucfirst($enrollment->status) }}</option>@endforeach</select><button class="btn btn-primary">Apply</button></form>
+    <div class="table-responsive"><table class="table academic-table align-middle"><thead><tr><th>Course</th><th>Semester / term</th><th>Credits</th><th>Registration</th><th>Assigned teachers</th></tr></thead><tbody>@forelse($courses as $course)<tr><td>{{ $course->course_name }}<small>{{ $course->course_code }}</small></td><td>{{ $course->enrollment->semester }}<small>{{ $course->enrollment->academic_year }} · {{ $course->enrollment->term?->name ?? 'Historical enrollment' }}</small></td><td>{{ $course->credit_hours }}</td><td>{{ ucfirst($course->registration_type ?? 'Registered') }}</td><td>{{ $course->offering?->teachers->pluck('name')->join(', ') ?: 'Not recorded' }}</td></tr>@empty<tr><td colspan="5" class="academic-empty">No registered courses found.</td></tr>@endforelse</tbody></table></div>
+    {{ $courses->links('pagination::bootstrap-5') }}
+@endsection

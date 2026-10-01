@@ -4,18 +4,15 @@ namespace App\Http\Controllers\StudentPortal;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance\AttendanceRecord;
-use App\Models\Enrollment\StudentEnrollmentCourse;
 use App\Services\Attendance\AttendanceCalculator;
+use App\Services\StudentPortal\StudentWorkspace;
 use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
     private function courses(Request $request)
     {
-        $student = $request->user()->studentProfile;
-        abort_unless($student, 403, 'Please ask an administrator to link your account to your student profile.');
-
-        return StudentEnrollmentCourse::whereHas('enrollment', fn ($query) => $query->where('student_id', $student->id));
+        return app(StudentWorkspace::class)->courses($request->user());
     }
 
     public function index(Request $request, AttendanceCalculator $calculator)

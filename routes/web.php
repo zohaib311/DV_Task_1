@@ -22,10 +22,11 @@ require __DIR__.'/teaching.php';
 require __DIR__.'/attendance.php';
 require __DIR__.'/assessments.php';
 require __DIR__.'/result-moderation.php';
+require __DIR__.'/student-portal.php';
 
 Route::get('/', function () {
     if (Auth::check()) {
-        return redirect()->route('dashboardView');
+        return redirect()->route(app(\App\Services\StudentPortal\StudentWorkspace::class)->landing(Auth::user()) ?? 'dashboardView');
     }
     return redirect()->route('signup');
 });

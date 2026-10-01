@@ -390,10 +390,26 @@ Implementation details:
 
 Manual acceptance checklist: [Phase 9F testing guide](docs/testing/PHASE_9F_RESULT_MODERATION_GUIDE.md). Automated coverage: `tests/Feature/Result/ResultModerationTest.php`, `tests/Unit/FlexibleResultCalculatorTest.php`, plus the existing regression suite. Browser visual acceptance remains manual. The full student portal remains Phase 9G.
 
-### Phase 9G — Student Portal
+### Phase 9G — Student Portal (Completed)
 
-- Student dashboard, attendance, courses, assessment marks, results, and history.
-- Student-specific authorization tests.
+- [x] Student dashboard, attendance, courses, assessment marks, results, and history.
+- [x] Student-specific authorization tests.
+
+Implementation details:
+
+- The existing **Student Portal** sidebar dropdown and purple, single-panel layout now include **My Dashboard & Profile**, **My Courses**, **My Attendance**, **Released Marks**, and **Results & History**. No parallel attendance module was created.
+- Student login and general dashboard/root navigation lead to an allowed portal page; students do not land on the generic administrative dashboard. Administrative and teacher account landing behavior is retained. A student with all portal permissions removed falls back to account settings.
+- Dashboard displays the linked academic profile, current enrollment, registration number, term/year, section, course count, and latest published semester GPA when authorized. Academic identity/enrollment fields are read-only; administrators continue to manage these through the existing student/enrollment screens.
+- Courses come from saved semester enrollments (not the student record's legacy course list). Students can filter their own enrollments and see course snapshots, credits, registration type, and assigned teachers. Missing enrollment/teacher and historical records have explicit empty/fallback states.
+- Existing student attendance pages retain completed-session-only visibility, live attendance calculations, and exclusion of private teacher notes/drafts/cancellations. They now share the portal's centralized student ownership query.
+- **Release policy for this phase:** individual assessment marks become visible only when their semester result is published with a Pass/Fail outcome. Submission approval or semester review alone does not release marks. There is no new early-release switch. This conservative default can be extended later if the university confirms a different policy.
+- Released assessment screens read each student's saved result-item snapshot: assignments, quizzes, midterm/final, practical/project, raw maxima, weights, weighted contributions, and frozen attendance where present. They never read pending/live teacher scores or expose class-wide submission JSON, reviewer metadata, reasons, or audit history.
+- Published result sheets/history show course grades, marks, credits, percentage, SGPA, CGPA, and Pass/Fail. Flexible, legacy three-component, and historical total-only results are supported. Authorized corrections appear from the updated published snapshot; history is not recalculated from live catalog or teacher data by the portal.
+- All endpoints require login, their specific permission, and a linked student profile. Queries are scoped to the authenticated profile, including direct result/course URLs and enrollment filters. Another student's IDs return 404 even for an account with Super Admin permissions using a student-owned endpoint. Missing links return an actionable 403. There are no portal academic-write endpoints.
+- Existing `student.profile.view-own`, `student.attendance.view-own`, and `student.result.view-own` permissions are reused. New `student.courses.view-own` and `student.assessments.view-own` permissions are added to the default Student role without resetting existing permissions, user roles, profile links, or passwords. Custom roles can receive these through Access Control.
+- Enrollment/result notification delivery remains in Phase 9H, as scheduled; it is not claimed as implemented by the portal.
+
+Manual acceptance: [Phase 9G testing guide](docs/testing/PHASE_9G_STUDENT_PORTAL_GUIDE.md). Automated authorization/release/rendering coverage: `tests/Feature/StudentPortal/StudentPortalTest.php`, plus existing attendance and result regression tests. Browser visual acceptance remains manual.
 
 ### Phase 9H — Reporting and operational hardening
 
@@ -428,10 +444,10 @@ Manual acceptance checklist: [Phase 9F testing guide](docs/testing/PHASE_9F_RESU
 
 ## Next implementation step
 
-Phases 9A–9F are complete. Perform the overall acceptance checks before beginning **Phase 9G — Student Portal**:
+Phases 9A–9G are complete. Perform the overall acceptance checks before beginning **Phase 9H — Reporting and operational hardening**:
 
 1. Test the complete setup → enrollment → attendance → assessments → submission → review → publication → promotion workflow.
 2. Check role boundaries and result correction history with separate teacher, reviewer, and publisher accounts.
-3. After acceptance, implement the student dashboard, owned academic records, and student-specific authorization tests in Phase 9G.
+3. Check the student portal using two separate linked accounts, including unreleased marks and foreign-record URL attempts. After acceptance, proceed to Phase 9H reports, notifications, audit viewing, and operational hardening.
 
-Sections 1–8 above describe the overall requirements, not additional independent implementation phases. Their work is delivered through roadmap phases 9A–9H. Student Portal remains 9G; reporting and operational hardening remain 9H.
+Sections 1–8 above describe the overall requirements, not additional independent implementation phases. Their work is delivered through roadmap phases 9A–9H. Student Portal is implemented in 9G; reporting and operational hardening remain 9H.
