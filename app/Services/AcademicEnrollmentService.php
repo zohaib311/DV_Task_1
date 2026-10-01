@@ -10,6 +10,7 @@ use App\Models\Enrollment\StudentEnrollmentCourse;
 use App\Models\Enrollment\StudentSemesterEnrollment;
 use App\Models\Section\Section;
 use App\Models\Student;
+use App\Notifications\AcademicUpdateNotification;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -92,6 +93,13 @@ class AcademicEnrollmentService
             ])->all());
             $promotion?->update(['status' => 'promoted', 'completed_at' => today()]);
             $student->update(['semester' => $curriculum->semester, 'course_ids' => $offerings->pluck('course_id')->all()]);
+            if ($student->user) {
+                $student->user->notify(new AcademicUpdateNotification(
+                    'Semester enrollment updated',
+                    "You are enrolled in {$enrollment->semester} for {$enrollment->academic_year}.",
+                    route('student.courses', ['enrollment' => $enrollment->id])
+                ));
+            }
 
             return $enrollment;
         });

@@ -2,6 +2,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/academic/academic.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/academic/print.css') }}">
 @endsection
 
 @section('content')

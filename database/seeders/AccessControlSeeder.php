@@ -21,7 +21,7 @@ class AccessControlSeeder extends Seeder
             'terms.manage', 'curriculum.manage', 'offerings.manage', 'assessments.review',
             'enrollments.view', 'enrollments.create', 'enrollments.promote', 'enrollments.manage-courses',
             'results.view-all', 'results.create', 'results.edit', 'results.approve', 'results.publish',
-            'academic-history.view', 'audit.view',
+            'academic-history.view', 'audit.view', 'reports.view',
         ],
         'HOD / Program Coordinator' => [
             'dashboard.view', 'courses.manage', 'enrollments.view', 'enrollments.manage-courses',
@@ -33,7 +33,7 @@ class AccessControlSeeder extends Seeder
         ],
         'Student' => [
             'dashboard.view', 'student.profile.view-own', 'student.attendance.view-own',
-            'student.result.view-own', 'student.courses.view-own', 'student.assessments.view-own',
+            'student.result.view-own', 'student.courses.view-own', 'student.assessments.view-own', 'notifications.view-own',
         ],
     ];
 
@@ -48,7 +48,7 @@ class AccessControlSeeder extends Seeder
         'results.view-all', 'results.create', 'results.edit', 'results.submit', 'results.approve',
         'results.publish', 'results.edit-published',
         'student.profile.view-own', 'student.attendance.view-own', 'student.result.view-own',
-        'student.courses.view-own', 'student.assessments.view-own',
+        'student.courses.view-own', 'student.assessments.view-own', 'notifications.view-own', 'reports.view',
         'academic-history.view', 'audit.view', 'assessments.review',
     ];
 

@@ -9,7 +9,7 @@ Route::prefix('teaching/assessments')->name('teaching.assessments.')->middleware
     Route::get('/', [AssessmentController::class, 'index'])->name('index');
     Route::get('/{offering}', [AssessmentController::class, 'show'])->whereNumber('offering')->name('show');
     Route::post('/{offering}', [AssessmentController::class, 'store'])->whereNumber('offering')->middleware('permission:assessments.manage-assigned')->name('store');
-    Route::post('/{offering}/submit', [AssessmentController::class, 'submit'])->whereNumber('offering')->middleware('permission:results.submit')->name('submit');
+    Route::post('/{offering}/submit', [AssessmentController::class, 'submit'])->whereNumber('offering')->middleware(['permission:results.submit', 'throttle:10,1'])->name('submit');
     Route::get('/{offering}/items/{assessment}', [AssessmentController::class, 'edit'])->whereNumber(['offering', 'assessment'])->name('edit');
     Route::put('/{offering}/items/{assessment}', [AssessmentController::class, 'update'])->whereNumber(['offering', 'assessment'])->middleware('permission:assessments.manage-assigned')->name('update');
     Route::put('/{offering}/items/{assessment}/marks', [AssessmentController::class, 'marks'])->whereNumber(['offering', 'assessment'])->middleware('permission:marks.manage-assigned')->name('marks');
@@ -21,5 +21,5 @@ Route::prefix('academic/assessment-schemes')->name('academic.assessment-schemes.
 Route::prefix('academic/assessment-reviews')->name('academic.assessment-reviews.')->middleware(['auth', 'permission:assessments.review'])->group(function () {
     Route::get('/', [AssessmentReviewController::class, 'index'])->name('index');
     Route::get('/{submission}', [AssessmentReviewController::class, 'show'])->name('show');
-    Route::post('/{submission}', [AssessmentReviewController::class, 'update'])->name('update');
+    Route::post('/{submission}', [AssessmentReviewController::class, 'update'])->middleware('throttle:10,1')->name('update');
 });

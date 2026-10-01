@@ -413,9 +413,22 @@ Manual acceptance: [Phase 9G testing guide](docs/testing/PHASE_9G_STUDENT_PORTAL
 
 ### Phase 9H — Reporting and operational hardening
 
-- Teacher workload, attendance shortage, result summary, and promotion reports.
-- Notifications and audit viewer.
-- Database constraints, rate limiting, export/print, and full regression tests.
+- [x] Teacher workload, attendance shortage, result summary, and promotion reports.
+- [x] Notifications and audit viewer.
+- [x] Database constraints, rate limiting, export/print, and full regression tests.
+
+Implementation details:
+
+- **Academic Setup → Academic Reports** provides term-filtered teacher workload, attendance shortage, published-result summary, and promotion-eligibility reports. Reports are read-only: they never publish results, alter attendance, or promote students.
+- Attendance shortages use the same server-side attendance calculator and saved offering policy as attendance screens. The report threshold is filter-only (default 75%) and does not modify academic policy.
+- Result summaries use only published Pass/Fail records. Promotion rows use the existing promotion policy and link to the existing protected promotion form.
+- **Academic Setup → Audit Viewer** is a read-only consolidated view for attendance, assessment, and semester-result audits, including actor, time, action, reason, and saved before/after evidence. It requires `audit.view` and exposes no mutation control.
+- Linked students receive in-app database notifications when an enrollment is created, a result is published, or a published result is corrected. **Student Portal → Notifications** is ownership-scoped and lets students mark only their own notice as read.
+- `notifications.view-own` is granted additively to Student and `reports.view` to Academic Admin. Existing roles, custom permissions, profile links, credentials, and records are not reset. HOD can receive report permission explicitly through Access Control.
+- Request throttles protect assessment submission/review, attendance saves, and result moderation writes. Normal batch work remains supported: moderation actions allow 20/minute and attendance saves 30/minute. Existing permission checks, validations, revisions, transaction locks, immutable snapshots, unique constraints, and foreign keys remain in force.
+- Report printing is supported through the browser **Print report** layout. Spreadsheet/PDF export, email/SMS, queue infrastructure, and class-wide notifications are intentionally not claimed in this release.
+
+Manual acceptance: [Phase 9H testing guide](docs/testing/PHASE_9H_OPERATIONAL_HARDENING_GUIDE.md). Automated coverage: `tests/Feature/Academic/OperationalHardeningTest.php`, alongside existing regressions. Browser visual acceptance remains manual.
 
 ---
 

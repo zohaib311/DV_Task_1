@@ -23,6 +23,7 @@ require __DIR__.'/attendance.php';
 require __DIR__.'/assessments.php';
 require __DIR__.'/result-moderation.php';
 require __DIR__.'/student-portal.php';
+require __DIR__.'/reports.php';
 
 Route::get('/', function () {
     if (Auth::check()) {

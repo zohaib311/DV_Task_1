@@ -9,7 +9,7 @@ Route::prefix('teaching/attendance')->name('teaching.attendance.')->middleware([
     Route::get('/{offering}', [AttendanceController::class, 'offering'])->whereNumber('offering')->name('offering');
     Route::post('/{offering}', [AttendanceController::class, 'store'])->whereNumber('offering')->name('store');
     Route::get('/{offering}/sessions/{session}', [AttendanceController::class, 'show'])->whereNumber(['offering', 'session'])->name('show');
-    Route::put('/{offering}/sessions/{session}', [AttendanceController::class, 'update'])->whereNumber(['offering', 'session'])->name('update');
+    Route::put('/{offering}/sessions/{session}', [AttendanceController::class, 'update'])->whereNumber(['offering', 'session'])->middleware('throttle:30,1')->name('update');
     Route::post('/{offering}/sessions/{session}/cancel', [AttendanceController::class, 'cancel'])->whereNumber(['offering', 'session'])->name('cancel');
 });
 Route::prefix('student-portal/attendance')->name('student.attendance.')->middleware(['auth', 'permission:student.attendance.view-own'])->group(function () {

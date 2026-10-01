@@ -8,6 +8,7 @@ use App\Models\Enrollment\StudentSemesterEnrollment;
 use App\Models\Result\SemesterResult;
 use App\Models\Student;
 use App\Models\User;
+use App\Notifications\AcademicUpdateNotification;
 use App\Services\AcademicResultCalculator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -105,6 +106,11 @@ class ResultModerationService
                 }
             }
             $this->audit($result, $user, 'semester_published', 'Published the approved semester sheet.', $before);
+            $enrollment->student->user?->notify(new AcademicUpdateNotification(
+                'Semester result published',
+                "Your {$enrollment->semester} result is now available.",
+                route('student.results.show', $result)
+            ));
 
             return $result->refresh();
         }, 3);
@@ -141,6 +147,11 @@ class ResultModerationService
             $result->update(array_merge($this->calculator->semester($result->items->toArray()), ['revision' => $revision + 1]));
             $this->academic->recalculatePublishedCgpas($enrollment->student_id);
             $this->audit($result, $user, 'published_correction', $reason, $before);
+            $enrollment->student->user?->notify(new AcademicUpdateNotification(
+                'Published result updated',
+                "Your {$enrollment->semester} result has an authorized correction.",
+                route('student.results.show', $result)
+            ));
 
             return $result->refresh();
         }, 3);
