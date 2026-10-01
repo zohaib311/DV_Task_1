@@ -85,4 +85,98 @@ class OperationalHardeningTest extends TestCase
         }
         $this->postJson(route('results.moderation.publish', $this->enrollment), ['revision' => 1])->assertStatus(429);
     }
+
+    public function test_dashboard_uses_live_counts_and_only_authorized_actions(): void
+    {
+        $this->actingAs($this->admin)->get(route('dashboardView'))->assertOk()
+            ->assertViewHas('statistics', fn ($rows) => $rows->firstWhere('label', 'Students')['count'] === \App\Models\Student::count());
+        $limited = User::create(['name' => 'Limited staff', 'email' => 'limited@example.test', 'phone' => '03009999780', 'password' => bcrypt('password')]);
+        $limited->givePermissionTo(['dashboard.view', 'courses.manage']);
+        $limited->assignRole(\Spatie\Permission\Models\Role::findOrCreate('Limited staff', 'web'));
+        $this->actingAs($limited)->get(route('dashboardView'))->assertOk()
+            ->assertSee('Add Course')->assertDontSee('Add Student')->assertDontSee('Add Result')
+            ->assertViewHas('statistics', fn ($rows) => $rows->pluck('label')->all() === ['Courses']);
+    }
+
+    public function test_authenticated_login_redirect_and_unlinked_admin_navigation(): void
+    {
+        $this->admin->assignRole('Super Admin');
+        $this->actingAs($this->admin)->get('/login')->assertRedirect('/');
+        $this->get(route('dashboardView'))->assertOk()->assertDontSee('Teacher Panel')->assertDontSee('Student Portal');
+        $this->assertFileExists(public_path('css/academic/print.css'));
+    }
+
+    public function test_reports_preserve_zero_averages_and_scope_promotions_to_selected_term(): void
+    {
+        \App\Models\Result\SemesterResult::create([
+            'student_semester_enrollment_id' => $this->enrollment->id, 'student_id' => $this->enrollment->student_id,
+            'status' => 'Fail', 'published_at' => now(), 'sgpa' => 0, 'cgpa' => 0, 'semester_percentage' => 0,
+        ]);
+        $this->actingAs($this->admin)->get(route('academic.reports.index'))->assertOk()
+            ->assertViewHas('resultSummary', fn ($summary) => $summary['average_sgpa'] === 0.0 && $summary['average_percentage'] === 0.0);
+        config(['academic.promotion.require_published_pass_result' => false]);
+        $term = \App\Models\Academic\AcademicTerm::findOrFail($this->enrollment->academic_term_id)->replicate();
+        $term->name = 'Empty report term';
+        $term->save();
+        $this->get(route('academic.reports.index', ['term' => $term->id]))->assertOk()
+            ->assertViewHas('promotion', fn ($rows) => $rows->isEmpty());
+        $limited = User::create(['name' => 'Limited staff', 'email' => 'limited@example.test', 'phone' => '03009999780', 'password' => bcrypt('password')]);
+        $limited->givePermissionTo('reports.view');
+        $limited->assignRole(\Spatie\Permission\Models\Role::findOrCreate('Limited staff', 'web'));
+        $this->actingAs($limited)->get(route('academic.reports.index'))->assertOk()->assertDontSee('Open promotion');
+    }
+
+    public function test_audit_search_is_paginated_and_retains_filters(): void
+    {
+        $offering = CourseOffering::firstOrFail();
+        for ($i = 0; $i < 30; $i++) {
+            \App\Models\Assessment\AssessmentAudit::create(['course_offering_id' => $offering->id,
+                'user_id' => $this->admin->id, 'action' => 'scheme_updated', 'reason' => 'Pagination evidence '.$i, 'after' => []]);
+        }
+        $this->actingAs($this->admin)->get(route('academic.audits.index', ['type' => 'assessment', 'search' => 'pagination']))
+            ->assertOk()->assertViewHas('audits', fn ($rows) => $rows->total() === 30 && $rows->count() === 25)
+            ->assertSee('page=2', false);
+        $this->get(route('academic.audits.index', ['type' => 'assessment', 'search' => 'pagination', 'page' => 2]))
+            ->assertOk()->assertViewHas('audits', fn ($rows) => $rows->count() === 5);
+    }
+
+    public function test_notification_only_access_has_navigation_and_safe_redirects(): void
+    {
+        $this->admin->syncRoles([]);
+        $this->admin->givePermissionTo('notifications.view-own');
+        $this->admin->assignRole(\Spatie\Permission\Models\Role::findOrCreate('Notifications only', 'web'));
+        $this->enrollment->student->update(['user_id' => $this->admin->id]);
+        $user = $this->admin->fresh();
+        $this->assertSame('student.notifications.index', app(\App\Services\StudentPortal\StudentWorkspace::class)->landing($user));
+        $this->actingAs($user)->get(route('student.notifications.index'))->assertOk()->assertSee('Student Portal');
+        foreach ([route('student.results.index'), 'https://example.org/untrusted'] as $url) {
+            $user->notify(new AcademicUpdateNotification('Academic update', 'Review your update.', $url));
+            $notification = $user->notifications()->latest()->firstOrFail();
+            $this->post(route('student.notifications.read', $notification))->assertRedirect(route('student.notifications.index'));
+            $this->assertNotNull($notification->fresh()->read_at);
+        }
+    }
+
+    public function test_notifications_open_owned_published_result_and_enrollment_links(): void
+    {
+        $user = User::create(['name' => 'Linked student', 'email' => 'linked@example.test', 'phone' => '03009999781', 'password' => bcrypt('password')]);
+        $user->assignRole('Student');
+        $this->enrollment->student->update(['user_id' => $user->id]);
+        $result = \App\Models\Result\SemesterResult::create([
+            'student_semester_enrollment_id' => $this->enrollment->id, 'student_id' => $this->enrollment->student_id,
+            'status' => 'Pass', 'published_at' => now(), 'sgpa' => 4, 'cgpa' => 4, 'semester_percentage' => 90,
+        ]);
+        $this->actingAs($user);
+        foreach ([route('student.results.show', $result), route('student.courses', ['enrollment' => $this->enrollment->id])] as $url) {
+            $notice = new AcademicUpdateNotification('Update', 'Saved academic update', $url);
+            $notice->id = (string) \Illuminate\Support\Str::uuid();
+            $user->notify($notice);
+            $this->post(route('student.notifications.read', $notice->id))->assertRedirect($url);
+        }
+        $result->update(['status' => 'Draft', 'published_at' => null]);
+        $notice = new AcademicUpdateNotification('Update', 'Unavailable result', route('student.results.show', $result));
+        $notice->id = (string) \Illuminate\Support\Str::uuid();
+        $user->notify($notice);
+        $this->post(route('student.notifications.read', $notice->id))->assertRedirect(route('student.notifications.index'));
+    }
 }

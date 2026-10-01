@@ -1,0 +1,11 @@
+@media print {
+    .sidebar, .navbar, .no-print, .academic-header-actions, .academic-tabs, .pagination { display: none !important; }
+    body { background: #fff !important; }
+    body.has-sidebar .main-content { margin: 0 !important; padding: 0 !important; }
+    .academic-shell { border: 0 !important; box-shadow: none !important; }
+    .academic-header { color: #222 !important; background: #fff !important; padding: 0 0 18px !important; }
+    .academic-header p { color: #444 !important; }
+    .table-responsive { overflow: visible !important; }
+    thead { display: table-header-group; }
+    tr { break-inside: avoid; }
+}

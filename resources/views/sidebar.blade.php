@@ -28,7 +28,8 @@
         @endcan
 
         @include('layouts.partials.sidebar-teaching')
-        @canany(['student.profile.view-own', 'student.courses.view-own', 'student.attendance.view-own', 'student.assessments.view-own', 'student.result.view-own'])
+        @if(auth()->user()->studentProfile)
+        @canany(['student.profile.view-own', 'student.courses.view-own', 'student.attendance.view-own', 'student.assessments.view-own', 'student.result.view-own', 'notifications.view-own'])
         <li class="nav-item">
             <details class="sidebar-group" @if(request()->is('student-portal*')) open @endif>
                 <summary class="sidebar-link"><i class="bi bi-mortarboard me-2" aria-hidden="true"></i> Student Portal <i class="bi bi-chevron-down sidebar-group-arrow" aria-hidden="true"></i></summary>
@@ -36,11 +37,12 @@
             </details>
         </li>
         @endcanany
+        @endif
 
         @can('students.manage')
         <li class="nav-item">
             <a href="{{ route('allStudents') }}"
-                class="sidebar-link nav-link {{ request()->is('student*') ? 'active' : '' }}">
+                class="sidebar-link nav-link {{ request()->is('student', 'student/*', 'students', 'students/*') ? 'active' : '' }}">
                 <i class="bi bi-mortarboard me-2 fs-5"></i>
                 <span>Students</span>
             </a>

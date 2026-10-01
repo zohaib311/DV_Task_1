@@ -28,8 +28,11 @@ class ReportController extends Controller
             })->filter(fn ($row) => $row['percentage'] !== null && $row['percentage'] < $threshold);
         })->values();
         $results = SemesterResult::with('enrollment')->whereNotNull('published_at')->when($data['term'] ?? null, fn ($q, $term) => $q->whereHas('enrollment', fn ($q) => $q->where('academic_term_id', $term)))->get();
-        $resultSummary = ['published' => $results->count(), 'pass' => $results->where('status', 'Pass')->count(), 'fail' => $results->where('status', 'Fail')->count(), 'average_sgpa' => $results->avg('sgpa') ? round($results->avg('sgpa'), 2) : null, 'average_percentage' => $results->avg('semester_percentage') ? round($results->avg('semester_percentage'), 2) : null];
-        $promotion = StudentSemesterEnrollment::with(['student', 'semesterResult'])->where('status', 'active')->get()->map(fn ($row) => ['enrollment' => $row, 'eligibility' => $enrollmentService->promotionEligibility($row)])->filter(fn ($row) => $row['eligibility']['allowed'])->values();
+        $results = $results->whereIn('status', ['Pass', 'Fail']);
+        $resultSummary = ['published' => $results->count(), 'pass' => $results->where('status', 'Pass')->count(), 'fail' => $results->where('status', 'Fail')->count(), 'average_sgpa' => $results->avg('sgpa') !== null ? round($results->avg('sgpa'), 2) : null, 'average_percentage' => $results->avg('semester_percentage') !== null ? round($results->avg('semester_percentage'), 2) : null];
+        $promotion = StudentSemesterEnrollment::with(['student', 'semesterResult'])->where('status', 'active')
+            ->when($data['term'] ?? null, fn ($query, $term) => $query->where('academic_term_id', $term))
+            ->get()->map(fn ($row) => ['enrollment' => $row, 'eligibility' => $enrollmentService->promotionEligibility($row)])->filter(fn ($row) => $row['eligibility']['allowed'])->values();
         $terms = AcademicTerm::orderByDesc('starts_on')->get();
 
         return view('academic.reports.index', compact('terms', 'workload', 'shortages', 'threshold', 'resultSummary', 'promotion'));

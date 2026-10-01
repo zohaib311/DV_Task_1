@@ -15,7 +15,7 @@ class StudentWorkspace
             return null;
         }
         foreach (['student.profile.view-own' => 'student.dashboard', 'student.courses.view-own' => 'student.courses',
-            'student.attendance.view-own' => 'student.attendance.index', 'student.assessments.view-own' => 'student.assessments.index', 'student.result.view-own' => 'student.results.index'] as $permission => $route) {
+            'student.attendance.view-own' => 'student.attendance.index', 'student.assessments.view-own' => 'student.assessments.index', 'student.result.view-own' => 'student.results.index', 'notifications.view-own' => 'student.notifications.index'] as $permission => $route) {
             if ($user->can($permission)) {
                 return $route;
             }
