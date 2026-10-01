@@ -24,7 +24,7 @@ class AcademicResultCalculator
     {
         $offerings = \App\Models\Academic\CourseOffering::whereIn('id', $enrollment->courses()->select('course_offering_id'))->orderBy('id')->lockForUpdate()->get();
         if ($offerings->contains(fn ($offering) => $offering->assessment_scheme_approved_at !== null)) {
-            throw ValidationException::withMessages(['assessment_workflow' => 'Teacher-managed assessment results must use the submission/review workflow. Semester publication is scheduled for Phase 9F.']);
+            throw ValidationException::withMessages(['assessment_workflow' => 'Teacher-managed assessment results must use Results > Moderation & Publication.']);
         }
     }
 
@@ -264,7 +264,7 @@ class AcademicResultCalculator
 
         $enrollment->loadMissing('courses.course');
         if ($enrollment->courses()->whereHas('offering', fn ($query) => $query->whereNotNull('assessment_scheme_approved_at'))->exists()) {
-            $errors['assessment_workflow'] = 'This enrollment uses teacher-managed assessments. Use the assessment submission/review workflow; semester publication will be connected in Phase 9F.';
+            $errors['assessment_workflow'] = 'This enrollment uses teacher-managed assessments. Open Results > Moderation & Publication to review and publish its semester sheet.';
         }
         $enrolledCourses = $enrollment->courses->keyBy('id');
         $submittedByEnrollmentCourse = [];

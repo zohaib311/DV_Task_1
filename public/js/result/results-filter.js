@@ -71,8 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     function renderStudentRow(student, index) {
         const enrollment = student.listed_enrollment; const result = enrollment.semester_result;
-        const canEdit = result && (!result.published_at || s?.allowPublishedEdits);
-        const add = `<button type="button" class="action__btn ${result ? 'action__info' : 'action__add'} btn-add-semester-result" title="${result ? 'Semester result already added' : 'Add semester result'}" data-bs-toggle="offcanvas" data-bs-target="#semesterResultDrawer" data-student-id="${student.id}" data-enrollment-id="${enrollment.id}" data-existing-result="${result ? 'true' : 'false'}"><i class="bi ${result ? 'bi-journal-check' : 'bi-plus-circle'}"></i></button>`;
+        const canEdit = !enrollment.moderation_url && result && (!result.published_at || s?.allowPublishedEdits);
+        const add = enrollment.moderation_url ? `<a class="action__btn action__add" href="${escapeAttribute(enrollment.moderation_url)}" title="${result ? 'Result already added — open saved moderation sheet' : 'Review teacher marks'}"><i class="bi bi-journal-check"></i></a>` : `<button type="button" class="action__btn ${result ? 'action__info' : 'action__add'} btn-add-semester-result" title="${result ? 'Semester result already added' : 'Add semester result'}" data-bs-toggle="offcanvas" data-bs-target="#semesterResultDrawer" data-student-id="${student.id}" data-enrollment-id="${enrollment.id}" data-existing-result="${result ? 'true' : 'false'}"><i class="bi ${result ? 'bi-journal-check' : 'bi-plus-circle'}"></i></button>`;
         const view = result ? `<button type="button" class="action__btn action__info btn-view-semester-result" title="View semester result sheet" data-bs-toggle="modal" data-bs-target="#semesterResultSheetModal" data-result-id="${result.id}"><i class="bi bi-eye"></i></button>` : '';
         const edit = canEdit ? `<button type="button" class="action__btn action__edit btn-edit-semester-result" title="Edit semester result" data-bs-toggle="offcanvas" data-bs-target="#semesterResultDrawer" data-result-id="${result.id}"><i class="bi bi-pencil-square"></i></button>` : '';
         const history = `<button type="button" class="action__btn action__info btn-view-academic-history" title="View academic history" data-bs-toggle="modal" data-bs-target="#semesterResultSheetModal" data-student-id="${student.id}"><i class="bi bi-clock-history"></i></button>`;
@@ -108,6 +108,18 @@ document.addEventListener('DOMContentLoaded', () => {
             setText('sheet_semester', sheet.semester); setText('sheet_academic_year', sheet.academic_year); setText('sheet_percentage', sheet.semester_percentage !== null ? `${format(sheet.semester_percentage, 2)}%` : '—'); setText('sheet_sgpa', optionalNumber(sheet.sgpa)); setText('sheet_cgpa', optionalNumber(sheet.cgpa)); setText('sheet_record_state', sheet.published_at ? 'Published' : 'Draft');
             const status = document.getElementById('sheet_status'); status.textContent = sheet.status; status.className = `semester-status is-${sheet.status.toLowerCase()}`;
             document.getElementById('sheet_course_rows').innerHTML = sheet.items.map((item) => `<tr><td><strong>${escapeHtml(item.course_name)}</strong><small>${escapeHtml(item.course_code)}</small></td><td>${format(item.credit_hours, 1)}</td><td>${component(item.attendance_obtained_marks, item.attendance_marks)}</td><td>${component(item.mid_obtained_marks, item.mid_marks)}</td><td>${component(item.final_obtained_marks, item.final_marks)}</td><td>${optionalNumber(item.obtained_marks)} / ${format(item.total_marks, 0)}</td><td>${item.percentage !== null ? `${format(item.percentage, 2)}%` : '—'}</td><td>${escapeHtml(item.grade || '—')}</td><td>${optionalNumber(item.grade_point)}</td><td><span class="course-status is-${escapeAttribute((item.status || 'Draft').toLowerCase())}">${escapeHtml(item.status || 'Draft')}</span></td></tr>`).join('');
+        }
+        const sheetBody = document.getElementById('sheet_course_rows');
+        const sheetHeader = sheetBody.closest('table').querySelector('thead tr');
+        if (!sheetHeader.dataset.legacyHtml) sheetHeader.dataset.legacyHtml = sheetHeader.innerHTML;
+        sheetHeader.innerHTML = sheetHeader.dataset.legacyHtml;
+        if (sheet?.items.some((item) => item.assessment_snapshot)) {
+            sheetHeader.innerHTML = '<th>Course</th><th>Cr.</th><th>Assessment breakdown</th><th>Obtained</th><th>%</th><th>Grade</th><th>GP</th><th>Status</th>';
+            sheetBody.innerHTML = sheet.items.map((item) => {
+                const evidence = item.assessment_snapshot;
+                const breakdown = evidence ? evidence.scheme.map((part) => `${escapeHtml(part.code)}: ${format(evidence.student.components[part.code], 2)} / ${format(part.allocation, 2)}`).join('<br>') : 'Legacy result';
+                return `<tr><td><strong>${escapeHtml(item.course_name)}</strong><small>${escapeHtml(item.course_code)}</small></td><td>${format(item.credit_hours, 1)}</td><td>${breakdown}</td><td>${format(item.obtained_marks, 2)} / ${format(item.total_marks, 0)}</td><td>${format(item.percentage, 2)}%</td><td>${escapeHtml(item.grade)}</td><td>${format(item.grade_point, 2)}</td><td>${escapeHtml(item.status)}</td></tr>`;
+            }).join('');
         }
         document.getElementById('sheet_history_heading').textContent = sheet ? 'Academic history' : 'All semester records';
         document.getElementById('sheet_history_count').textContent = `${data.history.length} ${data.history.length === 1 ? 'semester' : 'semesters'}`;

@@ -56,7 +56,7 @@ class ResultController extends Controller
         ]);
 
         $enrollments = StudentSemesterEnrollment::query()
-            ->with(['student', 'department', 'section', 'courses', 'semesterResult'])
+            ->with(['student', 'department', 'section', 'courses.offering', 'semesterResult'])
             ->where('section_id', $section_id)
             ->when($validated['department_id'] ?? null, fn ($query, $departmentId) => $query->where('department_id', $departmentId))
             ->when($validated['academic_year'] ?? null, fn ($query, $year) => $query->where('academic_year', $year))
@@ -254,6 +254,7 @@ class ResultController extends Controller
     public function getSemesterResultData(SemesterResult $semesterResult)
     {
         Gate::authorize('update', $semesterResult);
+        abort_if($semesterResult->source === 'teacher', 422, 'Open Results > Moderation & Publication for this teacher-managed result.');
 
         $semesterResult->load([
             'enrollment.student',
@@ -370,6 +371,7 @@ class ResultController extends Controller
     public function updateSemesterResult(Request $request, SemesterResult $semesterResult, AcademicResultCalculator $calculator)
     {
         Gate::authorize('update', $semesterResult);
+        abort_if($semesterResult->source === 'teacher', 422, 'Teacher-managed results can only be changed through Moderation & Publication.');
         $validated = $request->validate($this->semesterResultRules());
         $enrollment = StudentSemesterEnrollment::query()
             ->whereKey($validated['enrollment_id'])
@@ -445,6 +447,8 @@ class ResultController extends Controller
             'semester' => $enrollment->semester,
             'academic_year' => $enrollment->academic_year,
             'course_count' => $enrollment->courses->count(),
+            'moderation_url' => $enrollment->courses->contains(fn ($course) => $course->offering?->assessment_scheme_approved_at !== null)
+                ? route('results.moderation.show', $enrollment) : null,
             'semester_result' => $result ? [
                 'id' => $result->id,
                 'semester_percentage' => $result->semester_percentage,
@@ -482,6 +486,7 @@ class ResultController extends Controller
             'status' => $semesterResult->status,
             'published_at' => $semesterResult->published_at?->toIso8601String(),
             'items' => $semesterResult->items->map(fn (SemesterResultItem $item) => [
+                'assessment_snapshot' => $item->assessment_snapshot,
                 'course_code' => $item->course_code,
                 'course_name' => $item->course_name,
                 'credit_hours' => $item->credit_hours,

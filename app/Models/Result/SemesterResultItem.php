@@ -28,6 +28,7 @@ class SemesterResultItem extends Model
         'grade',
         'grade_point',
         'status',
+        'assessment_submission_id', 'assessment_snapshot',
     ];
 
     protected $casts = [
@@ -42,6 +43,7 @@ class SemesterResultItem extends Model
         'final_obtained_marks' => 'decimal:2',
         'percentage' => 'decimal:2',
         'grade_point' => 'decimal:2',
+        'assessment_snapshot' => 'array',
     ];
 
     public function semesterResult(): BelongsTo

@@ -15,6 +15,7 @@
                 <span class="results-page-kicker"><i class="bi bi-journal-check"></i> Academic Records</span>
                 <h1>Results Management</h1>
                 <p>Select a department and section to view, add, or update student results.</p>
+                <a class="btn btn-light btn-sm mt-2" href="{{ route('results.moderation.index') }}">Moderation &amp; Publication <i class="bi bi-arrow-right"></i></a>
             </header>
 
             <div class="results-main-card-body">

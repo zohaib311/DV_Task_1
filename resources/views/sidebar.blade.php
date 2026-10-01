@@ -111,11 +111,13 @@
 
         @can('results.view-all')
         <li class="nav-item">
-            <a href="{{ route('allResults') }}"
-                class="sidebar-link nav-link {{ request()->is('result*') ? 'active' : '' }}">
-                <i class="bi bi-window-stack me-2 fs-5"></i>
-                <span>Results</span>
-            </a>
+            <details class="sidebar-group" @if(request()->is('result*')) open @endif>
+                <summary class="sidebar-link"><i class="bi bi-window-stack me-2 fs-5"></i><span>Results</span><i class="bi bi-chevron-down sidebar-group-arrow"></i></summary>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('allResults') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('allResults')])>Student Results</a></li>
+                    <li><a href="{{ route('results.moderation.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('results.moderation.*')])>Moderation &amp; Publication</a></li>
+                </ul>
+            </details>
         </li>
         @endcan
 

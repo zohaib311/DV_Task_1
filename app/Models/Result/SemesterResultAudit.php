@@ -12,6 +12,7 @@ class SemesterResultAudit extends Model
         'semester_result_id',
         'updated_by',
         'action',
+        'reason',
         'before',
         'after',
     ];

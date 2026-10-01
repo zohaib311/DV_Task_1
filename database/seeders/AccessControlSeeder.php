@@ -20,7 +20,7 @@ class AccessControlSeeder extends Seeder
             'departments.manage', 'sections.manage', 'courses.manage', 'events.manage',
             'terms.manage', 'curriculum.manage', 'offerings.manage', 'assessments.review',
             'enrollments.view', 'enrollments.create', 'enrollments.promote', 'enrollments.manage-courses',
-            'results.view-all', 'results.create', 'results.edit', 'results.publish',
+            'results.view-all', 'results.create', 'results.edit', 'results.approve', 'results.publish',
             'academic-history.view', 'audit.view',
         ],
         'HOD / Program Coordinator' => [

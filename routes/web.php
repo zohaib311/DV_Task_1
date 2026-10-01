@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 require __DIR__.'/teaching.php';
 require __DIR__.'/attendance.php';
 require __DIR__.'/assessments.php';
+require __DIR__.'/result-moderation.php';
 
 Route::get('/', function () {
     if (Auth::check()) {

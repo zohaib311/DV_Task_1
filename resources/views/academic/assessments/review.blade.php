@@ -13,5 +13,6 @@
         </form>
     @else
         <p class="academic-note">{{ ucfirst($submission->status) }} by {{ $submission->reviewer?->name ?? 'Former account' }}: {{ $submission->review_note }}</p>
+        @if($submission->status === 'approved') @can('results.view-all')<a class="btn btn-primary" href="{{ route('results.moderation.index') }}">Continue to semester moderation</a>@endcan @endif
     @endif
 @endsection

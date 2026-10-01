@@ -364,16 +364,31 @@ Implementation details:
 - **Academic Setup → Assessment Reviews** allows independent reviewers to return a submission with instructions (offering becomes active) or approve it (offering becomes reviewed/read-only). Assigned teachers cannot review their own class even if given the review permission. Returning never modifies the old snapshot; resubmission creates a new snapshot. Duplicate/stale reviews are rejected.
 - New global permission `assessments.review` is granted additively to Academic Admin; Super Admin retains its existing bypass. HOD is not granted unscoped global review access automatically. Teacher definitions, marks, and submission separately require `assessments.manage-assigned`, `marks.manage-assigned`, and `results.submit`, in addition to assignment/linked-profile checks.
 - Existing role customizations and demo passwords are preserved. For old **Demo Teacher (9C)** accounts, explicitly enable the three teacher permissions above in Access Control (plus attendance permission for recording sessions).
-- **Compatibility boundary:** offerings without an approved flexible scheme keep the existing manual result workflow. Once a flexible scheme is approved, the legacy result drawer cannot save/publish a result for an enrollment containing that offering. This prevents an inconsistent 3-component result bypass. Approval of a course submission does not publish a semester result or recalculate SGPA/CGPA; the Phase 9F integration remains to be implemented.
+- **Compatibility boundary:** offerings without an approved flexible scheme keep the existing manual result workflow. Once a flexible scheme is approved, the legacy result drawer cannot save/publish a result for an enrollment containing that offering. This prevents an inconsistent 3-component result bypass. Approval of a course submission does not publish a semester result or recalculate SGPA/CGPA; Phase 9F now provides the separate semester review/publication workflow.
 - Models/services use `app/Models/Assessment` and `app/Services/Assessment`; teacher and academic controllers remain in their existing module folders. Routes are in `routes/assessments.php`; shared previews, teacher views, and admin views live in their respective assessment folders. Existing purple layouts/sidebar groups are reused.
 
 Manual acceptance checklist: [Phase 9E testing guide](docs/testing/PHASE_9E_ASSESSMENT_GUIDE.md). Automated coverage: `tests/Feature/Assessment/AssessmentWorkflowTest.php` plus the existing regression suite. Browser visual acceptance remains manual.
 
-### Phase 9F — Result moderation and publication
+### Phase 9F — Result moderation and publication (Completed)
 
-- Replace manual result-entry dependency with aggregated teacher marks.
-- HOD/Admin review and publish flow.
-- Preserve result snapshots and audit corrections.
+- [x] Replace manual result-entry dependency with aggregated teacher marks.
+- [x] HOD/Admin review and publish flow.
+- [x] Preserve result snapshots and audit corrections.
+
+Implementation details:
+
+- **Results → Moderation & Publication** provides a searchable, stage-filtered semester queue. Existing Results rows link teacher-managed enrollments to their moderation sheet; existing result-sheet/history views display all flexible components. The existing purple academic shell is reused as one main panel, with evidence and correction details expandable in place.
+- Initial review requires an active enrollment/term and the latest approved submission for **every enrolled course**, including repeats. Missing, returned, incomplete, or mismatched evidence blocks approval. An enrollment mixing flexible and unapproved/manual offerings cannot silently publish a partial result; complete all offering schemes/submissions first. Pure legacy enrollments retain their existing manual workflow.
+- A reviewer with `results.view-all` + `results.approve` checks the sheet and records a note. Approval saves a frozen, unpublished semester sheet (`Draft` storage status, explicitly shown as **Approved / unpublished**). A preview fingerprint rejects stale approval requests. Approval does not release results or calculate final CGPA.
+- A publisher with `results.view-all` + `results.publish` releases the reviewed sheet in a separate action. Direct publication without an approved sheet, duplicate requests, closed terms, and stale revisions are rejected. HOD's existing role can approve; it cannot publish unless the administrator grants publication permission. Academic Admin receives `results.approve` additively; existing role customizations/passwords are not reset. These existing permissions are global, not department-scoped; no departmental HOD mapping is invented by this phase.
+- Assigned teachers (including co-teachers with additional administrative permissions) cannot moderate, publish, or correct their own classes. An independent administrator/reviewer must act. A non-teaching administrator with both review and publication permissions may perform both steps.
+- Raw assessment scores are weighted within their approved component budgets and rounded to two decimal places. Frozen attendance evidence supplies attendance marks; browser totals and mutable live marks are not used. Grades, optional final-exam minimum, credit-weighted SGPA, aggregate percentage, pass/fail, and published-history CGPA are calculated on the server using the existing academic policy. The grading scale/final minimum are frozen per result item, so subsequent policy changes cannot silently regrade a reviewed/published sheet.
+- Result items retain submission IDs, review/submission metadata, component allocations (including decimal maxima), individual raw scores/maxima/weights/dates, and attendance counts/policy/marks. Legacy three-component columns are not repurposed to misrepresent flexible assessments.
+- Publication and correction use transactions with student/enrollment/term/offering locks and revision checks. An offering becomes `completed` only after **all of its enrolled students** have published semester results; completion is audited. Result publication keeps the enrollment active so the existing promotion eligibility/workflow continues to work. It does not automatically promote students or close terms.
+- Published raw-assessment corrections require `results.edit`, `results.edit-published`, and `results.publish`, a meaningful reason, and the current result revision. They retain publication status/date, preserve the original teacher submission, validate every assessment, and save actor/reason/before/after evidence in existing result audits. A correction recalculates the affected semester and later cumulative GPAs without changing other semesters' course grades. Attendance evidence is intentionally read-only here; unrestricted manual attendance overrides are not introduced. Historical attendance correction/reopening is not part of this release.
+- Read-only saved evidence and permission-protected audit history are available on the moderation sheet. Direct legacy drawer updates cannot overwrite teacher-managed results. No destructive result or submission endpoint was added.
+
+Manual acceptance checklist: [Phase 9F testing guide](docs/testing/PHASE_9F_RESULT_MODERATION_GUIDE.md). Automated coverage: `tests/Feature/Result/ResultModerationTest.php`, `tests/Unit/FlexibleResultCalculatorTest.php`, plus the existing regression suite. Browser visual acceptance remains manual. The full student portal remains Phase 9G.
 
 ### Phase 9G — Student Portal
 
@@ -413,10 +428,10 @@ Manual acceptance checklist: [Phase 9E testing guide](docs/testing/PHASE_9E_ASSE
 
 ## Next implementation step
 
-Phases 9A–9E are complete. Next is **Phase 9F — Result moderation and publication**:
+Phases 9A–9F are complete. Perform the overall acceptance checks before beginning **Phase 9G — Student Portal**:
 
-1. Aggregate approved offering submissions into semester results without relying on manual component entry.
-2. Implement authorized final review/publication, grade/SGPA/CGPA calculation, and offering completion.
-3. Preserve flexible component/attendance snapshots in published result items and audit authorized corrections.
+1. Test the complete setup → enrollment → attendance → assessments → submission → review → publication → promotion workflow.
+2. Check role boundaries and result correction history with separate teacher, reviewer, and publisher accounts.
+3. After acceptance, implement the student dashboard, owned academic records, and student-specific authorization tests in Phase 9G.
 
-Sections 1–8 above describe the overall requirements, not additional independent implementation phases. Their work is delivered through roadmap phases 9A–9H. Result aggregation and moderation remain scheduled for 9F.
+Sections 1–8 above describe the overall requirements, not additional independent implementation phases. Their work is delivered through roadmap phases 9A–9H. Student Portal remains 9G; reporting and operational hardening remain 9H.

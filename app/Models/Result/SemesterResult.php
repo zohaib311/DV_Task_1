@@ -18,6 +18,7 @@ class SemesterResult extends Model
         'cgpa',
         'status',
         'published_at',
+        'source', 'revision', 'reviewed_by', 'reviewed_at',
     ];
 
     protected $casts = [
@@ -25,6 +26,8 @@ class SemesterResult extends Model
         'sgpa' => 'decimal:2',
         'cgpa' => 'decimal:2',
         'published_at' => 'datetime',
+        'reviewed_at' => 'datetime',
+        'revision' => 'integer',
     ];
 
     public function enrollment(): BelongsTo
