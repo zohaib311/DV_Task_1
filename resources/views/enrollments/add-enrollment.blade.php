@@ -41,7 +41,7 @@
                             <select name="student_id" id="student_id" class="form-select" required @disabled($isPromotion)>
                                 <option value="">Select student</option>
                                 @foreach($students as $student)
-                                    <option value="{{ $student->id }}" data-department-id="{{ $student->department_id }}" data-placement="{{ $student->registration_no }} · {{ $student->department?->name }} / {{ $student->section?->name }}"
+                                    <option value="{{ $student->id }}" data-department-id="{{ $student->department_id }}" data-program-id="{{ $student->program_id }}" data-placement="{{ $student->registration_no }} · {{ $student->program?->code ?? 'Legacy program' }} · {{ $student->department?->name }} / {{ $student->section?->name }}"
                                         @selected(old('student_id', $isPromotion ? $promotionEnrollment->student_id : request('student_id')) == $student->id)>{{ $student->name }} ({{ $student->registration_no }})</option>
                                 @endforeach
                             </select>
@@ -58,17 +58,16 @@
                             <label for="semester_curriculum_id" class="form-label">{{ $isPromotion ? 'Next semester curriculum' : 'Semester curriculum' }}</label>
                             <select name="semester_curriculum_id" id="semester_curriculum_id" class="form-select" required>
                                 <option value="">Select an approved curriculum</option>
-                                @foreach($curricula as $curriculum)<option value="{{ $curriculum->id }}" data-department-id="{{ $curriculum->department_id }}" data-semester="{{ $curriculum->semester }}" @selected(old('semester_curriculum_id') == $curriculum->id)>{{ $curriculum->semester }} · {{ $curriculum->version }} · {{ $curriculum->department->name }}</option>@endforeach
+                                @foreach($curricula as $curriculum)<option value="{{ $curriculum->id }}" data-department-id="{{ $curriculum->department_id }}" data-program-id="{{ $curriculum->program_id }}" data-semester="{{ $curriculum->semester }}" @selected(old('semester_curriculum_id') == $curriculum->id)>{{ $curriculum->semester }} · {{ $curriculum->version }} · {{ $curriculum->program?->code ?? 'Legacy program' }}</option>@endforeach
                             </select>
                         </div>
                     </div>
                 </section>
                 <section class="enrollment-form-section">
-                    <div class="enrollment-section-title"><i class="bi bi-journal-richtext"></i><div><h5>Registered courses &amp; teachers</h5><p>Required courses are preselected. Elective and repeat/improvement courses can be added explicitly.</p></div></div>
-                    <p id="offeringStatus" class="text-muted small" aria-live="polite">Select a student, term, and curriculum to load the course plan.</p>
-                    <div class="table-responsive"><table class="table academic-table align-middle"><thead><tr><th>Select</th><th>Course / Teacher</th><th>Type</th><th>Credits</th><th>Assessment</th></tr></thead><tbody id="enrollmentOfferingRows"></tbody></table></div>
+                    <div class="enrollment-section-title"><i class="bi bi-journal-richtext"></i><div><h5>Automatically assigned semester courses</h5><p>Required courses come from the approved department semester plan. Students do not select their own required courses.</p></div></div>
+                    <p id="offeringStatus" class="text-muted small" aria-live="polite">Select a student, term, and curriculum to load the automatic course plan.</p>
+                    <div class="table-responsive"><table class="table academic-table align-middle"><thead><tr><th>Course / Teacher</th><th>Type</th><th>Credits</th><th>Assessment</th></tr></thead><tbody id="enrollmentOfferingRows"></tbody></table></div>
                     <p class="text-muted small mb-0">Assessment: Attendance / Midterm / Final. Approved credit hours and marking schemes are saved with this enrollment.</p>
-                    <script type="application/json" id="previousOfferingSelection">@json(old('offering_ids', []))</script>
                 </section>
                 <div class="form__actions mt-4"><a href="{{ route('allEnrollments') }}" class="cancel__btn">Back</a><button type="submit" class="update__btn" id="saveEnrollment" disabled>{{ $isPromotion ? 'Promote Student' : 'Create Enrollment' }}</button></div>
             </form>

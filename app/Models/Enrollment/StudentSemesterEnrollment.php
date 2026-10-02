@@ -16,6 +16,7 @@ class StudentSemesterEnrollment extends Model
     protected $fillable = [
         'student_id',
         'department_id',
+        'program_id',
         'section_id',
         'semester',
         'academic_year',
@@ -49,6 +50,11 @@ class StudentSemesterEnrollment extends Model
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function program(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Academic\Program::class);
     }
 
     public function section(): BelongsTo

@@ -23,7 +23,7 @@ class OfferingController extends Controller
         return view('teaching.offerings.index', [
             'teacher' => $teacher,
             'terms' => AcademicTerm::with('academicYear')->whereIn('id', (clone $assigned)->select('academic_term_id'))->orderByDesc('starts_on')->get(),
-            'offerings' => $assigned->with(['term.academicYear', 'section', 'department'])->withCount('enrollmentCourses')
+            'offerings' => $assigned->with(['term.academicYear', 'section', 'department', 'program'])->withCount('enrollmentCourses')
                 ->when($filters['term_id'] ?? null, fn ($query, $term) => $query->where('academic_term_id', $term))
                 ->when($filters['status'] ?? null, fn ($query, $status) => $query->where('status', $status))
                 ->when($filters['q'] ?? null, fn ($query, $search) => $query->where(fn ($query) => $query->where('course_name', 'like', '%'.$search.'%')->orWhere('course_code', 'like', '%'.$search.'%')))
@@ -34,7 +34,7 @@ class OfferingController extends Controller
     public function show(Request $request, string $offering, TeacherWorkspace $workspace)
     {
         $teacher = $workspace->profile($request->user());
-        $offering = $workspace->offerings($teacher)->with(['term.academicYear', 'section', 'department', 'teachers'])->findOrFail($offering);
+        $offering = $workspace->offerings($teacher)->with(['term.academicYear', 'section', 'department', 'program', 'teachers'])->findOrFail($offering);
         $filters = $request->validate(['q' => ['nullable', 'string', 'max:100']]);
 
         return view('teaching.offerings.show', [

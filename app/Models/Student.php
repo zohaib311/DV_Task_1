@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Course\Course;
+use App\Models\Academic\Program;
 use App\Models\Department\Department;
 use App\Models\Enrollment\StudentSemesterEnrollment;
 use App\Models\Result\Result;
@@ -24,6 +25,7 @@ class Student extends Model
         'email',
         'phone',
         'department_id',
+        'program_id',
         'section_id',
         'semester',
         'course_ids',
@@ -52,6 +54,11 @@ class Student extends Model
     public function department()
     {
         return $this->belongsTo(Department::class, 'department_id');
+    }
+
+    public function program(): BelongsTo
+    {
+        return $this->belongsTo(Program::class);
     }
 
     public function user(): BelongsTo

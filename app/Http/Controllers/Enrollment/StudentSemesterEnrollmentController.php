@@ -14,7 +14,7 @@ class StudentSemesterEnrollmentController extends Controller
 {
     public function index()
     {
-        $enrollments = StudentSemesterEnrollment::with(['student', 'department', 'section', 'semesterResult', 'term', 'curriculum', 'courses.course', 'courses.offering.teachers'])
+        $enrollments = StudentSemesterEnrollment::with(['student', 'department', 'program', 'section', 'semesterResult', 'term', 'curriculum', 'courses.course', 'courses.offering.teachers'])
             ->withCount('courses')->orderByDesc('enrolled_at')->orderByDesc('id')->get();
 
         return view('enrollments.enrollments', compact('enrollments'));
@@ -35,9 +35,9 @@ class StudentSemesterEnrollmentController extends Controller
         $service = app(AcademicEnrollmentService::class);
 
         return view('enrollments.add-enrollment', [
-            'students' => $enrollment ? collect([$enrollment->student()->with(['department', 'section'])->firstOrFail()]) : Student::with(['department', 'section'])->orderBy('name')->get(),
+            'students' => $enrollment ? collect([$enrollment->student()->with(['department', 'program', 'section'])->firstOrFail()]) : Student::with(['department', 'program', 'section'])->orderBy('name')->get(),
             'terms' => AcademicTerm::with('academicYear')->where('status', 'active')->orderByDesc('starts_on')->get(),
-            'curricula' => SemesterCurriculum::with('department')->where('status', 'approved')->orderBy('semester')->orderByDesc('id')->get(),
+            'curricula' => SemesterCurriculum::with(['department', 'program'])->where('status', 'approved')->orderBy('semester')->orderByDesc('id')->get(),
             'promotionEnrollment' => $enrollment,
             'promotionEligibility' => $enrollment ? $service->promotionEligibility($enrollment) : null,
             'nextSemester' => $enrollment ? $service->nextSemester($enrollment->semester) : null,
@@ -57,6 +57,7 @@ class StudentSemesterEnrollmentController extends Controller
 
         return response()->json([
             'missing_required' => $missing->pluck('course_code')->values(),
+            'automatic' => true,
             'offerings' => $offerings->map(fn ($offering) => [
                 'id' => $offering->id, 'course_name' => $offering->course_name, 'course_code' => $offering->course_code,
                 'credit_hours' => $offering->credit_hours, 'total_marks' => $offering->total_marks,
@@ -86,7 +87,7 @@ class StudentSemesterEnrollmentController extends Controller
         return [
             'academic_term_id' => ['required', 'integer', 'exists:academic_terms,id'],
             'semester_curriculum_id' => ['required', 'integer', 'exists:semester_curricula,id'],
-            'offering_ids' => ['required', 'array', 'min:1'],
+            'offering_ids' => ['nullable', 'array', 'min:1', 'required_with:course_ids'],
             'offering_ids.*' => ['required', 'integer', 'distinct', 'exists:course_offerings,id'],
         ];
     }

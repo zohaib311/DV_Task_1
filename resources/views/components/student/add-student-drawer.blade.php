@@ -1,7 +1,7 @@
 <div class="offcanvas offcanvas-end add-student-drawer" tabindex="-1" id="addStudentDrawer"
     aria-labelledby="addStudentDrawerLabel">
     <form action="{{ route('addStudent') }}" method="POST" enctype="multipart/form-data"
-        class="d-flex flex-column h-100 m-0" novalidate>
+        class="d-flex flex-column h-100 m-0" novalidate data-student-form>
         @csrf
 
         <div class="drawer-header">
@@ -50,7 +50,7 @@
                         <select name="user_id" id="user_id" class="form-select @error('user_id') is-invalid @enderror">
                             <option value="">Create profile without portal access</option>
                             @foreach ($users as $user)
-                                <option value="{{ $user->id }}" @selected(old('user_id') == $user->id)>{{ $user->name }} — {{ $user->email }}</option>
+                                <option value="{{ $user->id }}" data-name="{{ $user->name }}" data-email="{{ $user->email }}" data-phone="{{ $user->phone }}" @selected(old('user_id') == $user->id)>{{ $user->name }} — {{ $user->email }}</option>
                             @endforeach
                         </select>
                         <small class="student-field-hint">Link the student to an existing User account for the future Student Portal.</small>
@@ -96,6 +96,14 @@
                         <small class="student-field-hint">JPG or PNG, max 2 MB</small>
                         @error('image') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                     </div>
+                    <div class="col-12">
+                        <div class="student-drawer-note">
+                            <div class="form-check"><input class="form-check-input" type="checkbox" name="create_portal_account" value="1" id="create_portal_account" @checked(old('create_portal_account', !old('user_id')))><label class="form-check-label fw-semibold" for="create_portal_account">Create Student Portal account</label></div>
+                            <small>The student can log in immediately after enrollment.</small>
+                            <div class="row g-2 mt-1" data-account-passwords><div class="col-md-6"><label class="form-label" for="account_password">Password</label><input class="form-control" type="password" name="account_password" id="account_password" autocomplete="new-password"></div><div class="col-md-6"><label class="form-label" for="account_password_confirmation">Confirm password</label><input class="form-control" type="password" name="account_password_confirmation" id="account_password_confirmation" autocomplete="new-password"></div></div>
+                            @error('account_password') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -134,6 +142,11 @@
                             @endforeach
                         </select>
                         @error('section_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label for="program_id" class="form-label">Program</label>
+                        <select name="program_id" id="program_id" class="form-select @error('program_id') is-invalid @enderror" required><option value="">Select department first</option>@foreach ($programs as $program)<option value="{{ $program->id }}" data-department-id="{{ $program->department_id }}" @selected(old('program_id') == $program->id)>{{ $program->code }} — {{ $program->name }}</option>@endforeach</select>
+                        @error('program_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                 </div>
             </section>

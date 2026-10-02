@@ -45,7 +45,7 @@
             @endif
 
 
-            <form action="{{ route('updateTeacher', $teacher->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('updateTeacher', $teacher->id) }}" method="POST" enctype="multipart/form-data" data-teacher-form>
 
                 @csrf
                 @method('PUT')
@@ -57,7 +57,7 @@
                         <select name="user_id" id="user_id" class="form-select @error('user_id') is-invalid @enderror">
                             <option value="">No portal account linked</option>
                             @foreach ($users as $user)
-                                <option value="{{ $user->id }}" @selected(old('user_id', $teacher->user_id) == $user->id)>{{ $user->name }} — {{ $user->email }}</option>
+                                <option value="{{ $user->id }}" data-name="{{ $user->name }}" data-email="{{ $user->email }}" data-phone="{{ $user->phone }}" @selected(old('user_id', $teacher->user_id) == $user->id)>{{ $user->name }} — {{ $user->email }}</option>
                             @endforeach
                         </select>
                         <small class="text-muted">A linked account will receive Teacher Panel access in Phase 9C.</small>
@@ -102,11 +102,11 @@
                     <div class="col-md-6">
 
                         <label for="class" class="form-label">
-                            Course
+                            Academic specialization
                         </label>
 
                         <input type="text" name="course" id="course" value="{{ old('course', $teacher->course) }}"
-                            class="form-control @error('course') is-invalid @enderror" placeholder="Enter course">
+                            class="form-control @error('course') is-invalid @enderror" placeholder="e.g. Computer Science">
 
                         @error('course')
                             <div class="invalid-feedback">
@@ -240,4 +240,8 @@
             }
         }, 2000);
     </script>
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('js/student/student-account-flow.js') }}"></script>
 @endsection

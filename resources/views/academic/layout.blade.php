@@ -17,8 +17,8 @@
             @else
             <nav class="academic-tabs" aria-label="Academic setup">
                 @can('terms.manage')<a href="{{ route('academic.terms.index') }}" @class(['active' => request()->is('academic/terms*')])><span>01</span> Years &amp; terms</a>@endcan
-                @can('curriculum.manage')<a href="{{ route('academic.curricula.index') }}" @class(['active' => request()->is('academic/curricula*')])><span>02</span> Curriculum</a>@endcan
-                @can('offerings.manage')<a href="{{ route('academic.offerings.index') }}" @class(['active' => request()->is('academic/offerings*')])><span>03</span> Course offerings</a>@endcan
+                @can('curriculum.manage')<a href="{{ route('academic.programs.index') }}" @class(['active' => request()->is('academic/programs*')])><span>02</span> Programs</a><a href="{{ route('academic.curricula.index') }}" @class(['active' => request()->is('academic/curricula*')])><span>03</span> Curriculum</a>@endcan
+                @can('offerings.manage')<a href="{{ route('academic.offerings.index') }}" @class(['active' => request()->is('academic/offerings*')])><span>04</span> Course offerings</a>@endcan
             </nav>
             @endif
             <div class="academic-body">

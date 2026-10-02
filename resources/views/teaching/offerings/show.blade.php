@@ -10,7 +10,7 @@
         <div class="academic-actions mb-4 mt-0"><a class="btn btn-primary" href="{{ route('teaching.attendance.offering', $offering) }}">Manage attendance</a></div>
     @endcan
     <dl class="teaching-class-details">
-        <div><dt>Department / Section</dt><dd>{{ $offering->department->name }} / {{ $offering->section->name }}</dd></div>
+        <div><dt>Program / Section</dt><dd>{{ $offering->program?->code ?? 'Legacy program' }} · {{ $offering->department->name }} / {{ $offering->section->name }}</dd></div>
         <div><dt>Academic year</dt><dd>{{ $offering->term->academicYear->name }}</dd></div>
         <div><dt>Teaching team</dt><dd>{{ $offering->teachers->pluck('name')->implode(', ') }}</dd></div>
         <div><dt>Offering status</dt><dd>@include('teaching.partials.status', ['status' => $offering->status])</dd></div>

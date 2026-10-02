@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CourseOffering extends Model
 {
-    protected $fillable = ['academic_term_id', 'curriculum_course_id', 'course_id', 'department_id', 'section_id', 'semester', 'course_code', 'course_name', 'credit_hours', 'total_marks', 'attendance_marks', 'mid_marks', 'final_marks', 'status'];
+    protected $fillable = ['academic_term_id', 'curriculum_course_id', 'course_id', 'department_id', 'program_id', 'section_id', 'semester', 'course_code', 'course_name', 'credit_hours', 'total_marks', 'attendance_marks', 'mid_marks', 'final_marks', 'status'];
 
     protected $casts = ['credit_hours' => 'decimal:1', 'attendance_policy' => 'array', 'assessment_scheme_approved_at' => 'datetime'];
 
@@ -53,6 +53,11 @@ class CourseOffering extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function program()
+    {
+        return $this->belongsTo(Program::class);
     }
 
     public function section()

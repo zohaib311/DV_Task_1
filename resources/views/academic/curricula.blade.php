@@ -1,12 +1,28 @@
 @extends('academic.layout')
-@section('title', 'Semester Curriculum')
-@section('heading', 'Semester Curriculum')
-@section('description', 'Define each department’s semester plan with required courses, electives, and approved assessment schemes.')
-@section('header-actions')<a href="{{ route('academic.curricula.create') }}" class="btn academic-header-btn"><i class="bi bi-plus-lg"></i> New curriculum</a>@endsection
+@section('title', '8-Semester Program Plans')
+@section('heading', '8-Semester Program Plans')
+@section('description', 'Build an approved semester-wise course plan for every academic program.')
+@section('header-actions')<a href="{{ route('academic.curricula.create') }}" class="btn academic-header-btn"><i class="bi bi-plus-lg"></i> Add semester plan</a>@endsection
 @section('academic-content')
-    <p class="academic-note"><i class="bi bi-shield-check"></i> Approved versions retain their course and assessment details. Create a new version when the academic plan changes.</p>
-    <div class="table-responsive"><table class="table academic-table align-middle"><thead><tr><th>Department</th><th>Semester</th><th>Version</th><th>Courses</th><th>Status</th><th></th></tr></thead><tbody>
-        @forelse($curricula as $curriculum)<tr><td class="fw-semibold">{{ $curriculum->department->name }}</td><td>{{ $curriculum->semester }}</td><td>{{ $curriculum->version }}</td><td>{{ $curriculum->courses_count }}</td><td><span class="academic-badge {{ $curriculum->status === 'approved' ? 'is-active' : '' }}">{{ ucfirst($curriculum->status) }}</span></td><td><a href="{{ route('academic.curricula.edit', $curriculum) }}">{{ $curriculum->status === 'approved' ? 'View plan' : 'Edit & approve' }}</a></td></tr>
-        @empty<tr><td colspan="6" class="academic-empty">No curriculum defined. Create the first department-semester course plan.</td></tr>@endforelse
-    </tbody></table></div>{{ $curricula->links() }}
+    <div class="academic-note mb-4"><i class="bi bi-map"></i> Create the program first, then configure Semester 1 through Semester 8. Approved plans are preserved for academic history.</div>
+    @forelse($programs as $programPlan)
+        @php($program = $programPlan['program'])
+        <section class="academic-form-section mb-4">
+            <div class="d-flex justify-content-between align-items-center gap-3 mb-3"><div><h2 class="mb-1">{{ $program->name }} <small class="text-muted">({{ $program->code }})</small></h2><p class="text-muted mb-0">{{ $program->department->name }} · Program curriculum map</p></div><span class="academic-badge is-active">{{ $programPlan['semesters']->filter(fn ($plan) => $plan->status === 'approved')->count() }} / {{ $program->total_semesters }} approved</span></div>
+            <div class="table-responsive"><table class="table academic-table align-middle"><thead><tr><th>Semester</th><th>Course plan</th><th>Courses</th><th>Status</th><th>Action</th></tr></thead><tbody>
+                @foreach(range(1, $program->total_semesters) as $number)
+                    @php($plan = $programPlan['semesters']->get("Semester $number"))
+                    <tr><td><strong>Semester {{ $number }}</strong></td>
+                    @if($plan)
+                        <td>{{ $plan->version }}</td><td>{{ $plan->courses_count }}</td><td><span class="academic-badge {{ $plan->status === 'approved' ? 'is-active' : '' }}">{{ ucfirst($plan->status) }}</span></td><td><a href="{{ route('academic.curricula.edit', $plan) }}">{{ $plan->status === 'approved' ? 'View plan' : 'Complete plan' }}</a></td>
+                    @else
+                        <td class="text-muted">Not configured</td><td>—</td><td><span class="academic-badge">Missing</span></td><td><a href="{{ route('academic.curricula.create', ['program_id' => $program->id, 'semester' => 'Semester '.$number]) }}">Configure semester {{ $number }}</a></td>
+                    @endif
+                    </tr>
+                @endforeach
+            </tbody></table></div>
+        </section>
+    @empty
+        <div class="academic-empty">No program plans yet. Create a program first, then configure its semester plan.</div>
+    @endforelse
 @endsection

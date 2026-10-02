@@ -9,7 +9,7 @@
         @csrf @if($curriculum->exists) @method('PUT') @endif
         <fieldset @disabled($approved)>
             <div class="row g-3 mb-4">
-                <div class="col-md-5"><label for="department_id" class="form-label">Department</label><select id="department_id" name="department_id" class="form-select" required><option value="">Select department</option>@foreach($departments as $department)<option value="{{ $department->id }}" @selected(old('department_id', $curriculum->department_id) == $department->id)>{{ $department->name }}</option>@endforeach</select></div>
+                <div class="col-md-5"><label for="program_id" class="form-label">Program</label><select id="program_id" name="program_id" class="form-select" required><option value="">Select program</option>@foreach($programs as $program)<option value="{{ $program->id }}" @selected(old('program_id', $curriculum->program_id) == $program->id)>{{ $program->code }} · {{ $program->name }} ({{ $program->department->name }})</option>@endforeach</select></div>
                 <div class="col-md-3"><label for="semester" class="form-label">Semester</label><select id="semester" name="semester" class="form-select" required>@foreach(range(1, 8) as $number)<option @selected(old('semester', $curriculum->semester) === 'Semester '.$number)>Semester {{ $number }}</option>@endforeach</select></div>
                 <div class="col-md-4"><label for="version" class="form-label">Curriculum version</label><input id="version" name="version" class="form-control" value="{{ old('version', $curriculum->version) }}" placeholder="e.g. 2026 Intake" maxlength="60" required></div>
             </div>

@@ -20,16 +20,13 @@ class AcademicEnrollmentService
     public function availableOfferings(Student $student, AcademicTerm $term, SemesterCurriculum $curriculum): Collection
     {
         $this->validatePlacement($student, $term, $curriculum);
-        $previousCourseIds = $this->previousCourseIds($student);
-
         return CourseOffering::with(['teachers', 'curriculumCourse'])
             ->where('academic_term_id', $term->id)->where('department_id', $student->department_id)
+            ->when($student->program_id, fn ($query, $programId) => $query->where('program_id', $programId))
             ->where('section_id', $student->section_id)->where('status', 'active')
             ->whereHas('teachers')->whereHas('course', fn ($query) => $query->where('is_active', true))
-            ->where(function ($query) use ($curriculum, $previousCourseIds) {
-                $query->whereHas('curriculumCourse', fn ($q) => $q->where('semester_curriculum_id', $curriculum->id))
-                    ->orWhereIn('course_id', $previousCourseIds);
-            })->orderBy('course_code')->get();
+            ->whereHas('curriculumCourse', fn ($query) => $query->where('semester_curriculum_id', $curriculum->id)->where('type', 'required'))
+            ->orderBy('course_code')->get();
     }
 
     public function enroll(array $data, ?StudentSemesterEnrollment $promotion = null): StudentSemesterEnrollment
@@ -61,28 +58,44 @@ class AcademicEnrollmentService
                 ->where('semester', $curriculum->semester)->exists()) {
                 $this->invalid('semester_curriculum_id', 'This student already has an enrollment for this academic year and semester.');
             }
-            $offerings = CourseOffering::with(['curriculumCourse', 'teachers', 'course'])->whereIn('id', $data['offering_ids'])->orderBy('id')->lockForUpdate()->get();
-            if ($offerings->count() !== count($data['offering_ids'])) {
-                $this->invalid('offering_ids', 'One or more selected offerings are no longer available.');
-            }
-            $previousCourseIds = $this->previousCourseIds($student);
-            foreach ($offerings as $offering) {
-                if ($offering->academic_term_id !== $term->id || $offering->section_id !== $student->section_id ||
-                    $offering->department_id !== $student->department_id || $offering->status !== 'active' ||
-                    $offering->teachers->isEmpty() || ! $offering->course->is_active) {
-                    $this->invalid('offering_ids', 'Select active, teacher-assigned offerings in the student\'s section and selected term.');
+            $selectedOfferingIds = $data['offering_ids'] ?? [];
+            if ($selectedOfferingIds) {
+                // Backward compatibility for existing integrations and repeat/improvement workflows.
+                $offerings = CourseOffering::with(['curriculumCourse', 'teachers', 'course'])->whereIn('id', $selectedOfferingIds)->orderBy('id')->lockForUpdate()->get();
+                if ($offerings->count() !== count($selectedOfferingIds)) {
+                    $this->invalid('offering_ids', 'One or more selected offerings are no longer available.');
                 }
-                if ($offering->curriculumCourse->semester_curriculum_id !== $curriculum->id && ! $previousCourseIds->contains($offering->course_id)) {
-                    $this->invalid('offering_ids', 'A course outside this curriculum must be a previously completed course selected for repeat or improvement.');
+                $previousCourseIds = $this->previousCourseIds($student);
+                foreach ($offerings as $offering) {
+                    if ($offering->academic_term_id !== $term->id || $offering->section_id !== $student->section_id ||
+                        $offering->department_id !== $student->department_id || $offering->program_id !== $student->program_id || $offering->status !== 'active' ||
+                        $offering->teachers->isEmpty() || ! $offering->course->is_active) {
+                        $this->invalid('offering_ids', 'Select active, teacher-assigned offerings in the student\'s section and selected term.');
+                    }
+                    if ($offering->curriculumCourse->semester_curriculum_id !== $curriculum->id && ! $previousCourseIds->contains($offering->course_id)) {
+                        $this->invalid('offering_ids', 'A course outside this curriculum must be a previously completed course selected for repeat or improvement.');
+                    }
                 }
+            } else {
+                // Normal admission never asks an operator to choose a student's required courses.
+                $offerings = CourseOffering::with(['curriculumCourse', 'teachers', 'course'])
+                    ->where('academic_term_id', $term->id)->where('department_id', $student->department_id)
+                    ->when($student->program_id, fn ($query, $programId) => $query->where('program_id', $programId))
+                    ->where('section_id', $student->section_id)->where('status', 'active')->whereHas('teachers')
+                    ->whereHas('course', fn ($query) => $query->where('is_active', true))
+                    ->whereHas('curriculumCourse', fn ($query) => $query->where('semester_curriculum_id', $curriculum->id)->where('type', 'required'))
+                    ->orderBy('course_code')->lockForUpdate()->get();
             }
             $selectedCurriculumCourseIds = $offerings->pluck('curriculum_course_id');
             $missing = $curriculum->courses->where('type', 'required')->reject(fn ($course) => $selectedCurriculumCourseIds->contains($course->id));
             if ($missing->isNotEmpty()) {
-                $this->invalid('offering_ids', 'Include every required curriculum course: '.$missing->pluck('course_code')->implode(', ').'. Create any missing active offerings first.');
+                if ($selectedOfferingIds) {
+                    $this->invalid('offering_ids', 'Include every required curriculum course: '.$missing->pluck('course_code')->implode(', ').'.');
+                }
+                $this->invalid('semester_curriculum_id', 'The semester teaching setup is incomplete. Missing active, teacher-assigned classes: '.$missing->pluck('course_code')->implode(', ').'.');
             }
             $enrollment = StudentSemesterEnrollment::create([
-                'student_id' => $student->id, 'department_id' => $student->department_id, 'section_id' => $student->section_id,
+                'student_id' => $student->id, 'department_id' => $student->department_id, 'program_id' => $student->program_id, 'section_id' => $student->section_id,
                 'academic_term_id' => $term->id, 'semester_curriculum_id' => $curriculum->id,
                 'academic_year' => $term->academicYear->name, 'semester' => $curriculum->semester,
                 'status' => 'active', 'enrolled_at' => today(),
@@ -145,8 +158,8 @@ class AcademicEnrollmentService
         if ($term->status !== 'active') {
             $this->invalid('academic_term_id', 'Only active terms accept new enrollments.');
         }
-        if ($curriculum->status !== 'approved' || $curriculum->department_id !== $student->department_id) {
-            $this->invalid('semester_curriculum_id', 'Select an approved curriculum for the student\'s department.');
+        if ($curriculum->status !== 'approved' || $curriculum->department_id !== $student->department_id || $curriculum->program_id !== $student->program_id) {
+            $this->invalid('semester_curriculum_id', 'Select an approved curriculum for the student\'s program and department.');
         }
     }
 

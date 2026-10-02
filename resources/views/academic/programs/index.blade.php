@@ -1,0 +1,21 @@
+@extends('academic.layout')
+@section('title', 'Academic Programs')
+@section('heading', 'Academic Programs')
+@section('description', 'Create degree programs before building their semester-wise course plans.')
+@section('academic-content')
+    <section class="academic-form-section mb-4">
+        <h2>Create program</h2><p class="text-muted">Examples: BSCS, BSSE, and BSIT. Each program has its own study plan, even when courses are shared.</p>
+        <form method="POST" action="{{ route('academic.programs.store') }}" class="row g-3">@csrf
+            <div class="col-md-3"><label class="form-label" for="department_id">Department</label><select id="department_id" name="department_id" class="form-select" required><option value="">Select department</option>@foreach($departments as $department)<option value="{{ $department->id }}" @selected(old('department_id') == $department->id)>{{ $department->name }}</option>@endforeach</select></div>
+            <div class="col-md-3"><label class="form-label" for="name">Program name</label><input id="name" name="name" class="form-control" value="{{ old('name') }}" placeholder="BS Computer Science" required></div>
+            <div class="col-md-2"><label class="form-label" for="code">Code</label><input id="code" name="code" class="form-control" value="{{ old('code') }}" placeholder="BSCS" required></div>
+            <div class="col-md-2"><label class="form-label" for="duration_years">Years</label><input id="duration_years" type="number" name="duration_years" min="1" max="8" value="{{ old('duration_years', 4) }}" class="form-control" required></div>
+            <div class="col-md-2"><label class="form-label" for="total_semesters">Semesters</label><input id="total_semesters" type="number" name="total_semesters" min="1" max="16" value="{{ old('total_semesters', 8) }}" class="form-control" required></div>
+            <input type="hidden" name="is_active" value="1"><div class="col-12"><button class="btn btn-primary">Create program</button></div>
+        </form>
+    </section>
+    <div class="table-responsive"><table class="table academic-table align-middle"><thead><tr><th>Program</th><th>Department</th><th>Duration</th><th>Academic setup</th><th>Status</th><th>Manage</th></tr></thead><tbody>
+    @forelse($programs as $program)<tr><td><strong>{{ $program->name }}</strong><small>{{ $program->code }}</small></td><td>{{ $program->department->name }}</td><td>{{ $program->duration_years }} years / {{ $program->total_semesters }} semesters</td><td>{{ $program->curricula_count }} plans · {{ $program->offerings_count }} offerings · {{ $program->students_count }} students</td><td><span class="academic-badge {{ $program->is_active ? 'is-active' : '' }}">{{ $program->is_active ? 'Active' : 'Inactive' }}</span></td><td><details><summary>Update</summary><form method="POST" action="{{ route('academic.programs.update', $program) }}" class="row g-2 mt-2">@csrf @method('PUT')<div class="col-12"><select name="department_id" class="form-select form-select-sm" required>@foreach($departments as $department)<option value="{{ $department->id }}" @selected($program->department_id === $department->id)>{{ $department->name }}</option>@endforeach</select></div><div class="col-6"><input name="name" class="form-control form-control-sm" value="{{ $program->name }}" required></div><div class="col-6"><input name="code" class="form-control form-control-sm" value="{{ $program->code }}" required></div><div class="col-4"><input type="number" name="duration_years" class="form-control form-control-sm" value="{{ $program->duration_years }}" min="1" max="8" required></div><div class="col-4"><input type="number" name="total_semesters" class="form-control form-control-sm" value="{{ $program->total_semesters }}" min="1" max="16" required></div><div class="col-4"><select name="is_active" class="form-select form-select-sm"><option value="1" @selected($program->is_active)>Active</option><option value="0" @selected(!$program->is_active)>Inactive</option></select></div><div class="col-12"><button class="btn btn-sm btn-primary">Save</button></div></form></details></td></tr>
+    @empty<tr><td colspan="6" class="academic-empty">No programs yet. Start with BSCS, BSSE, or BSIT.</td></tr>@endforelse
+    </tbody></table></div>
+@endsection

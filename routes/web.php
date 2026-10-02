@@ -5,6 +5,7 @@ use App\Http\Controllers\AccessControlController;
 use App\Http\Controllers\Academic\AcademicTermController;
 use App\Http\Controllers\Academic\CurriculumController;
 use App\Http\Controllers\Academic\CourseOfferingController;
+use App\Http\Controllers\Academic\ProgramController;
 use App\Http\Controllers\Course\CourseController;
 use App\Http\Controllers\Dashboard\DashbaordController;
 use App\Http\Controllers\Department\DepartmentController;
@@ -241,6 +242,11 @@ Route::prefix('access-control')->controller(AccessControlController::class)->mid
 });
 
 Route::prefix('academic')->name('academic.')->middleware('auth')->group(function () {
+    Route::middleware('permission:curriculum.manage')->controller(ProgramController::class)->group(function () {
+        Route::get('/programs', 'index')->name('programs.index');
+        Route::post('/programs', 'store')->name('programs.store');
+        Route::put('/programs/{program}', 'update')->name('programs.update');
+    });
     Route::middleware('permission:terms.manage')->controller(AcademicTermController::class)->group(function () {
         Route::get('/terms', 'index')->name('terms.index');
         Route::post('/years', 'storeYear')->name('years.store');
@@ -262,5 +268,9 @@ Route::prefix('academic')->name('academic.')->middleware('auth')->group(function
         Route::post('/offerings', 'store')->name('offerings.store');
         Route::get('/offerings/{offering}/edit', 'edit')->name('offerings.edit');
         Route::put('/offerings/{offering}', 'update')->name('offerings.update');
+    });
+    Route::middleware('permission:offerings.manage')->controller(\App\Http\Controllers\Academic\SemesterTeachingSetupController::class)->group(function () {
+        Route::get('/teaching-setup', 'create')->name('teaching-setup.create');
+        Route::post('/teaching-setup', 'store')->name('teaching-setup.store');
     });
 });

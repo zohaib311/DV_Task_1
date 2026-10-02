@@ -28,7 +28,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('updateStudent', $student->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('updateStudent', $student->id) }}" method="POST" enctype="multipart/form-data" data-student-form>
                 @csrf
                 @method('PUT')
 
@@ -39,7 +39,7 @@
                         <select name="user_id" id="user_id" class="form-select @error('user_id') is-invalid @enderror">
                             <option value="">No portal account linked</option>
                             @foreach ($users as $user)
-                                <option value="{{ $user->id }}" @selected(old('user_id', $student->user_id) == $user->id)>{{ $user->name }} — {{ $user->email }}</option>
+                                <option value="{{ $user->id }}" data-name="{{ $user->name }}" data-email="{{ $user->email }}" data-phone="{{ $user->phone }}" @selected(old('user_id', $student->user_id) == $user->id)>{{ $user->name }} — {{ $user->email }}</option>
                             @endforeach
                         </select>
                         <small class="text-muted">A linked account will receive Student Portal access in Phase 9G.</small>
@@ -96,6 +96,15 @@
                         <label for="registration_no" class="form-label">Registration No</label>
                         <input type="text" id="registration_no" value="{{ $student->registration_no ?? 'N/A' }}"
                             class="form-control bg-light" readonly>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="program_id" class="form-label">Program</label>
+                        <select name="program_id" id="program_id" class="form-select @error('program_id') is-invalid @enderror" required>
+                            <option value="">Select department first</option>
+                            @foreach ($programs as $program)<option value="{{ $program->id }}" data-department-id="{{ $program->department_id }}" @selected(old('program_id', $student->program_id) == $program->id)>{{ $program->code }} — {{ $program->name }}</option>@endforeach
+                        </select>
+                        @error('program_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
                     <div class="col-md-6">
@@ -189,4 +198,5 @@
 
 @section('scripts')
     <script src="{{ asset('js/student/department-section-filter.js') }}"></script>
+    <script src="{{ asset('js/student/student-account-flow.js') }}"></script>
 @endsection

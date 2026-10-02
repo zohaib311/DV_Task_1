@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const departmentSelect = document.getElementById('department_id');
+    const programSelect = document.getElementById('program_id');
     const sectionSelect = document.getElementById('section_id');
 
     if (departmentSelect && sectionSelect) {
@@ -46,8 +47,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
         departmentSelect.addEventListener('change', function () {
             filterSections(false);
+            filterPrograms(false);
         });
 
+        function filterPrograms(isInit = false) {
+            if (!programSelect) return;
+            const selectedDeptId = departmentSelect.value;
+            for (const option of programSelect.options) {
+                if (!option.value) continue;
+                option.hidden = option.disabled = option.dataset.departmentId !== selectedDeptId;
+            }
+            if (programSelect.selectedOptions[0]?.disabled && !isInit) programSelect.value = '';
+            programSelect.disabled = !selectedDeptId;
+        }
+
         filterSections(true); // Run initially for pre-selected values
+        filterPrograms(true);
     }
 });

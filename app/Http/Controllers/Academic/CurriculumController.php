@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Academic;
 
 use App\Http\Controllers\Controller;
 use App\Models\Academic\SemesterCurriculum;
+use App\Models\Academic\Program;
 use App\Models\Course\Course;
-use App\Models\Department\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -15,7 +15,15 @@ class CurriculumController extends Controller
 {
     public function index()
     {
-        return view('academic.curricula', ['curricula' => SemesterCurriculum::with('department')->withCount('courses')->latest()->paginate(20)]);
+        $curricula = SemesterCurriculum::with(['department', 'program'])->withCount('courses')->latest('id')->get();
+        $programs = $curricula->whereNotNull('program_id')->groupBy('program_id')->map(function ($programPlans) {
+            return [
+                'program' => $programPlans->first()->program,
+                'semesters' => $programPlans->groupBy('semester')->map(fn ($versions) => $versions->first()),
+            ];
+        })->sortBy(fn ($item) => $item['program']->name);
+
+        return view('academic.curricula', compact('programs'));
     }
 
     public function create()
@@ -30,9 +38,13 @@ class CurriculumController extends Controller
 
     private function form(SemesterCurriculum $curriculum)
     {
+        if (! $curriculum->exists) {
+            $curriculum->fill(request()->only(['program_id', 'semester']));
+        }
+
         return view('academic.curriculum-form', [
             'curriculum' => $curriculum,
-            'departments' => Department::orderBy('name')->get(),
+            'programs' => Program::with('department')->where('is_active', true)->orderBy('name')->get(),
             'courses' => Course::where('is_active', true)->orderBy('code')->get(),
         ]);
     }
@@ -54,9 +66,10 @@ class CurriculumController extends Controller
     private function save(Request $request, SemesterCurriculum $curriculum): SemesterCurriculum
     {
         $data = $request->validate([
-            'department_id' => ['required', 'integer', 'exists:departments,id'],
+            'program_id' => ['nullable', 'integer', 'exists:academic_programs,id'],
+            'department_id' => ['nullable', 'integer', 'exists:departments,id'],
             'semester' => ['required', Rule::in(array_map(fn ($i) => "Semester $i", range(1, 8)))],
-            'version' => ['required', 'string', 'max:60', Rule::unique('semester_curricula')->where('department_id', $request->input('department_id'))->where('semester', $request->input('semester'))->ignore($curriculum->id)],
+            'version' => ['required', 'string', 'max:60', Rule::unique('semester_curricula')->where('program_id', $request->input('program_id'))->where('semester', $request->input('semester'))->ignore($curriculum->id)],
             'course_ids' => ['required', 'array', 'min:1'],
             'course_ids.*' => ['required', 'integer', 'distinct', 'exists:courses,id'],
             'elective_ids' => ['nullable', 'array'],
@@ -68,11 +81,21 @@ class CurriculumController extends Controller
                 $curriculum = SemesterCurriculum::lockForUpdate()->findOrFail($curriculum->id);
                 $this->requireDraft($curriculum);
             }
+            $program = ! empty($data['program_id']) ? Program::where('is_active', true)->lockForUpdate()->findOrFail($data['program_id']) : null;
+            $departmentId = $program?->department_id ?? ($data['department_id'] ?? null);
+            if (! $departmentId) {
+                throw ValidationException::withMessages(['program_id' => 'Select an active program before creating a new curriculum.']);
+            }
             $courses = Course::whereIn('id', $data['course_ids'])->where('is_active', true)->lockForUpdate()->get();
             if ($courses->count() !== count($data['course_ids']) || $courses->contains(fn ($course) => $course->total_marks <= 0 || $course->credit_hours <= 0 || $course->attendance_marks + $course->mid_marks + $course->final_marks !== $course->total_marks)) {
                 throw ValidationException::withMessages(['course_ids' => 'Select active courses with positive credit hours and a valid assessment scheme.']);
             }
-            $curriculum->fill(collect($data)->only(['department_id', 'semester', 'version'])->all())->save();
+            $curriculum->fill([
+                'department_id' => $departmentId,
+                'program_id' => $program?->id,
+                'semester' => $data['semester'],
+                'version' => $data['version'],
+            ])->save();
             $curriculum->courses()->delete(); // Only unpublished draft rows can be replaced.
             $curriculum->courses()->createMany($courses->map(fn ($course) => [
                 'course_id' => $course->id, 'course_code' => $course->code, 'course_name' => $course->name,

@@ -5,7 +5,7 @@
             @forelse($offerings as $offering)
                 <tr>
                     <td><strong>{{ $offering->course_name }}</strong><small>{{ $offering->course_code }} · {{ $offering->credit_hours }} credits</small></td>
-                    <td>{{ $offering->department->name }}<small>Section {{ $offering->section->name }} · {{ $offering->semester }}</small></td>
+                    <td>{{ $offering->program?->code ?? 'Legacy program' }}<small>{{ $offering->department->name }} · Section {{ $offering->section->name }} · {{ $offering->semester }}</small></td>
                     <td>{{ $offering->term->name }}<small>{{ $offering->term->academicYear->name }}</small></td>
                     <td>{{ $offering->enrollment_courses_count }}</td>
                     <td>@include('teaching.partials.status', ['status' => $offering->status])</td>

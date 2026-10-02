@@ -342,12 +342,13 @@
         </div>
     @endforeach
 
-    <x-student.add-student-drawer :departments="$departments" :sections="$sections" :users="$users" />
+    <x-student.add-student-drawer :departments="$departments" :programs="$programs" :sections="$sections" :users="$users" />
 @endsection
 
 @section('scripts')
     <script src="{{ asset('js/student/department-section-filter.js') }}"></script>
     <script src="{{ asset('js/student/alert-dismiss.js') }}"></script>
+    <script src="{{ asset('js/student/student-account-flow.js') }}"></script>
     @if ($errors->any())
         <script>
             document.addEventListener('DOMContentLoaded', function () {

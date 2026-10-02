@@ -3,6 +3,7 @@
 namespace App\Models\Department;
 
 use App\Models\Section\Section;
+use App\Models\Academic\Program;
 use App\Models\Student;
 use App\Models\Enrollment\StudentSemesterEnrollment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,6 +28,11 @@ class Department extends Model
     public function students()
     {
         return $this->hasMany(Student::class, 'department_id');
+    }
+
+    public function programs()
+    {
+        return $this->hasMany(Program::class);
     }
 
     public function semesterEnrollments()
