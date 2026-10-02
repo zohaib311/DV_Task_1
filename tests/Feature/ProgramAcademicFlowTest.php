@@ -42,6 +42,7 @@ class ProgramAcademicFlowTest extends TestCase
         $this->post(route('academic.offerings.store'), ['academic_term_id' => $term->id, 'program_id' => $program->id, 'curriculum_course_id' => $curriculum->courses()->firstOrFail()->id, 'section_id' => $section->id, 'teacher_ids' => [$teacher->id], 'status' => 'active'])->assertSessionHasNoErrors();
 
         $student = Student::create(['name' => 'Student', 'email' => 'program.student@example.test', 'phone' => '03001110002', 'department_id' => $department->id, 'program_id' => $program->id, 'section_id' => $section->id]);
+        $this->get(route('editStudentForm', $student))->assertOk()->assertSee('Update Student');
         $this->post(route('addEnrollment'), ['student_id' => $student->id, 'academic_term_id' => $term->id, 'semester_curriculum_id' => $curriculum->id])->assertSessionHasNoErrors();
 
         $enrollment = StudentSemesterEnrollment::firstOrFail();

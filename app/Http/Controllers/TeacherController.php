@@ -144,7 +144,7 @@ class TeacherController extends Controller
                     ->whereHas('roles', fn ($role) => $role->where('name', 'Teacher'));
 
                 if ($selectedUserId) {
-                    $query->orWhereKey($selectedUserId);
+                    $query->orWhere('id', $selectedUserId);
                 }
             })
             ->orderBy('name')

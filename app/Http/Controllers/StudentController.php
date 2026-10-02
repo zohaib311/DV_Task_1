@@ -95,7 +95,12 @@ class StudentController extends Controller
     {
         $student     = Student::findOrFail($id);
         $departments = Department::all();
-        $programs    = Program::with('department')->where(fn ($query) => $query->where('is_active', true)->orWhereKey($student->program_id))->orderBy('name')->get();
+        $programs    = Program::with('department')->where(function ($query) use ($student) {
+            $query->where('is_active', true);
+            if ($student->program_id) {
+                $query->orWhere('id', $student->program_id);
+            }
+        })->orderBy('name')->get();
         $sections    = Section::with('department')->get();
         $activeEnrollment = $student->semesterEnrollments()
             ->with('courses.course')
@@ -170,7 +175,7 @@ class StudentController extends Controller
                     ->whereHas('roles', fn ($role) => $role->where('name', 'Student'));
 
                 if ($selectedUserId) {
-                    $query->orWhereKey($selectedUserId);
+                    $query->orWhere('id', $selectedUserId);
                 }
             })
             ->orderBy('name')
