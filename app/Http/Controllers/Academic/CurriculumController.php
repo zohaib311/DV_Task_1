@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Academic;
 
 use App\Http\Controllers\Controller;
+use App\Models\Academic\CurriculumCourse;
 use App\Models\Academic\SemesterCurriculum;
 use App\Models\Academic\Program;
 use App\Models\Course\Course;
@@ -42,10 +43,32 @@ class CurriculumController extends Controller
             $curriculum->fill(request()->only(['program_id', 'semester']));
         }
 
+        $courseUsage = [];
+        $currentPlanIds = SemesterCurriculum::whereNotNull('program_id')
+            ->selectRaw('MAX(id) as id')
+            ->groupBy('program_id', 'semester')
+            ->pluck('id');
+        SemesterCurriculum::with('courses:id,semester_curriculum_id,course_id')
+            ->whereIn('id', $currentPlanIds)
+            ->when($curriculum->exists, fn ($query) => $query->whereKeyNot($curriculum->id))
+            ->get(['id', 'program_id', 'semester'])
+            ->each(function (SemesterCurriculum $plan) use (&$courseUsage) {
+                foreach ($plan->courses as $course) {
+                    $courseUsage[$plan->program_id][$course->course_id][] = $plan->semester;
+                }
+            });
+        foreach ($courseUsage as &$programCourses) {
+            foreach ($programCourses as &$semesters) {
+                $semesters = array_values(array_unique($semesters));
+            }
+        }
+        unset($programCourses, $semesters);
+
         return view('academic.curriculum-form', [
             'curriculum' => $curriculum,
             'programs' => Program::with('department')->where('is_active', true)->orderBy('name')->get(),
             'courses' => Course::where('is_active', true)->orderBy('code')->get(),
+            'courseUsagePayload' => $courseUsage,
         ]);
     }
 
@@ -89,6 +112,27 @@ class CurriculumController extends Controller
             $courses = Course::whereIn('id', $data['course_ids'])->where('is_active', true)->lockForUpdate()->get();
             if ($courses->count() !== count($data['course_ids']) || $courses->contains(fn ($course) => $course->total_marks <= 0 || $course->credit_hours <= 0 || $course->attendance_marks + $course->mid_marks + $course->final_marks !== $course->total_marks)) {
                 throw ValidationException::withMessages(['course_ids' => 'Select active courses with positive credit hours and a valid assessment scheme.']);
+            }
+            if ($program) {
+                $otherSemesterPlanIds = SemesterCurriculum::where('program_id', $program->id)
+                    ->where('semester', '!=', $data['semester'])
+                    ->selectRaw('MAX(id) as id')
+                    ->groupBy('semester')
+                    ->pluck('id');
+                $conflicts = CurriculumCourse::with('curriculum:id,program_id,semester')
+                    ->whereIn('course_id', $courses->pluck('id'))
+                    ->whereIn('semester_curriculum_id', $otherSemesterPlanIds)
+                    ->get();
+                if ($conflicts->isNotEmpty()) {
+                    $labels = $conflicts
+                        ->map(fn (CurriculumCourse $course) => "{$course->course_code} ({$course->curriculum->semester})")
+                        ->unique()
+                        ->implode(', ');
+
+                    throw ValidationException::withMessages([
+                        'course_ids' => "These courses are already assigned to another {$program->code} semester: {$labels}. A course can belong to only one semester within the same program.",
+                    ]);
+                }
             }
             $curriculum->fill([
                 'department_id' => $departmentId,

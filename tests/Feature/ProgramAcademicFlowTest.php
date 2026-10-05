@@ -71,9 +71,38 @@ class ProgramAcademicFlowTest extends TestCase
         $semesterOne = SemesterCurriculum::latest('id')->firstOrFail();
         $this->post(route('academic.curricula.approve', $semesterOne))->assertSessionHasNoErrors();
 
-        $this->post(route('academic.curricula.store'), ['program_id' => $program->id, 'semester' => 'Semester 3', 'version' => '2026-S3', 'course_ids' => [$course->id]])->assertSessionHasNoErrors();
-        $semesterThree = SemesterCurriculum::latest('id')->firstOrFail();
-        $this->post(route('academic.curricula.approve', $semesterThree))->assertSessionHasNoErrors();
+        $this->get(route('academic.curricula.create', ['program_id' => $program->id, 'semester' => 'Semester 3']))
+            ->assertOk()
+            ->assertSee('curriculumCourseUsage');
+        $this->postJson(route('academic.curricula.store'), ['program_id' => $program->id, 'semester' => 'Semester 3', 'version' => '2026-S3', 'course_ids' => [$course->id]])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('course_ids');
+        $otherProgram = Program::create(['department_id' => $department->id, 'name' => 'BS Computer Science', 'code' => 'BSCS', 'duration_years' => 4, 'total_semesters' => 8, 'is_active' => true]);
+        $this->post(route('academic.curricula.store'), ['program_id' => $otherProgram->id, 'semester' => 'Semester 3', 'version' => '2026-S3', 'course_ids' => [$course->id]])
+            ->assertSessionHasNoErrors();
+
+        // Preserve coverage for bad historical data created before cross-semester
+        // curriculum validation existed.
+        $semesterThree = SemesterCurriculum::create([
+            'department_id' => $department->id,
+            'program_id' => $program->id,
+            'semester' => 'Semester 3',
+            'version' => 'Legacy-2026-S3',
+            'status' => 'approved',
+            'approved_at' => now(),
+            'approved_by' => $admin->id,
+        ]);
+        $semesterThree->courses()->create([
+            'course_id' => $course->id,
+            'course_code' => $course->code,
+            'course_name' => $course->name,
+            'credit_hours' => $course->credit_hours,
+            'total_marks' => $course->total_marks,
+            'attendance_marks' => $course->attendance_marks,
+            'mid_marks' => $course->mid_marks,
+            'final_marks' => $course->final_marks,
+            'type' => 'required',
+        ]);
 
         $existingCourse = $semesterOne->courses()->where('course_id', $course->id)->firstOrFail();
         $missingCourse = $semesterOne->courses()->where('course_id', $otherCourse->id)->firstOrFail();
