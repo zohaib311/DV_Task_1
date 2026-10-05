@@ -3,7 +3,6 @@
 @section('heading', 'Prepare Semester Teaching')
 @section('description', 'Create every class for one department, section, term, and semester plan in one controlled step.')
 @section('academic-content')
-    @if($errors->any())<div class="alert alert-danger"><strong>Please review the setup:</strong><ul class="mb-0 mt-1">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
     <div class="academic-note mb-4"><i class="bi bi-diagram-3"></i> Select the term, section, and approved semester plan. Assign a teacher to each course once; future student enrollments will receive the required courses automatically.</div>
     <form method="POST" action="{{ route('academic.teaching-setup.store') }}" id="semesterTeachingSetup">
         @csrf
@@ -22,5 +21,6 @@
     </form>
     <script type="application/json" id="teachingSetupData">@json($curriculaPayload)</script>
     <script type="application/json" id="teachingSetupTeachers">@json($teachersPayload)</script>
+    <script type="application/json" id="teachingSetupExisting">@json($existingOfferingsPayload)</script>
 @endsection
 @section('scripts')<script src="{{ asset('js/academic/semester-teaching-setup.js') }}"></script>@endsection
