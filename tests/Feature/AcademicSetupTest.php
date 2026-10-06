@@ -253,7 +253,7 @@ class AcademicSetupTest extends TestCase
         $this->assertSame(1, StudentSemesterEnrollment::where('status', 'active')->count());
     }
 
-    public function test_published_failed_result_allows_promotion_with_an_available_backlog_repeat(): void
+    public function test_published_failed_result_carries_the_repeat_and_previous_teacher_into_the_next_term(): void
     {
         $first = $this->offeringPlan($this->student, [$this->course], 'Semester 1');
         $this->post(route('addEnrollment'), $first + ['student_id' => $this->student->id])->assertSessionHasNoErrors();
@@ -275,19 +275,34 @@ class AcademicSetupTest extends TestCase
         $later = AcademicTerm::create(['academic_year_id' => $year->id, 'name' => 'Summer 2027', 'starts_on' => '2027-06-20', 'ends_on' => '2027-07-25', 'status' => 'active']);
         $nextOffering = CourseOffering::findOrFail($next['offering_ids'][0]);
         $nextOffering->update(['academic_term_id' => $later->id]);
-        $repeat = CourseOffering::create($enrollmentCourse->only(['course_id', 'course_code', 'course_name', 'credit_hours', 'total_marks', 'attendance_marks', 'mid_marks', 'final_marks']) + [
-            'academic_term_id' => $later->id, 'curriculum_course_id' => CourseOffering::findOrFail($first['offering_ids'][0])->curriculum_course_id,
-            'department_id' => $this->student->department_id, 'section_id' => $this->student->section_id, 'semester' => 'Semester 1', 'status' => 'active',
-        ]);
-        $repeat->teachers()->attach($nextOffering->teachers()->pluck('teachers.id'));
         $next['academic_term_id'] = $later->id;
-        $next['offering_ids'] = [$nextOffering->id, $repeat->id];
 
         $this->get(route('promoteEnrollmentForm', $enrollment))->assertOk()->assertSee('Promotion is allowed with backlog courses: CS101');
         $this->getJson(route('enrollment.offerings', ['student_id' => $this->student->id, 'academic_term_id' => $later->id, 'semester_curriculum_id' => $next['semester_curriculum_id']]))
             ->assertOk()->assertJsonFragment(['course_code' => 'CS101', 'type' => 'repeat']);
+        $source = CourseOffering::findOrFail($first['offering_ids'][0]);
+        $repeat = CourseOffering::where('academic_term_id', $later->id)->where('course_id', $this->course->id)->firstOrFail();
+        $this->assertNotSame($source->id, $repeat->id);
+        $this->assertEqualsCanonicalizing($source->teachers()->pluck('teachers.id')->all(), $repeat->teachers()->pluck('teachers.id')->all());
+        $this->assertSame('active', $repeat->status);
+        $this->assertSame(0, $repeat->assessmentComponents()->count());
+        $this->assertSame(0, $repeat->attendanceSessions()->count());
+        // Leave the repeat unchecked during promotion so the student can choose it in the portal.
+        $next['offering_ids'] = [$nextOffering->id];
         $this->post(route('promoteEnrollment', $enrollment), $next)->assertSessionHasNoErrors();
-        $this->assertDatabaseHas('student_enrollment_courses', ['student_semester_enrollment_id' => StudentSemesterEnrollment::latest('id')->first()->id,
+        $promoted = StudentSemesterEnrollment::latest('id')->firstOrFail();
+        $this->assertDatabaseMissing('student_enrollment_courses', ['student_semester_enrollment_id' => $promoted->id,
+            'course_id' => $this->course->id]);
+
+        $studentUser = User::create(['name' => 'Student portal', 'email' => 'portal@student.test', 'phone' => '03001111222', 'password' => bcrypt('password')]);
+        $studentUser->assignRole('Student');
+        $this->student->update(['user_id' => $studentUser->id]);
+        $this->actingAs($studentUser)->get(route('student.registration.index'))->assertOk()
+            ->assertSee('CS101')->assertSee('Backlog repeat')->assertSee($nextOffering->course_code)->assertSee('Required');
+        $this->post(route('student.registration.store'), ['offering_ids' => [$nextOffering->id, $repeat->id]])->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('student_enrollment_courses', ['student_semester_enrollment_id' => $promoted->id,
+            'course_id' => $nextOffering->course_id, 'registration_type' => 'required']);
+        $this->assertDatabaseHas('student_enrollment_courses', ['student_semester_enrollment_id' => $promoted->id,
             'course_id' => $this->course->id, 'registration_type' => 'repeat']);
     }
 }

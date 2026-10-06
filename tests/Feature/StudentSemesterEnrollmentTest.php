@@ -129,7 +129,7 @@ class StudentSemesterEnrollmentTest extends TestCase
         $this->assertNull($student->course_ids);
     }
 
-    public function test_a_published_passing_enrollment_can_be_promoted_with_explicit_next_semester_courses(): void
+    public function test_a_published_passing_enrollment_is_promoted_then_courses_are_left_for_student_selection(): void
     {
         [$user, $student, $currentEnrollment, $currentCourse, $nextCourse] = $this->makePromotionRecord('Pass');
 
@@ -151,7 +151,7 @@ class StudentSemesterEnrollmentTest extends TestCase
         $nextEnrollment = StudentSemesterEnrollment::where('student_id', $student->id)
             ->where('semester', 'Semester 2')
             ->firstOrFail();
-        $this->assertDatabaseHas('student_enrollment_courses', [
+        $this->assertDatabaseMissing('student_enrollment_courses', [
             'student_semester_enrollment_id' => $nextEnrollment->id,
             'course_id' => $nextCourse->id,
         ]);
@@ -161,7 +161,7 @@ class StudentSemesterEnrollmentTest extends TestCase
         ]);
         $student->refresh();
         $this->assertSame('Semester 2', $student->semester);
-        $this->assertSame([$nextCourse->id], $student->course_ids);
+        $this->assertSame([], $student->course_ids);
     }
 
     public function test_a_published_failed_result_can_progress_with_backlogs_under_the_default_policy(): void

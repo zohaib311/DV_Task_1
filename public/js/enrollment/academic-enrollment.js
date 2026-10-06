@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let requestNumber = 0;
     let ready = false;
     let maximumCredits = 21;
+    const selfRegistration = form.dataset.selfRegistration === 'true';
 
     function updateSave() {
         save.disabled = !ready || form.dataset.blocked === 'true';
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return td;
     }
     function updateCourseLoad() {
+        if (selfRegistration) return;
         const selected = [...rows.querySelectorAll('input[name="offering_ids[]"]:checked')];
         const credits = selected.reduce((total, input) => total + Number(input.dataset.credits || 0), 0);
         const requiredMissing = rows.querySelectorAll('input[data-required="true"]:not(:checked)').length > 0;
@@ -68,23 +70,27 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const offering of data.offerings) {
                 const row = document.createElement('tr');
                 const selectionCell = cell('');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.name = 'offering_ids[]';
-                checkbox.value = offering.id;
-                checkbox.checked = offering.required;
-                checkbox.disabled = offering.required;
-                checkbox.dataset.required = offering.required ? 'true' : 'false';
-                checkbox.dataset.credits = offering.credit_hours;
-                checkbox.className = 'form-check-input';
-                checkbox.setAttribute('aria-label', `Include ${offering.course_code}`);
-                selectionCell.append(checkbox);
-                if (offering.required) {
-                    const hidden = document.createElement('input');
-                    hidden.type = 'hidden';
-                    hidden.name = 'offering_ids[]';
-                    hidden.value = offering.id;
-                    selectionCell.append(hidden);
+                if (selfRegistration) {
+                    selectionCell.textContent = 'Student selects';
+                } else {
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = 'offering_ids[]';
+                    checkbox.value = offering.id;
+                    checkbox.checked = offering.required;
+                    checkbox.disabled = offering.required;
+                    checkbox.dataset.required = offering.required ? 'true' : 'false';
+                    checkbox.dataset.credits = offering.credit_hours;
+                    checkbox.className = 'form-check-input';
+                    checkbox.setAttribute('aria-label', `Include ${offering.course_code}`);
+                    selectionCell.append(checkbox);
+                    if (offering.required) {
+                        const hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = 'offering_ids[]';
+                        hidden.value = offering.id;
+                        selectionCell.append(hidden);
+                    }
                 }
                 const courseCell = cell('');
                 const label = document.createElement('label');
@@ -100,6 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.missing_required.length) {
                 status.className = 'text-danger small';
                 status.textContent = `Semester teaching setup is incomplete for: ${data.missing_required.join(', ')}. Academic Administration must prepare these classes and assign teachers.`;
+            } else if (data.offerings.length && selfRegistration) {
+                status.textContent = `${data.offerings.length} courses are prepared. After promotion, the student will select courses in the Student Portal up to ${maximumCredits} credit hours.`;
+                updateSave();
             } else if (data.offerings.length) updateCourseLoad();
             else status.textContent = 'No courses are available for this semester plan and term.';
             if (data.missing_required.length) updateSave();
