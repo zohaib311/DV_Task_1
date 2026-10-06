@@ -7,6 +7,7 @@ use App\Models\Result\SemesterResultItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StudentEnrollmentCourse extends Model
 {
@@ -50,5 +51,10 @@ class StudentEnrollmentCourse extends Model
     public function resultItem(): HasOne
     {
         return $this->hasOne(SemesterResultItem::class, 'student_enrollment_course_id');
+    }
+
+    public function assessmentSubmissions(): HasMany
+    {
+        return $this->hasMany(\App\Models\Assessment\StudentAssessmentSubmission::class, 'student_enrollment_course_id');
     }
 }

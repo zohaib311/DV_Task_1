@@ -164,16 +164,16 @@ class StudentSemesterEnrollmentTest extends TestCase
         $this->assertSame([$nextCourse->id], $student->course_ids);
     }
 
-    public function test_a_failed_result_cannot_be_promoted_under_the_default_policy(): void
+    public function test_a_published_failed_result_can_progress_with_backlogs_under_the_default_policy(): void
     {
         [$user, $student, $currentEnrollment, , $nextCourse] = $this->makePromotionRecord('Fail');
 
         $this->actingAs($user)
             ->post(route('promoteEnrollment', $currentEnrollment), $this->offeringPlan($student, [$nextCourse]))
-            ->assertSessionHasErrors('promotion');
+            ->assertRedirect(route('allEnrollments'));
 
-        $this->assertDatabaseCount('student_semester_enrollments', 1);
-        $this->assertSame('active', $currentEnrollment->refresh()->status);
+        $this->assertDatabaseCount('student_semester_enrollments', 2);
+        $this->assertSame('promoted', $currentEnrollment->refresh()->status);
     }
 
     private function makePromotionRecord(string $resultStatus): array

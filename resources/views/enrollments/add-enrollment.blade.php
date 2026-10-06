@@ -64,9 +64,9 @@
                     </div>
                 </section>
                 <section class="enrollment-form-section">
-                    <div class="enrollment-section-title"><i class="bi bi-journal-richtext"></i><div><h5>Automatically assigned semester courses</h5><p>Required courses come from the approved department semester plan. Students do not select their own required courses.</p></div></div>
+                    <div class="enrollment-section-title"><i class="bi bi-journal-richtext"></i><div><h5>Semester course registration</h5><p>Required courses are automatic. Available electives and failed-course repeats are optional and subject to the credit-hour limit.</p></div></div>
                     <p id="offeringStatus" class="text-muted small" aria-live="polite">Select a student, term, and curriculum to load the automatic course plan.</p>
-                    <div class="table-responsive"><table class="table academic-table align-middle"><thead><tr><th>Course / Teacher</th><th>Type</th><th>Credits</th><th>Assessment</th></tr></thead><tbody id="enrollmentOfferingRows"></tbody></table></div>
+                    <div class="table-responsive"><table class="table academic-table align-middle"><thead><tr><th>Include</th><th>Course / Teacher</th><th>Type</th><th>Credits</th><th>Assessment</th></tr></thead><tbody id="enrollmentOfferingRows"></tbody></table></div>
                     <p class="text-muted small mb-0">Assessment: Attendance / Midterm / Final. Approved credit hours and marking schemes are saved with this enrollment.</p>
                 </section>
                 <div class="form__actions mt-4"><a href="{{ route('allEnrollments') }}" class="cancel__btn">Back</a><button type="submit" class="update__btn" id="saveEnrollment" disabled>{{ $isPromotion ? 'Promote Student' : 'Create Enrollment' }}</button></div>

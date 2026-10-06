@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Assessment extends Model
 {
-    protected $fillable = ['title', 'held_on', 'maximum', 'weight', 'revision'];
+    protected $fillable = ['title', 'instructions', 'held_on', 'maximum', 'weight', 'revision', 'submission_required', 'submissions_due_at', 'marks_released_at'];
 
-    protected $casts = ['held_on' => 'date', 'maximum' => 'decimal:2', 'weight' => 'decimal:2', 'revision' => 'integer'];
+    protected $casts = ['held_on' => 'date', 'maximum' => 'decimal:2', 'weight' => 'decimal:2', 'revision' => 'integer',
+        'submission_required' => 'boolean', 'submissions_due_at' => 'datetime', 'marks_released_at' => 'datetime'];
 
     public function component()
     {
@@ -18,5 +19,10 @@ class Assessment extends Model
     public function marks()
     {
         return $this->hasMany(AssessmentMark::class);
+    }
+
+    public function studentSubmissions()
+    {
+        return $this->hasMany(StudentAssessmentSubmission::class);
     }
 }

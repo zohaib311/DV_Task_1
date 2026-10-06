@@ -8,6 +8,7 @@ use App\Models\Academic\CurriculumCourse;
 use App\Models\Academic\SemesterCurriculum;
 use App\Models\Enrollment\StudentEnrollmentCourse;
 use App\Models\Enrollment\StudentSemesterEnrollment;
+use App\Models\Result\SemesterResultItem;
 use App\Models\Section\Section;
 use App\Models\Student;
 use App\Notifications\AcademicUpdateNotification;
@@ -20,13 +21,20 @@ class AcademicEnrollmentService
     public function availableOfferings(Student $student, AcademicTerm $term, SemesterCurriculum $curriculum): Collection
     {
         $this->validatePlacement($student, $term, $curriculum);
-        return CourseOffering::with(['teachers', 'curriculumCourse'])
+        $base = CourseOffering::with(['teachers', 'curriculumCourse', 'course'])
             ->where('academic_term_id', $term->id)->where('department_id', $student->department_id)
             ->when($student->program_id, fn ($query, $programId) => $query->where('program_id', $programId))
             ->where('section_id', $student->section_id)->where('status', 'active')
-            ->whereHas('teachers')->whereHas('course', fn ($query) => $query->where('is_active', true))
-            ->whereHas('curriculumCourse', fn ($query) => $query->where('semester_curriculum_id', $curriculum->id)->where('type', 'required'))
-            ->orderBy('course_code')->get();
+            ->whereHas('teachers')->whereHas('course', fn ($query) => $query->where('is_active', true));
+
+        $current = (clone $base)->whereHas('curriculumCourse', fn ($query) => $query->where('semester_curriculum_id', $curriculum->id))->get();
+        $failedCourseIds = $this->failedCourseIds($student);
+        $repeats = $failedCourseIds->isEmpty() ? collect() : (clone $base)
+            ->whereIn('course_id', $failedCourseIds)
+            ->whereNotIn('course_id', $current->pluck('course_id'))
+            ->get();
+
+        return $current->concat($repeats)->sortBy('course_code')->values();
     }
 
     public function enroll(array $data, ?StudentSemesterEnrollment $promotion = null): StudentSemesterEnrollment
@@ -86,6 +94,10 @@ class AcademicEnrollmentService
                     ->whereHas('curriculumCourse', fn ($query) => $query->where('semester_curriculum_id', $curriculum->id)->where('type', 'required'))
                     ->orderBy('course_code')->lockForUpdate()->get();
             }
+            $maximumCredits = (float) config('academic.enrollment.maximum_credit_hours', 21);
+            if ((float) $offerings->sum('credit_hours') > $maximumCredits) {
+                $this->invalid('offering_ids', "The selected course load exceeds the {$maximumCredits} credit-hour limit.");
+            }
             $selectedCurriculumCourseIds = $offerings->pluck('curriculum_course_id');
             $missing = $curriculum->courses->where('type', 'required')->reject(fn ($course) => $selectedCurriculumCourseIds->contains($course->id));
             if ($missing->isNotEmpty()) {
@@ -126,14 +138,19 @@ class AcademicEnrollmentService
         if ($this->nextSemester($enrollment->semester) === null) {
             return ['allowed' => false, 'message' => 'Semester 8 is the final configured semester.'];
         }
-        if (config('academic.promotion.require_published_pass_result')) {
+        if (config('academic.promotion.require_published_result', true)) {
             $result = $enrollment->semesterResult;
-            if (! $result?->published_at || $result->status !== 'Pass') {
-                return ['allowed' => false, 'message' => 'A published passing result is required before promotion. Review failed courses before continuing.'];
+            if (! $result?->published_at || ! in_array($result->status, ['Pass', 'Fail'], true)) {
+                return ['allowed' => false, 'message' => 'A published semester result is required before promotion.'];
             }
         }
 
-        return ['allowed' => true, 'message' => 'Promotion check passed. Select the next term and approved semester curriculum.'];
+        $failed = $enrollment->semesterResult?->items()->where('status', 'Fail')->pluck('course_code')->filter()->values() ?? collect();
+        $message = $failed->isEmpty()
+            ? 'Promotion check passed. Select the next term and approved semester curriculum.'
+            : 'Promotion is allowed with backlog courses: '.$failed->implode(', ').'. Prepare their offerings in the next term if the student will repeat them now.';
+
+        return ['allowed' => true, 'message' => $message, 'failed_courses' => $failed->all()];
     }
 
     public function nextSemester(string $semester): ?string
@@ -148,6 +165,71 @@ class AcademicEnrollmentService
     {
         return StudentEnrollmentCourse::whereHas('enrollment', fn ($query) => $query->where('student_id', $student->id)
             ->whereHas('semesterResult', fn ($result) => $result->whereNotNull('published_at')->whereIn('status', ['Pass', 'Fail'])))->pluck('course_id');
+    }
+
+    public function failedCourseIds(Student $student): Collection
+    {
+        return SemesterResultItem::query()
+            ->whereHas('semesterResult', fn ($query) => $query->whereNotNull('published_at')->whereIn('status', ['Pass', 'Fail'])
+                ->whereHas('enrollment', fn ($enrollment) => $enrollment->where('student_id', $student->id)))
+            ->orderBy('id')->get(['id', 'course_id', 'status'])->keyBy('course_id')
+            ->filter(fn ($item) => $item->status === 'Fail')->keys()->values();
+    }
+
+    public function optionalRegistrationOfferings(StudentSemesterEnrollment $enrollment): Collection
+    {
+        $enrollment->loadMissing(['student', 'term', 'curriculum']);
+        if ($enrollment->status !== 'active' || $enrollment->term?->status !== 'active') {
+            return collect();
+        }
+        $failed = $this->failedCourseIds($enrollment->student);
+        $registered = $enrollment->courses()->pluck('course_id');
+
+        return CourseOffering::with(['teachers', 'curriculumCourse'])
+            ->where('academic_term_id', $enrollment->academic_term_id)
+            ->where('department_id', $enrollment->department_id)
+            ->where('program_id', $enrollment->program_id)
+            ->where('section_id', $enrollment->section_id)
+            ->where('status', 'active')->whereHas('teachers')
+            ->whereHas('course', fn ($query) => $query->where('is_active', true))
+            ->whereNotIn('course_id', $registered)
+            ->where(function ($query) use ($enrollment, $failed) {
+                $query->whereHas('curriculumCourse', fn ($course) => $course
+                    ->where('semester_curriculum_id', $enrollment->semester_curriculum_id)->where('type', 'elective'));
+                if ($failed->isNotEmpty()) {
+                    $query->orWhereIn('course_id', $failed);
+                }
+            })->orderBy('course_code')->get();
+    }
+
+    public function addOptionalCourses(Student $student, StudentSemesterEnrollment $enrollment, array $offeringIds): void
+    {
+        DB::transaction(function () use ($student, $enrollment, $offeringIds) {
+            Student::whereKey($student->id)->lockForUpdate()->firstOrFail();
+            $enrollment = StudentSemesterEnrollment::with(['term', 'student'])->whereKey($enrollment->id)->lockForUpdate()->firstOrFail();
+            if ($enrollment->student_id !== $student->id) {
+                abort(404);
+            }
+            if ($enrollment->status !== 'active' || $enrollment->term?->status !== 'active') {
+                $this->invalid('courses', 'Course registration is only available for an active enrollment in an active term.');
+            }
+            $allowed = $this->optionalRegistrationOfferings($enrollment)->keyBy('id');
+            $selected = collect($offeringIds)->unique()->map(fn ($id) => $allowed->get((int) $id));
+            if ($selected->contains(null) || $selected->isEmpty()) {
+                $this->invalid('courses', 'Select only the available elective or backlog course offerings.');
+            }
+            $credits = (float) $enrollment->courses()->sum('credit_hours') + (float) $selected->sum('credit_hours');
+            $maximum = (float) config('academic.enrollment.maximum_credit_hours', 21);
+            if ($credits > $maximum) {
+                $this->invalid('courses', "The selected course load is {$credits} credit hours; the maximum is {$maximum}.");
+            }
+            $failed = $this->failedCourseIds($student);
+            $enrollment->courses()->createMany($selected->map(fn ($offering) => $offering->only(CurriculumCourse::SNAPSHOT_FIELDS) + [
+                'course_offering_id' => $offering->id,
+                'registration_type' => $failed->contains($offering->course_id) ? 'repeat' : 'elective',
+            ])->all());
+            $student->update(['course_ids' => $enrollment->courses()->pluck('course_id')->all()]);
+        });
     }
 
     private function validatePlacement(Student $student, AcademicTerm $term, SemesterCurriculum $curriculum): void

@@ -22,13 +22,19 @@
         <fieldset @disabled($locked || !auth()->user()->can('marks.manage-assigned') || $assessment->held_on->isAfter(today()))>
             <legend class="h6">Enrolled students · {{ $courses->count() }}</legend>
             <div class="table-responsive"><table class="table academic-table align-middle">
-                <thead><tr><th>Student</th><th>Registration no.</th><th>Obtained / {{ $assessment->maximum }}</th></tr></thead>
+                <thead><tr><th>Student</th><th>Registration no.</th>@if($assessment->submission_required)<th>Submission</th>@endif<th>Obtained / {{ $assessment->maximum }}</th></tr></thead>
                 <tbody>@foreach($courses as $index => $course)
-                    <tr><td>{{ $course->enrollment->student->name }}</td><td>{{ $course->enrollment->student->registration_no }}</td><td><input type="hidden" name="marks[{{ $index }}][course_id]" value="{{ $course->id }}"><input class="form-control" type="number" name="marks[{{ $index }}][obtained]" min="0" max="{{ $assessment->maximum }}" step="0.01" aria-label="Marks for {{ $course->enrollment->student->name }}" value="{{ old('marks.'.$index.'.obtained', $assessment->marks->firstWhere('student_enrollment_course_id', $course->id)?->obtained) }}"></td></tr>
+                    @php($studentSubmission = $assessment->studentSubmissions->firstWhere('student_enrollment_course_id', $course->id))
+                    <tr><td>{{ $course->enrollment->student->name }}</td><td>{{ $course->enrollment->student->registration_no }}</td>
+                        @if($assessment->submission_required)<td>@if($studentSubmission)<a href="{{ route('teaching.assessments.student-submissions.show', [$offering, $assessment, $studentSubmission]) }}">Open submission</a><small>{{ $studentSubmission->submitted_at->format('d M Y H:i') }}</small>@else<span class="text-muted">Not submitted</span>@endif</td>@endif
+                        <td><input type="hidden" name="marks[{{ $index }}][course_id]" value="{{ $course->id }}"><input class="form-control" type="number" name="marks[{{ $index }}][obtained]" min="0" max="{{ $assessment->maximum }}" step="0.01" aria-label="Marks for {{ $course->enrollment->student->name }}" value="{{ old('marks.'.$index.'.obtained', $assessment->marks->firstWhere('student_enrollment_course_id', $course->id)?->obtained) }}">@if($studentSubmission)<textarea class="form-control mt-2" name="marks[{{ $index }}][feedback]" maxlength="5000" placeholder="Feedback for student">{{ old('marks.'.$index.'.feedback', $studentSubmission->teacher_feedback) }}</textarea>@endif</td></tr>
                 @endforeach</tbody>
             </table></div>
             <label class="form-label" for="marks-reason">Correction reason (required when changing saved scores)</label><input class="form-control" id="marks-reason" name="reason" maxlength="1000" value="{{ old('reason') }}">
             <div class="academic-actions"><button class="btn btn-primary">Save marks</button></div>
         </fieldset>
     </form>
+    @if(!$locked && $assessment->marks->whereNotNull('obtained')->count() === $courses->count() && $courses->isNotEmpty())
+        <form method="POST" action="{{ route('teaching.assessments.release', [$offering, $assessment]) }}" class="academic-actions">@csrf<button class="btn btn-primary" @disabled($assessment->marks_released_at)>{{ $assessment->marks_released_at ? 'Marks released '.$assessment->marks_released_at->format('d M Y H:i') : 'Release marks to students' }}</button></form>
+    @endif
 @endsection

@@ -6,6 +6,7 @@ use App\Models\Academic\CourseOffering;
 use App\Models\Assessment\Assessment;
 use App\Models\Assessment\AssessmentComponent;
 use App\Models\Assessment\AssessmentSubmission;
+use App\Models\Assessment\StudentAssessmentSubmission;
 use App\Models\User;
 use App\Services\Teaching\TeacherWorkspace;
 use Illuminate\Support\Facades\DB;
@@ -66,6 +67,14 @@ class AssessmentWorkflow
             if ($data['held_on'] < $offering->term->starts_on->toDateString() || $data['held_on'] > $offering->term->ends_on->toDateString()) {
                 $this->invalid('held_on', 'The assessment date must be within the teaching term.');
             }
+            $data['submission_required'] = (bool) ($data['submission_required'] ?? false);
+            $data['submissions_due_at'] = $data['submission_required'] ? ($data['submissions_due_at'] ?? null) : null;
+            if ($data['submission_required'] && ! $data['submissions_due_at']) {
+                $this->invalid('submissions_due_at', 'Choose a submission deadline.');
+            }
+            if ($data['submissions_due_at'] && (substr($data['submissions_due_at'], 0, 10) < $offering->term->starts_on->toDateString() || substr($data['submissions_due_at'], 0, 10) > $offering->term->ends_on->toDateString())) {
+                $this->invalid('submissions_due_at', 'The submission deadline must be within the teaching term.');
+            }
             $used = $component->assessments()->when($assessment->exists, fn ($q) => $q->whereKeyNot($assessment->id))->sum('weight');
             if ((int) round(($used + $data['weight']) * 100) > (int) round($component->allocation * 100)) {
                 $this->invalid('weight', 'Assessment weights exceed this component allocation. Remaining: '.round($component->allocation - $used, 2).'.');
@@ -74,7 +83,7 @@ class AssessmentWorkflow
                 $this->invalid('title', 'This component already has an assessment with that title.');
             }
             $before = $assessment->exists ? $assessment->toArray() : null;
-            $assessment->fill(collect($data)->only(['title', 'held_on', 'maximum', 'weight'])->all());
+            $assessment->fill(collect($data)->only(['title', 'instructions', 'held_on', 'maximum', 'weight', 'submission_required', 'submissions_due_at'])->all());
             $assessment->assessment_component_id = $component->id;
             $assessment->revision = $assessment->exists ? $assessment->revision + 1 : 1;
             $assessment->save();
@@ -116,9 +125,32 @@ class AssessmentWorkflow
             }
             foreach ($submitted as $id => $row) {
                 $assessment->marks()->updateOrCreate(['student_enrollment_course_id' => $id], ['obtained' => $row['obtained'] ?? null]);
+                $feedback = trim($row['feedback'] ?? '');
+                if ($feedback !== '') {
+                    StudentAssessmentSubmission::where('assessment_id', $assessment->id)->where('student_enrollment_course_id', $id)
+                        ->update(['teacher_feedback' => $feedback, 'status' => 'reviewed', 'reviewed_at' => now()]);
+                }
             }
             $assessment->increment('revision');
             $this->audit($offering, $user, 'marks_saved', $before, ['assessment_id' => $assessment->id, 'marks' => $assessment->marks()->get()->toArray()], $reason ?: null);
+        });
+    }
+
+    public function releaseMarks(User $user, int $offeringId, int $assessmentId): void
+    {
+        abort_unless($user->can('marks.manage-assigned'), 403);
+        DB::transaction(function () use ($user, $offeringId, $assessmentId) {
+            $offering = $this->lockedAssigned($user, $offeringId);
+            $this->writable($offering);
+            $assessment = Assessment::whereHas('component', fn ($query) => $query->where('course_offering_id', $offering->id))->lockForUpdate()->findOrFail($assessmentId);
+            $expected = $offering->enrollmentCourses()->count();
+            if ($expected === 0 || $assessment->marks()->whereNotNull('obtained')->count() !== $expected) {
+                $this->invalid('assessment', 'Enter marks for every enrolled student before releasing this assessment.');
+            }
+            if (! $assessment->marks_released_at) {
+                $assessment->update(['marks_released_at' => now()]);
+                $this->audit($offering, $user, 'assessment_marks_released', null, ['assessment_id' => $assessment->id, 'released_at' => $assessment->marks_released_at]);
+            }
         });
     }
 

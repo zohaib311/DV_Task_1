@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const save = document.getElementById('saveEnrollment');
     let requestNumber = 0;
     let ready = false;
+    let maximumCredits = 21;
 
     function updateSave() {
         save.disabled = !ready || form.dataset.blocked === 'true';
@@ -34,6 +35,17 @@ document.addEventListener('DOMContentLoaded', () => {
         td.textContent = text;
         return td;
     }
+    function updateCourseLoad() {
+        const selected = [...rows.querySelectorAll('input[name="offering_ids[]"]:checked')];
+        const credits = selected.reduce((total, input) => total + Number(input.dataset.credits || 0), 0);
+        const requiredMissing = rows.querySelectorAll('input[data-required="true"]:not(:checked)').length > 0;
+        ready = selected.length > 0 && !requiredMissing && credits <= maximumCredits;
+        status.className = credits > maximumCredits ? 'text-danger small' : 'text-muted small';
+        status.textContent = credits > maximumCredits
+            ? `Selected load is ${credits} credit hours; maximum allowed is ${maximumCredits}.`
+            : `Selected course load: ${credits} / ${maximumCredits} credit hours. Required courses are locked; electives and backlog repeats are optional.`;
+        updateSave();
+    }
     async function loadOfferings() {
         const currentRequest = ++requestNumber;
         ready = false;
@@ -52,25 +64,45 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             if (currentRequest !== requestNumber) return;
             if (!response.ok) throw new Error(Object.values(data.errors || {}).flat().join(' ') || data.message || 'Unable to load course offerings.');
+            maximumCredits = Number(data.maximum_credit_hours || 21);
             for (const offering of data.offerings) {
                 const row = document.createElement('tr');
+                const selectionCell = cell('');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'offering_ids[]';
+                checkbox.value = offering.id;
+                checkbox.checked = offering.required;
+                checkbox.disabled = offering.required;
+                checkbox.dataset.required = offering.required ? 'true' : 'false';
+                checkbox.dataset.credits = offering.credit_hours;
+                checkbox.className = 'form-check-input';
+                checkbox.setAttribute('aria-label', `Include ${offering.course_code}`);
+                selectionCell.append(checkbox);
+                if (offering.required) {
+                    const hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'offering_ids[]';
+                    hidden.value = offering.id;
+                    selectionCell.append(hidden);
+                }
                 const courseCell = cell('');
                 const label = document.createElement('label');
                 label.textContent = `${offering.course_code} — ${offering.course_name}`;
                 const teacher = document.createElement('small');
                 teacher.textContent = offering.teachers;
                 courseCell.append(label, teacher);
-                row.append(courseCell, cell('Required'), cell(offering.credit_hours), cell(`${offering.attendance_marks} / ${offering.mid_marks} / ${offering.final_marks} (${offering.total_marks})`));
+                row.append(selectionCell, courseCell, cell(offering.type === 'repeat' ? 'Backlog repeat' : offering.type[0].toUpperCase() + offering.type.slice(1)), cell(offering.credit_hours), cell(`${offering.attendance_marks} / ${offering.mid_marks} / ${offering.final_marks} (${offering.total_marks})`));
                 rows.append(row);
             }
+            rows.querySelectorAll('input[type="checkbox"]:not(:disabled)').forEach((input) => input.addEventListener('change', updateCourseLoad));
             ready = data.offerings.length > 0 && data.missing_required.length === 0;
             if (data.missing_required.length) {
                 status.className = 'text-danger small';
                 status.textContent = `Semester teaching setup is incomplete for: ${data.missing_required.join(', ')}. Academic Administration must prepare these classes and assign teachers.`;
-            } else {
-                status.textContent = data.offerings.length ? `${data.offerings.length} required courses will be assigned automatically when you create this enrollment.` : 'No required courses are configured in this approved semester plan.';
-            }
-            updateSave();
+            } else if (data.offerings.length) updateCourseLoad();
+            else status.textContent = 'No courses are available for this semester plan and term.';
+            if (data.missing_required.length) updateSave();
         } catch (error) {
             if (currentRequest !== requestNumber) return;
             status.className = 'text-danger small';

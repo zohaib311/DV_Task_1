@@ -6,6 +6,7 @@ use App\Models\Academic\CourseOffering;
 use App\Models\Assessment\Assessment;
 use App\Models\Assessment\AssessmentComponent;
 use App\Models\Assessment\AssessmentSubmission;
+use App\Models\Assessment\StudentAssessmentSubmission;
 use App\Models\Result\SemesterResult;
 use App\Models\Section\Section;
 use App\Models\User;
@@ -15,6 +16,8 @@ use Database\Seeders\AccessControlSeeder;
 use Database\Seeders\Demo\TeacherPanelDemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AssessmentWorkflowTest extends TestCase
@@ -292,5 +295,45 @@ class AssessmentWorkflowTest extends TestCase
         $this->put(route('academic.offerings.update', $planned), $payload)->assertSessionHasNoErrors();
         $this->assertSame('active', $planned->fresh()->status);
         $this->assertSame(5, $planned->assessmentComponents()->count());
+    }
+
+    public function test_student_submission_teacher_marking_and_live_mark_release_are_private(): void
+    {
+        Storage::fake('local');
+        $this->approveScheme();
+        $component = $this->offering->assessmentComponents()->where('code', 'assignment')->firstOrFail();
+        $this->post(route('teaching.assessments.store', $this->offering), [
+            'component_id' => $component->id, 'title' => 'Portal Assignment', 'instructions' => 'Upload your solution.',
+            'held_on' => '2026-10-01', 'maximum' => 20, 'weight' => 10, 'submission_required' => 1,
+            'submissions_due_at' => '2026-10-02T17:00',
+        ])->assertSessionHasNoErrors();
+        $assessment = Assessment::where('title', 'Portal Assignment')->firstOrFail();
+        $course = $this->offering->enrollmentCourses()->firstOrFail();
+        $student = User::create(['name' => 'Submitting Student', 'email' => 'submitting@student.test', 'phone' => '03009999111', 'password' => bcrypt('password')]);
+        $student->assignRole('Student');
+        $course->enrollment->student->update(['user_id' => $student->id]);
+
+        $this->actingAs($student)->get(route('student.assessments.show', $course))->assertOk()->assertSee('Upload your solution.')->assertSee('Submit work');
+        $this->post(route('student.assessment-submissions.store', [$course, $assessment]), [
+            'answer_text' => 'My completed solution', 'attachment' => UploadedFile::fake()->create('solution.pdf', 100, 'application/pdf'),
+        ])->assertSessionHasNoErrors();
+        $submission = StudentAssessmentSubmission::firstOrFail();
+        Storage::disk('local')->assertExists($submission->attachment_path);
+
+        $this->actingAs($this->teacher)->get(route('teaching.assessments.edit', [$this->offering, $assessment]))->assertOk()->assertSee('Open submission');
+        $this->get(route('teaching.assessments.student-submissions.show', [$this->offering, $assessment, $submission]))->assertOk()->assertSee('My completed solution');
+        $this->get(route('teaching.assessments.student-submissions.download', [$this->offering, $assessment, $submission]))->assertOk();
+        $payload = $this->marksPayload($assessment, 16);
+        foreach ($payload['marks'] as &$row) {
+            if ($row['course_id'] === $course->id) {
+                $row['feedback'] = 'Good work';
+            }
+        }
+        unset($row);
+        $this->put(route('teaching.assessments.marks', [$this->offering, $assessment]), $payload)->assertSessionHasNoErrors();
+        $this->post(route('teaching.assessments.release', [$this->offering, $assessment]))->assertSessionHasNoErrors();
+
+        $this->actingAs($student)->get(route('student.assessments.show', $course))->assertOk()->assertSee('16.00 / 20.00')->assertSee('Good work');
+        $this->get(route('student.assessment-submissions.download', $submission))->assertOk();
     }
 }

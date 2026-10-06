@@ -62,6 +62,9 @@ return [
     'enrollment' => [
         // A section change creates a new auditable enrollment event, not an in-place history rewrite.
         'allow_section_change_within_semester' => false,
+        // Required courses are registered automatically. Students may add
+        // available electives and failed-course repeats up to this load.
+        'maximum_credit_hours' => (float) env('ACADEMIC_MAXIMUM_CREDIT_HOURS', 21),
     ],
 
     'results' => [
@@ -70,9 +73,8 @@ return [
     ],
 
     'promotion' => [
-        // A promotion creates a new active enrollment only after the current
-        // semester has a published passing result. Repeat/improvement courses
-        // are selected explicitly in the promotion form.
-        'require_published_pass_result' => env('ACADEMIC_PROMOTION_REQUIRE_PUBLISHED_PASS_RESULT', true),
+        // Promotion requires a published result, but a failed course becomes
+        // a backlog/repeat instead of blocking the student's next semester.
+        'require_published_result' => env('ACADEMIC_PROMOTION_REQUIRE_PUBLISHED_RESULT', true),
     ],
 ];

@@ -252,4 +252,42 @@ class AcademicSetupTest extends TestCase
         $this->assertDatabaseCount('student_semester_enrollments', 2);
         $this->assertSame(1, StudentSemesterEnrollment::where('status', 'active')->count());
     }
+
+    public function test_published_failed_result_allows_promotion_with_an_available_backlog_repeat(): void
+    {
+        $first = $this->offeringPlan($this->student, [$this->course], 'Semester 1');
+        $this->post(route('addEnrollment'), $first + ['student_id' => $this->student->id])->assertSessionHasNoErrors();
+        $enrollment = StudentSemesterEnrollment::firstOrFail();
+        $enrollmentCourse = $enrollment->courses()->firstOrFail();
+        $result = SemesterResult::create(['student_semester_enrollment_id' => $enrollment->id, 'student_id' => $this->student->id,
+            'status' => 'Fail', 'published_at' => now(), 'sgpa' => 0, 'cgpa' => 0, 'semester_percentage' => 40]);
+        $result->items()->create($enrollmentCourse->only(['course_id', 'course_code', 'course_name', 'credit_hours', 'total_marks']) + [
+            'student_enrollment_course_id' => $enrollmentCourse->id, 'obtained_marks' => 40, 'percentage' => 40,
+            'grade' => 'F', 'grade_point' => 0, 'status' => 'Fail',
+        ]);
+
+        $nextCourse = $this->course->replicate();
+        $nextCourse->code = 'CS201';
+        $nextCourse->name = 'Data Structures';
+        $nextCourse->save();
+        $next = $this->offeringPlan($this->student, [$nextCourse], 'Semester 2');
+        $year = AcademicYear::firstOrFail();
+        $later = AcademicTerm::create(['academic_year_id' => $year->id, 'name' => 'Summer 2027', 'starts_on' => '2027-06-20', 'ends_on' => '2027-07-25', 'status' => 'active']);
+        $nextOffering = CourseOffering::findOrFail($next['offering_ids'][0]);
+        $nextOffering->update(['academic_term_id' => $later->id]);
+        $repeat = CourseOffering::create($enrollmentCourse->only(['course_id', 'course_code', 'course_name', 'credit_hours', 'total_marks', 'attendance_marks', 'mid_marks', 'final_marks']) + [
+            'academic_term_id' => $later->id, 'curriculum_course_id' => CourseOffering::findOrFail($first['offering_ids'][0])->curriculum_course_id,
+            'department_id' => $this->student->department_id, 'section_id' => $this->student->section_id, 'semester' => 'Semester 1', 'status' => 'active',
+        ]);
+        $repeat->teachers()->attach($nextOffering->teachers()->pluck('teachers.id'));
+        $next['academic_term_id'] = $later->id;
+        $next['offering_ids'] = [$nextOffering->id, $repeat->id];
+
+        $this->get(route('promoteEnrollmentForm', $enrollment))->assertOk()->assertSee('Promotion is allowed with backlog courses: CS101');
+        $this->getJson(route('enrollment.offerings', ['student_id' => $this->student->id, 'academic_term_id' => $later->id, 'semester_curriculum_id' => $next['semester_curriculum_id']]))
+            ->assertOk()->assertJsonFragment(['course_code' => 'CS101', 'type' => 'repeat']);
+        $this->post(route('promoteEnrollment', $enrollment), $next)->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('student_enrollment_courses', ['student_semester_enrollment_id' => StudentSemesterEnrollment::latest('id')->first()->id,
+            'course_id' => $this->course->id, 'registration_type' => 'repeat']);
+    }
 }

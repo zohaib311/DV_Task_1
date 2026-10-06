@@ -39,7 +39,7 @@ class AssessmentController extends Controller
     public function edit(Request $request, int $offering, int $assessment, AssessmentWorkflow $workflow)
     {
         $offering = $workflow->assigned($request->user(), $offering);
-        $assessment = Assessment::with(['component', 'marks'])->whereHas('component', fn ($q) => $q->where('course_offering_id', $offering->id))->findOrFail($assessment);
+        $assessment = Assessment::with(['component', 'marks', 'studentSubmissions'])->whereHas('component', fn ($q) => $q->where('course_offering_id', $offering->id))->findOrFail($assessment);
         $courses = $offering->enrollmentCourses()->with('enrollment.student')->orderBy('id')->get();
         $locked = $offering->status !== 'active' || $offering->term->status !== 'active'
             || $offering->enrollmentCourses()->whereHas('enrollment', fn ($query) => $query->where('status', '!=', 'active')->orWhereHas('semesterResult', fn ($query) => $query->whereNotNull('published_at')->whereIn('status', ['Pass', 'Fail'])))->exists();
@@ -58,10 +58,18 @@ class AssessmentController extends Controller
     {
         $data = $request->validate(['revision' => ['required', 'integer', 'min:1'], 'reason' => ['nullable', 'string', 'max:1000'],
             'marks' => ['required', 'array', 'min:1'], 'marks.*.course_id' => ['required', 'integer', 'distinct'],
-            'marks.*.obtained' => ['nullable', 'numeric', 'min:0', 'max:10000', 'decimal:0,2']]);
+            'marks.*.obtained' => ['nullable', 'numeric', 'min:0', 'max:10000', 'decimal:0,2'],
+            'marks.*.feedback' => ['nullable', 'string', 'max:5000']]);
         $workflow->saveMarks($request->user(), $offering, $assessment, $data);
 
         return back()->with('success', 'Marks saved. Blank entries remain incomplete; zero is a recorded score.');
+    }
+
+    public function release(Request $request, int $offering, int $assessment, AssessmentWorkflow $workflow)
+    {
+        $workflow->releaseMarks($request->user(), $offering, $assessment);
+
+        return back()->with('success', 'Assessment marks are now visible to enrolled students.');
     }
 
     public function submit(Request $request, int $offering, AssessmentWorkflow $workflow)
@@ -73,7 +81,8 @@ class AssessmentController extends Controller
 
     private function definitionRules(): array
     {
-        return ['component_id' => ['required', 'integer'], 'title' => ['required', 'string', 'max:120'], 'held_on' => ['required', 'date_format:Y-m-d'],
-            'maximum' => ['required', 'numeric', 'min:0.01', 'max:10000', 'decimal:0,2'], 'weight' => ['required', 'numeric', 'min:0.01', 'max:1000', 'decimal:0,2']];
+        return ['component_id' => ['required', 'integer'], 'title' => ['required', 'string', 'max:120'], 'instructions' => ['nullable', 'string', 'max:5000'], 'held_on' => ['required', 'date_format:Y-m-d'],
+            'maximum' => ['required', 'numeric', 'min:0.01', 'max:10000', 'decimal:0,2'], 'weight' => ['required', 'numeric', 'min:0.01', 'max:1000', 'decimal:0,2'],
+            'submission_required' => ['nullable', 'boolean'], 'submissions_due_at' => ['nullable', 'date']];
     }
 }

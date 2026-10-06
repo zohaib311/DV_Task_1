@@ -3,6 +3,8 @@
 namespace Tests\Feature\StudentPortal;
 
 use App\Models\Enrollment\StudentSemesterEnrollment;
+use App\Models\Academic\CourseOffering;
+use App\Models\Course\Course;
 use App\Models\Result\SemesterResult;
 use App\Models\User;
 use Database\Seeders\AccessControlSeeder;
@@ -158,5 +160,24 @@ class StudentPortalTest extends TestCase
         $snapshot['student']['components']['assignment'] = 95;
         $item->update(['assessment_snapshot' => $snapshot, 'obtained_marks' => 95]);
         $this->get($url)->assertOk()->assertSee('19 / 20')->assertSee('95 / 100')->assertDontSee('PRIVATE_AUDIT_REASON');
+    }
+
+    public function test_student_can_register_an_available_elective_within_the_credit_limit(): void
+    {
+        $source = $this->enrollment->courses()->firstOrFail()->offering;
+        $course = Course::create(['code' => 'DEMO-EL101', 'name' => 'Portal Elective', 'description' => 'Elective', 'credit_hours' => 3,
+            'total_marks' => 100, 'attendance_marks' => 10, 'mid_marks' => 30, 'final_marks' => 60, 'is_active' => true]);
+        $entry = $this->enrollment->curriculum->courses()->create(['course_id' => $course->id, 'course_code' => $course->code, 'course_name' => $course->name,
+            'credit_hours' => 3, 'total_marks' => 100, 'attendance_marks' => 10, 'mid_marks' => 30, 'final_marks' => 60, 'type' => 'elective']);
+        $offering = CourseOffering::create($entry->only(['course_id', 'course_code', 'course_name', 'credit_hours', 'total_marks', 'attendance_marks', 'mid_marks', 'final_marks']) + [
+            'academic_term_id' => $this->enrollment->academic_term_id, 'curriculum_course_id' => $entry->id,
+            'department_id' => $this->enrollment->department_id, 'program_id' => $this->enrollment->program_id,
+            'section_id' => $this->enrollment->section_id, 'semester' => $this->enrollment->semester, 'status' => 'active']);
+        $offering->teachers()->attach($source->teachers()->pluck('teachers.id'));
+
+        $this->get(route('student.registration.index'))->assertOk()->assertSee('Portal Elective');
+        $this->post(route('student.registration.store'), ['offering_ids' => [$offering->id]])->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('student_enrollment_courses', ['student_semester_enrollment_id' => $this->enrollment->id,
+            'course_offering_id' => $offering->id, 'registration_type' => 'elective']);
     }
 }

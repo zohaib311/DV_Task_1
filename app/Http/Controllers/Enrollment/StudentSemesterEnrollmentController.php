@@ -58,12 +58,14 @@ class StudentSemesterEnrollmentController extends Controller
         return response()->json([
             'missing_required' => $missing->pluck('course_code')->values(),
             'automatic' => true,
+            'maximum_credit_hours' => (float) config('academic.enrollment.maximum_credit_hours', 21),
             'offerings' => $offerings->map(fn ($offering) => [
                 'id' => $offering->id, 'course_name' => $offering->course_name, 'course_code' => $offering->course_code,
                 'credit_hours' => $offering->credit_hours, 'total_marks' => $offering->total_marks,
                 'attendance_marks' => $offering->attendance_marks, 'mid_marks' => $offering->mid_marks, 'final_marks' => $offering->final_marks,
                 'teachers' => $offering->teachers->pluck('name')->implode(', '),
                 'type' => $offering->curriculumCourse->semester_curriculum_id === $curriculum->id ? $offering->curriculumCourse->type : 'repeat',
+                'required' => $offering->curriculumCourse->semester_curriculum_id === $curriculum->id && $offering->curriculumCourse->type === 'required',
             ])->values(),
         ]);
     }

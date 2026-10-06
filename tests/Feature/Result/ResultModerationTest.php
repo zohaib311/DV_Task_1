@@ -211,7 +211,7 @@ class ResultModerationTest extends TestCase
         $this->assertSame('Fail', $result->fresh()->status);
         $this->assertEquals(0, $result->fresh()->sgpa);
         $this->assertEquals(77.5, $result->fresh()->semester_percentage);
-        $this->assertFalse(app(AcademicEnrollmentService::class)->promotionEligibility($this->enrollment->fresh())['allowed']);
+        $this->assertTrue(app(AcademicEnrollmentService::class)->promotionEligibility($this->enrollment->fresh())['allowed']);
     }
 
     public function test_correction_updates_later_semester_cgpa_without_rewriting_its_course_grades(): void

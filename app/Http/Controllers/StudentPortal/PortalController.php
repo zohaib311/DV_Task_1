@@ -58,10 +58,12 @@ class PortalController extends Controller
 
     public function assessment(Request $request, int $course, StudentWorkspace $workspace)
     {
-        $course = $workspace->courses($request->user())->with('enrollment')->findOrFail($course);
+        $course = $workspace->courses($request->user())->with(['enrollment.term', 'offering.assessmentComponents.assessments.marks', 'offering.assessmentComponents.assessments.studentSubmissions'])->findOrFail($course);
         $result = $workspace->results($request->user())->where('student_semester_enrollment_id', $course->student_semester_enrollment_id)->first();
         $item = $result?->items()->where('student_enrollment_course_id', $course->id)->first();
 
-        return view('student-portal.assessments.show', compact('course', 'item'));
+        $liveAssessments = $course->offering?->assessmentComponents->flatMap->assessments->sortBy('held_on') ?? collect();
+
+        return view('student-portal.assessments.show', compact('course', 'item', 'liveAssessments'));
     }
 }
