@@ -15,7 +15,7 @@
         @if($offering->assessment_scheme_approved_at && $offering->status === 'active' && $offering->term->status === 'active')
             <details class="academic-form-section"><summary class="fw-semibold">Create assessment</summary>
                 <p class="text-muted small mt-3">Example: an assignment scored out of 20 can contribute 5 marks to the course. The assessment weights must fit the approved component allocation.</p>
-                <form method="POST" action="{{ route('teaching.assessments.store', $offering) }}">
+                <form method="POST" enctype="multipart/form-data" action="{{ route('teaching.assessments.store', $offering) }}">
                     @csrf
                     <label class="form-label" for="assessment-component">Component</label>
                     <select class="form-select mb-3" id="assessment-component" name="component_id" required><option value="">Choose component</option>@foreach($offering->assessmentComponents->where('code', '!=', 'attendance') as $component)<option value="{{ $component->id }}" @selected(old('component_id') == $component->id)>{{ ucfirst($component->code) }} — {{ $component->allocation }} allocated, {{ $component->assessments->sum('weight') }} used</option>@endforeach</select>
@@ -29,7 +29,7 @@
     <div class="table-responsive"><table class="table academic-table align-middle">
         <thead><tr><th>Assessment</th><th>Component</th><th>Date</th><th>Raw maximum</th><th>Weight</th><th>Action</th></tr></thead>
         <tbody>@forelse($offering->assessmentComponents->flatMap->assessments as $item)
-            <tr><td>{{ $item->title }}</td><td>{{ ucfirst($offering->assessmentComponents->firstWhere('id', $item->assessment_component_id)->code) }}</td><td>{{ $item->held_on->format('d M Y') }}</td><td>{{ $item->maximum }}</td><td>{{ $item->weight }}</td><td><a href="{{ route('teaching.assessments.edit', [$offering, $item]) }}">Open marks</a></td></tr>
+            <tr><td>{{ $item->title }}@if($item->question_file_path)<small><a href="{{ route('teaching.assessments.question-file', [$offering, $item]) }}">{{ $item->question_original_filename }}</a></small>@endif</td><td>{{ ucfirst($offering->assessmentComponents->firstWhere('id', $item->assessment_component_id)->code) }}</td><td>{{ $item->held_on->format('d M Y') }}</td><td>{{ $item->maximum }}</td><td>{{ $item->weight }}</td><td><a href="{{ route('teaching.assessments.edit', [$offering, $item]) }}">Open marks</a></td></tr>
         @empty<tr><td colspan="6" class="academic-empty">No assessments created yet. Attendance is calculated separately from sessions.</td></tr>@endforelse</tbody>
     </table></div>
     <h2 class="mt-4">Course marks preview</h2>

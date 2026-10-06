@@ -306,14 +306,23 @@ class AssessmentWorkflowTest extends TestCase
             'component_id' => $component->id, 'title' => 'Portal Assignment', 'instructions' => 'Upload your solution.',
             'held_on' => '2026-10-01', 'maximum' => 20, 'weight' => 10, 'submission_required' => 1,
             'submissions_due_at' => '2026-10-02T17:00',
+            'question_file' => UploadedFile::fake()->create('questions.pdf', 100, 'application/pdf'),
         ])->assertSessionHasNoErrors();
         $assessment = Assessment::where('title', 'Portal Assignment')->firstOrFail();
+        Storage::disk('local')->assertExists($assessment->question_file_path);
+        $this->get(route('teaching.assessments.question-file', [$this->offering, $assessment]))->assertOk()->assertDownload('questions.pdf');
         $course = $this->offering->enrollmentCourses()->firstOrFail();
         $student = User::create(['name' => 'Submitting Student', 'email' => 'submitting@student.test', 'phone' => '03009999111', 'password' => bcrypt('password')]);
         $student->assignRole('Student');
         $course->enrollment->student->update(['user_id' => $student->id]);
 
-        $this->actingAs($student)->get(route('student.assessments.show', $course))->assertOk()->assertSee('Upload your solution.')->assertSee('Submit work');
+        $this->actingAs($student)->get(route('student.assessments.show', $course))->assertOk()->assertSee('Upload your solution.')
+            ->assertSee('Download question file')->assertSee('Submit work');
+        $this->get(route('student.assessments.question-file', [$course, $assessment]))->assertOk()->assertDownload('questions.pdf');
+        $otherStudent = User::create(['name' => 'Other Student', 'email' => 'other@student.test', 'phone' => '03009999112', 'password' => bcrypt('password')]);
+        $otherStudent->assignRole('Student');
+        $this->actingAs($otherStudent)->get(route('student.assessments.question-file', [$course, $assessment]))->assertForbidden();
+        $this->actingAs($student);
         $this->post(route('student.assessment-submissions.store', [$course, $assessment]), [
             'answer_text' => 'My completed solution', 'attachment' => UploadedFile::fake()->create('solution.pdf', 100, 'application/pdf'),
         ])->assertSessionHasNoErrors();

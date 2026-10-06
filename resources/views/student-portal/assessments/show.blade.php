@@ -11,7 +11,9 @@
             @php($mark = $assessment->marks->firstWhere('student_enrollment_course_id', $course->id))
             @php($submissionOpen = $assessment->submission_required && $course->enrollment->status === 'active' && $course->enrollment->term?->status === 'active' && $assessment->submissions_due_at && now()->lte($assessment->submissions_due_at))
             <tr>
-                <td><strong>{{ $assessment->title }}</strong><small>{{ ucfirst($assessment->component->code) }} · Weight {{ $assessment->weight }}</small>@if($assessment->instructions)<p class="small mt-2 mb-0">{{ $assessment->instructions }}</p>@endif</td>
+                <td><strong>{{ $assessment->title }}</strong><small>{{ ucfirst($assessment->component->code) }} · Weight {{ $assessment->weight }}</small>@if($assessment->instructions)<p class="small mt-2 mb-0">{{ $assessment->instructions }}</p>@endif
+                    @if($assessment->question_file_path)<p class="small mt-2 mb-0"><a class="btn btn-sm btn-outline-primary" href="{{ route('student.assessments.question-file', [$course, $assessment]) }}"><i class="bi bi-download"></i> Download question file</a><br><span class="text-muted">{{ $assessment->question_original_filename }} · {{ number_format(($assessment->question_file_size ?? 0) / 1024, 1) }} KB</span></p>@endif
+                </td>
                 <td>{{ $assessment->held_on->format('d M Y') }}@if($assessment->submissions_due_at)<small>Due {{ $assessment->submissions_due_at->format('d M Y H:i') }}</small>@endif</td>
                 <td>
                     @if(!$assessment->submission_required)<span class="text-muted">No upload required</span>

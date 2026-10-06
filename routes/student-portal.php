@@ -11,6 +11,7 @@ Route::prefix('student-portal')->name('student.')->middleware('auth')->controlle
     Route::get('/results', 'results')->middleware('permission:student.result.view-own')->name('results.index');
     Route::get('/results/{result}', 'result')->whereNumber('result')->middleware('permission:student.result.view-own')->name('results.show');
     Route::get('/assessments', 'assessments')->middleware('permission:student.assessments.view-own')->name('assessments.index');
+    Route::get('/assessments/{course}/items/{assessment}/question-file', 'assessmentQuestion')->whereNumber(['course', 'assessment'])->middleware('permission:student.assessments.view-own')->name('assessments.question-file');
     Route::get('/assessments/{course}', 'assessment')->whereNumber('course')->middleware('permission:student.assessments.view-own')->name('assessments.show');
 });
 

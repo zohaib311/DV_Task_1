@@ -84,7 +84,8 @@ class AssessmentWorkflow
                 $this->invalid('title', 'This component already has an assessment with that title.');
             }
             $before = $assessment->exists ? $assessment->toArray() : null;
-            $assessment->fill(collect($data)->only(['title', 'instructions', 'held_on', 'maximum', 'weight', 'submission_required', 'submissions_due_at'])->all());
+            $assessment->fill(collect($data)->only(['title', 'instructions', 'question_file_path', 'question_original_filename', 'question_mime_type',
+                'question_file_size', 'held_on', 'maximum', 'weight', 'submission_required', 'submissions_due_at'])->all());
             $assessment->assessment_component_id = $component->id;
             $assessment->revision = $assessment->exists ? $assessment->revision + 1 : 1;
             $assessment->save();

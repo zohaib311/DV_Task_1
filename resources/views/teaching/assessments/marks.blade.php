@@ -7,7 +7,7 @@
     @can('assessments.manage-assigned')
         @if(!$locked && !$assessment->marks->whereNotNull('obtained')->count())
             <details class="academic-form-section"><summary>Edit unmarked assessment definition</summary>
-                <form method="POST" action="{{ route('teaching.assessments.update', [$offering, $assessment]) }}" class="mt-3">
+                <form method="POST" enctype="multipart/form-data" action="{{ route('teaching.assessments.update', [$offering, $assessment]) }}" class="mt-3">
                     @csrf @method('PUT')
                     <input type="hidden" name="revision" value="{{ old('revision', $assessment->revision) }}"><input type="hidden" name="component_id" value="{{ $assessment->assessment_component_id }}">
                     @include('teaching.assessments.partials.definition-fields')

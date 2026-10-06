@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\StudentPortal;
 
 use App\Http\Controllers\Controller;
+use App\Models\Assessment\Assessment;
 use App\Services\StudentPortal\StudentWorkspace;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PortalController extends Controller
 {
@@ -65,5 +67,14 @@ class PortalController extends Controller
         $liveAssessments = $course->offering?->assessmentComponents->flatMap->assessments->sortBy('held_on') ?? collect();
 
         return view('student-portal.assessments.show', compact('course', 'item', 'liveAssessments'));
+    }
+
+    public function assessmentQuestion(Request $request, int $course, int $assessment, StudentWorkspace $workspace)
+    {
+        $course = $workspace->courses($request->user())->findOrFail($course);
+        $assessment = Assessment::whereHas('component', fn ($query) => $query->where('course_offering_id', $course->course_offering_id))->findOrFail($assessment);
+        abort_unless($assessment->question_file_path && Storage::disk('local')->exists($assessment->question_file_path), 404);
+
+        return Storage::disk('local')->download($assessment->question_file_path, $assessment->question_original_filename ?: 'assessment-question');
     }
 }

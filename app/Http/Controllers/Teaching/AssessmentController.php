@@ -8,6 +8,8 @@ use App\Services\Assessment\AssessmentCalculator;
 use App\Services\Assessment\AssessmentWorkflow;
 use App\Services\Teaching\TeacherWorkspace;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class AssessmentController extends Controller
 {
@@ -31,7 +33,14 @@ class AssessmentController extends Controller
 
     public function store(Request $request, int $offering, AssessmentWorkflow $workflow)
     {
-        $assessment = $workflow->saveDefinition($request->user(), $offering, $request->validate($this->definitionRules()));
+        $data = $request->validate($this->definitionRules());
+        $newPath = $this->storeQuestionFile($request, $data);
+        try {
+            $assessment = $workflow->saveDefinition($request->user(), $offering, $data);
+        } catch (Throwable $exception) {
+            if ($newPath) Storage::disk('local')->delete($newPath);
+            throw $exception;
+        }
 
         return redirect()->route('teaching.assessments.edit', [$offering, $assessment])->with('success', 'Assessment created. Enter raw marks for the enrolled students.');
     }
@@ -49,9 +58,33 @@ class AssessmentController extends Controller
 
     public function update(Request $request, int $offering, int $assessment, AssessmentWorkflow $workflow)
     {
-        $workflow->saveDefinition($request->user(), $offering, $request->validate($this->definitionRules() + ['revision' => ['required', 'integer', 'min:1']]), $assessment);
+        $assigned = $workflow->assigned($request->user(), $offering);
+        $existing = Assessment::whereHas('component', fn ($query) => $query->where('course_offering_id', $assigned->id))->findOrFail($assessment);
+        $data = $request->validate($this->definitionRules() + ['revision' => ['required', 'integer', 'min:1']]);
+        $removeQuestionFile = (bool) ($data['remove_question_file'] ?? false);
+        $newPath = $this->storeQuestionFile($request, $data);
+        $oldPath = ($newPath || $removeQuestionFile) ? $existing->question_file_path : null;
+        if (! $newPath && $removeQuestionFile) {
+            $data = array_merge($data, ['question_file_path' => null, 'question_original_filename' => null,
+                'question_mime_type' => null, 'question_file_size' => null]);
+        }
+        try {
+            $workflow->saveDefinition($request->user(), $offering, $data, $assessment);
+        } catch (Throwable $exception) {
+            if ($newPath) Storage::disk('local')->delete($newPath);
+            throw $exception;
+        }
+        if ($oldPath && $oldPath !== $newPath) Storage::disk('local')->delete($oldPath);
 
         return back()->with('success', 'Unmarked assessment definition updated.');
+    }
+
+    public function questionFile(Request $request, int $offering, int $assessment, AssessmentWorkflow $workflow)
+    {
+        $offering = $workflow->assigned($request->user(), $offering);
+        $assessment = Assessment::whereHas('component', fn ($query) => $query->where('course_offering_id', $offering->id))->findOrFail($assessment);
+
+        return $this->downloadQuestionFile($assessment);
     }
 
     public function marks(Request $request, int $offering, int $assessment, AssessmentWorkflow $workflow)
@@ -83,6 +116,27 @@ class AssessmentController extends Controller
     {
         return ['component_id' => ['required', 'integer'], 'title' => ['required', 'string', 'max:120'], 'instructions' => ['nullable', 'string', 'max:5000'], 'held_on' => ['required', 'date_format:Y-m-d'],
             'maximum' => ['required', 'numeric', 'min:0.01', 'max:10000', 'decimal:0,2'], 'weight' => ['required', 'numeric', 'min:0.01', 'max:1000', 'decimal:0,2'],
-            'submission_required' => ['nullable', 'boolean'], 'submissions_due_at' => ['nullable', 'date']];
+            'submission_required' => ['nullable', 'boolean'], 'submissions_due_at' => ['nullable', 'date'],
+            'question_file' => ['nullable', 'file', 'max:10240', 'mimes:pdf,doc,docx,ppt,pptx,zip,txt,jpg,jpeg,png'],
+            'remove_question_file' => ['nullable', 'boolean']];
+    }
+
+    private function storeQuestionFile(Request $request, array &$data): ?string
+    {
+        $file = $request->file('question_file');
+        unset($data['question_file'], $data['remove_question_file']);
+        if (! $file) return null;
+        $path = $file->store('assessment-questions');
+        $data = array_merge($data, ['question_file_path' => $path, 'question_original_filename' => $file->getClientOriginalName(),
+            'question_mime_type' => $file->getMimeType(), 'question_file_size' => $file->getSize()]);
+
+        return $path;
+    }
+
+    private function downloadQuestionFile(Assessment $assessment)
+    {
+        abort_unless($assessment->question_file_path && Storage::disk('local')->exists($assessment->question_file_path), 404);
+
+        return Storage::disk('local')->download($assessment->question_file_path, $assessment->question_original_filename ?: 'assessment-question');
     }
 }

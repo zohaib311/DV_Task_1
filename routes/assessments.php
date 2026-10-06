@@ -12,6 +12,7 @@ Route::prefix('teaching/assessments')->name('teaching.assessments.')->middleware
     Route::post('/{offering}', [AssessmentController::class, 'store'])->whereNumber('offering')->middleware('permission:assessments.manage-assigned')->name('store');
     Route::post('/{offering}/submit', [AssessmentController::class, 'submit'])->whereNumber('offering')->middleware(['permission:results.submit', 'throttle:10,1'])->name('submit');
     Route::get('/{offering}/items/{assessment}', [AssessmentController::class, 'edit'])->whereNumber(['offering', 'assessment'])->name('edit');
+    Route::get('/{offering}/items/{assessment}/question-file', [AssessmentController::class, 'questionFile'])->whereNumber(['offering', 'assessment'])->name('question-file');
     Route::put('/{offering}/items/{assessment}', [AssessmentController::class, 'update'])->whereNumber(['offering', 'assessment'])->middleware('permission:assessments.manage-assigned')->name('update');
     Route::put('/{offering}/items/{assessment}/marks', [AssessmentController::class, 'marks'])->whereNumber(['offering', 'assessment'])->middleware('permission:marks.manage-assigned')->name('marks');
     Route::post('/{offering}/items/{assessment}/release', [AssessmentController::class, 'release'])->whereNumber(['offering', 'assessment'])->middleware('permission:marks.manage-assigned')->name('release');
