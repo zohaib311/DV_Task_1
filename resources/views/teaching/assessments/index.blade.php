@@ -1,4 +1,5 @@
 @extends('teaching.layout')
+@section('liveRefresh', 'true')
 @section('heading', 'Assessments & marks')
 @section('description', 'Plan assessments, enter marks and submit your assigned classes for review.')
 @section('teaching-content')

@@ -1,4 +1,5 @@
 @extends('academic.layout')
+@section('liveRefresh', 'true')
 @section('title', 'Course Offerings')
 @section('heading', 'Course Offerings')
 @section('description', 'Prepare all semester classes once, then student enrollment assigns the required courses automatically.')

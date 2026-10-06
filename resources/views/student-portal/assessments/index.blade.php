@@ -1,4 +1,5 @@
 @extends('student-portal.layout')
+@section('liveRefresh', 'true')
 @section('heading', 'My Assessments & Marks')
 @section('student-content')
     <p class="academic-note">Open a course to submit assigned work, follow deadlines, and view marks released by your teacher. Published result history remains available separately.</p>

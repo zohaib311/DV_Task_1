@@ -319,6 +319,7 @@ class AssessmentWorkflowTest extends TestCase
         ])->assertSessionHasNoErrors();
         $submission = StudentAssessmentSubmission::firstOrFail();
         Storage::disk('local')->assertExists($submission->attachment_path);
+        $this->assertTrue($this->teacher->notifications()->get()->contains(fn ($item) => ($item->data['title'] ?? null) === 'Student assessment submitted'));
 
         $this->actingAs($this->teacher)->get(route('teaching.assessments.edit', [$this->offering, $assessment]))->assertOk()->assertSee('Open submission');
         $this->get(route('teaching.assessments.student-submissions.show', [$this->offering, $assessment, $submission]))->assertOk()->assertSee('My completed solution');
@@ -332,6 +333,7 @@ class AssessmentWorkflowTest extends TestCase
         unset($row);
         $this->put(route('teaching.assessments.marks', [$this->offering, $assessment]), $payload)->assertSessionHasNoErrors();
         $this->post(route('teaching.assessments.release', [$this->offering, $assessment]))->assertSessionHasNoErrors();
+        $this->assertTrue($student->notifications()->get()->contains(fn ($item) => ($item->data['title'] ?? null) === 'Assessment marks released'));
 
         $this->actingAs($student)->get(route('student.assessments.show', $course))->assertOk()->assertSee('16.00 / 20.00')->assertSee('Good work');
         $this->get(route('student.assessment-submissions.download', $submission))->assertOk();

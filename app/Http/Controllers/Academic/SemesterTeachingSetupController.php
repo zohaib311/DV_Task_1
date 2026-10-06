@@ -12,6 +12,7 @@ use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Services\Notifications\AcademicNotificationService;
 
 class SemesterTeachingSetupController extends Controller
 {
@@ -149,8 +150,23 @@ class SemesterTeachingSetupController extends Controller
             return [
                 'created' => $missingCourses->count(),
                 'existing' => $curriculum->courses->count() - $missingCourses->count(),
+                'offering_ids' => CourseOffering::where('academic_term_id', $term->id)->where('program_id', $program?->id)
+                    ->where('section_id', $section->id)->whereIn('curriculum_course_id', $missingCourses->pluck('id'))->pluck('id')->all(),
             ];
         });
+
+        $notifications = app(AcademicNotificationService::class);
+        $newOfferings = CourseOffering::with(['term', 'section', 'teachers.user'])->whereIn('id', $created['offering_ids'])->get();
+        foreach ($newOfferings as $offering) {
+            $notifications->users($offering->teachers->pluck('user'), 'New course assigned',
+                "{$offering->course_code} — {$offering->course_name} has been assigned to you for {$offering->section->name} in {$offering->term->name}.",
+                route('teaching.offerings.show', $offering), 'teaching', ['offering_id' => $offering->id]);
+        }
+        if ($newOfferings->isNotEmpty()) {
+            $notifications->users($notifications->academicStaff(), 'Semester classes prepared',
+                "{$newOfferings->count()} classes were prepared for {$newOfferings->first()->section->name} in {$newOfferings->first()->term->name}.",
+                route('academic.offerings.index'), 'administration', ['offering_ids' => $created['offering_ids']], $request->user()->id);
+        }
 
         $message = $created['created'] === 0
             ? "Semester teaching setup was already ready. {$created['existing']} existing classes and teacher assignments were kept."

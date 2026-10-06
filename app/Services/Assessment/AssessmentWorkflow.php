@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\Teaching\TeacherWorkspace;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Services\Notifications\AcademicNotificationService;
 
 class AssessmentWorkflow
 {
@@ -88,6 +89,13 @@ class AssessmentWorkflow
             $assessment->revision = $assessment->exists ? $assessment->revision + 1 : 1;
             $assessment->save();
             $this->audit($offering, $user, 'assessment_saved', $before, $assessment->toArray());
+            $notifications = app(AcademicNotificationService::class);
+            $offering->enrollmentCourses()->with('enrollment.student.user')->get()->each(function ($course) use ($assessment, $offering, $notifications, $before) {
+                $notifications->user($course->enrollment->student->user,
+                    $before ? 'Assessment updated' : 'New assessment available',
+                    "{$assessment->title} for {$offering->course_code} is scheduled on {$assessment->held_on->format('d M Y')}.",
+                    route('student.assessments.show', $course), 'assessment', ['assessment_id' => $assessment->id, 'course_offering_id' => $offering->id]);
+            });
 
             return $assessment;
         });
@@ -150,6 +158,12 @@ class AssessmentWorkflow
             if (! $assessment->marks_released_at) {
                 $assessment->update(['marks_released_at' => now()]);
                 $this->audit($offering, $user, 'assessment_marks_released', null, ['assessment_id' => $assessment->id, 'released_at' => $assessment->marks_released_at]);
+                $notifications = app(AcademicNotificationService::class);
+                $offering->enrollmentCourses()->with('enrollment.student.user')->get()->each(function ($course) use ($assessment, $offering, $notifications) {
+                    $notifications->user($course->enrollment->student->user, 'Assessment marks released',
+                        "Marks for {$assessment->title} in {$offering->course_code} are now available.",
+                        route('student.assessments.show', $course), 'marks', ['assessment_id' => $assessment->id, 'course_offering_id' => $offering->id]);
+                });
             }
         });
     }
@@ -168,6 +182,10 @@ class AssessmentWorkflow
             $submission = $offering->assessmentSubmissions()->create(['submitted_by' => $user->id, 'snapshot' => $snapshot, 'status' => 'submitted']);
             $offering->update(['status' => 'marks_submitted']);
             $this->audit($offering, $user, 'submitted', null, ['submission_id' => $submission->id]);
+            $notifications = app(AcademicNotificationService::class);
+            $notifications->users($notifications->academicStaff(), 'Course marks awaiting review',
+                "{$offering->course_code} marks were submitted for academic review.",
+                route('academic.assessment-reviews.show', $submission), 'review', ['submission_id' => $submission->id], $user->id);
 
             return $submission;
         });
@@ -190,6 +208,10 @@ class AssessmentWorkflow
             $submission->update(['status' => $decision, 'reviewed_by' => $user->id, 'review_note' => $reason, 'reviewed_at' => now()]);
             $offering->update(['status' => $decision === 'approved' ? 'reviewed' : 'active']);
             $this->audit($offering, $user, $decision, null, ['submission_id' => $submission->id], $reason);
+            $notifications = app(AcademicNotificationService::class);
+            $notifications->users($notifications->assignedTeachers($offering), 'Course review '.($decision === 'approved' ? 'approved' : 'returned'),
+                "{$offering->course_code} marks were {$decision}. {$reason}",
+                route('teaching.assessments.show', $offering), 'review', ['submission_id' => $submission->id], $user->id);
         });
     }
 

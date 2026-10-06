@@ -9,7 +9,13 @@ class AcademicUpdateNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(private string $title, private string $message, private ?string $url = null) {}
+    public function __construct(
+        private string $title,
+        private string $message,
+        private ?string $url = null,
+        private string $category = 'academic',
+        private array $context = [],
+    ) {}
 
     public function via(object $notifiable): array
     {
@@ -18,6 +24,7 @@ class AcademicUpdateNotification extends Notification
 
     public function toArray(object $notifiable): array
     {
-        return ['title' => $this->title, 'message' => $this->message, 'url' => $this->url];
+        return ['title' => $this->title, 'message' => $this->message, 'url' => $this->url,
+            'category' => $this->category, 'context' => $this->context];
     }
 }

@@ -1,4 +1,5 @@
 @extends('academic.layout')
+@section('liveRefresh', 'true')
 @section('heading', 'Assessment review queue')
 @section('description', 'Review submitted course marks. Approval here does not publish a semester result.')
 @section('academic-content')

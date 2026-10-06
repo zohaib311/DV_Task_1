@@ -77,6 +77,30 @@ class OperationalHardeningTest extends TestCase
         $this->actingAs($foreign)->post(route('student.notifications.read', $notification))->assertNotFound();
     }
 
+    public function test_live_notification_feed_is_private_and_supports_safe_actions(): void
+    {
+        $foreign = User::create(['name' => 'Foreign staff', 'email' => 'foreign.staff@example.test', 'phone' => '03009999774', 'password' => bcrypt('password')]);
+        $foreign->assignRole('Academic Admin');
+        $this->admin->notify(new AcademicUpdateNotification('Assigned course', 'CS101 was assigned to you.', route('teaching.offerings.index'), 'offering'));
+        $foreign->notify(new AcademicUpdateNotification('Private update', 'This belongs to another user.'));
+
+        $response = $this->actingAs($this->admin)->getJson(route('account.notifications.feed'));
+        $response->assertOk()->assertJsonPath('unread_count', 1)
+            ->assertJsonPath('notifications.0.title', 'Assigned course')
+            ->assertJsonMissing(['title' => 'Private update']);
+        $notification = $this->admin->notifications()->firstOrFail();
+        $this->actingAs($foreign)->postJson(route('account.notifications.read', $notification))->assertNotFound();
+
+        $this->actingAs($this->admin)->postJson(route('account.notifications.read-all'))->assertOk()->assertJsonPath('unread_count', 0);
+        $this->assertSame(0, $this->admin->unreadNotifications()->count());
+
+        $this->admin->notify(new AcademicUpdateNotification('Unsafe link', 'Do not leave the application.', 'https://example.org/untrusted'));
+        $unsafe = $this->admin->notifications()->get()->first(fn ($item) => ($item->data['title'] ?? null) === 'Unsafe link');
+        $this->assertNotNull($unsafe);
+        $this->postJson(route('account.notifications.read', $unsafe))->assertOk()
+            ->assertJsonPath('redirect_url', route('account.notifications.index'));
+    }
+
     public function test_sensitive_publication_requests_are_rate_limited(): void
     {
         $this->actingAs($this->admin);

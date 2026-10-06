@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'My Form Task')</title>
 
     @vite(['resources/sass/app.scss', 'resources/css/app.css', 'resources/js/app.js'])
@@ -38,6 +39,9 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-3 ms-auto">
+                    @can('notifications.view-own')
+                        <x-live-notifications />
+                    @endcan
                     <div class="dropdown">
                         <button class="user-nav-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="{{ asset('storage/images/' . (auth()->user()->image ?? 'default-user.png')) }}"
@@ -90,7 +94,7 @@
         @guest
             @yield('content')
         @else
-            <div class="content-container">
+            <div class="content-container" @hasSection('liveRefresh') data-live-refresh @endif>
                 @yield('content')
             </div>
         @endguest

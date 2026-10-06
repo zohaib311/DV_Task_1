@@ -15,6 +15,7 @@ use App\Notifications\AcademicUpdateNotification;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Services\Notifications\AcademicNotificationService;
 
 class AcademicEnrollmentService
 {
@@ -125,6 +126,15 @@ class AcademicEnrollmentService
                     route('student.courses', ['enrollment' => $enrollment->id])
                 ));
             }
+            $notifications = app(AcademicNotificationService::class);
+            foreach ($offerings as $offering) {
+                $notifications->users($notifications->assignedTeachers($offering), 'Student roster updated',
+                    "{$student->name} ({$student->registration_no}) joined {$offering->course_code} in {$term->name}.",
+                    route('teaching.offerings.show', $offering), 'enrollment', ['offering_id' => $offering->id, 'student_id' => $student->id]);
+            }
+            $notifications->users($notifications->academicStaff(), $promotion ? 'Student promoted' : 'Student enrolled',
+                "{$student->name} is enrolled in {$curriculum->semester} for {$term->name}.",
+                route('allEnrollments'), 'enrollment', ['enrollment_id' => $enrollment->id]);
 
             return $enrollment;
         });
@@ -229,6 +239,17 @@ class AcademicEnrollmentService
                 'registration_type' => $failed->contains($offering->course_id) ? 'repeat' : 'elective',
             ])->all());
             $student->update(['course_ids' => $enrollment->courses()->pluck('course_id')->all()]);
+            $notifications = app(AcademicNotificationService::class);
+            $codes = $selected->pluck('course_code')->implode(', ');
+            $notifications->user($student->user, 'Course registration updated', "Registered courses: {$codes}.",
+                route('student.courses', ['enrollment' => $enrollment->id]), 'registration', ['enrollment_id' => $enrollment->id]);
+            foreach ($selected as $offering) {
+                $notifications->users($notifications->assignedTeachers($offering), 'Student roster updated',
+                    "{$student->name} ({$student->registration_no}) registered in {$offering->course_code}.",
+                    route('teaching.offerings.show', $offering), 'registration', ['offering_id' => $offering->id, 'student_id' => $student->id]);
+            }
+            $notifications->users($notifications->academicStaff(), 'Student course registration',
+                "{$student->name} registered: {$codes}.", route('allEnrollments'), 'registration', ['enrollment_id' => $enrollment->id]);
         });
     }
 

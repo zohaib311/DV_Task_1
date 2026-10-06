@@ -1,4 +1,5 @@
 @extends('teaching.layout')
+@section('liveRefresh', 'true')
 @section('heading', 'My assigned courses')
 @section('description', 'Browse your classes by term and open their student rosters.')
 @section('teaching-content')

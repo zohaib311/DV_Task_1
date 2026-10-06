@@ -22,14 +22,17 @@ class AccessControlSeeder extends Seeder
             'enrollments.view', 'enrollments.create', 'enrollments.promote', 'enrollments.manage-courses',
             'results.view-all', 'results.create', 'results.edit', 'results.approve', 'results.publish',
             'academic-history.view', 'audit.view', 'reports.view',
+            'notifications.view-own',
         ],
         'HOD / Program Coordinator' => [
             'dashboard.view', 'courses.manage', 'enrollments.view', 'enrollments.manage-courses',
             'results.view-all', 'results.approve', 'academic-history.view', 'audit.view',
+            'notifications.view-own',
         ],
         'Teacher' => [
             'dashboard.view', 'offerings.view-assigned', 'attendance.manage-assigned',
             'assessments.manage-assigned', 'marks.manage-assigned', 'results.submit',
+            'notifications.view-own',
         ],
         'Student' => [
             'dashboard.view', 'student.profile.view-own', 'student.attendance.view-own',

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use App\Services\Notifications\AcademicNotificationService;
 
 class CourseOfferingController extends Controller
 {
@@ -65,6 +66,7 @@ class CourseOfferingController extends Controller
 
     private function save(Request $request, CourseOffering $offering): void
     {
+        $previousTeacherUserIds = $offering->exists ? $offering->teachers()->whereNotNull('user_id')->pluck('user_id') : collect();
         $data = $request->validate([
             'academic_term_id' => ['required', 'integer', 'exists:academic_terms,id'],
             'curriculum_course_id' => ['required', 'integer', 'exists:curriculum_courses,id'],
@@ -74,7 +76,7 @@ class CourseOfferingController extends Controller
             'teacher_ids.*' => ['required', 'integer', 'distinct', 'exists:teachers,id'],
             'status' => ['required', Rule::in(['planned', 'active'])],
         ]);
-        DB::transaction(function () use ($offering, $data) {
+        $saved = DB::transaction(function () use ($offering, $data) {
             $term = AcademicTerm::lockForUpdate()->findOrFail($data['academic_term_id']);
             if ($term->status === 'closed' || ($data['status'] === 'active' && $term->status !== 'active')) {
                 throw ValidationException::withMessages(['academic_term_id' => 'An active offering needs an active term. Closed terms cannot accept changes.']);
@@ -109,6 +111,18 @@ class CourseOfferingController extends Controller
                 'semester' => $course->curriculum->semester, 'status' => $data['status'],
             ])->save();
             $offering->teachers()->sync($data['teacher_ids']);
+
+            return $offering->fresh(['term', 'section', 'teachers.user']);
         });
+        $notifications = app(AcademicNotificationService::class);
+        $newTeachers = $saved->teachers->pluck('user')->filter()->reject(fn ($user) => $previousTeacherUserIds->contains($user->id));
+        $notifications->users($newTeachers, 'New course assigned',
+            "{$saved->course_code} — {$saved->course_name} has been assigned to you for {$saved->section->name} in {$saved->term->name}.",
+            route('teaching.offerings.show', $saved), 'teaching', ['offering_id' => $saved->id]);
+        if (! $offering->wasRecentlyCreated && $newTeachers->isNotEmpty()) {
+            $notifications->users($notifications->academicStaff(), 'Teacher assignment updated',
+                "Teacher assignment changed for {$saved->course_code}, {$saved->section->name}.",
+                route('academic.offerings.index'), 'administration', ['offering_id' => $saved->id], $request->user()->id);
+        }
     }
 }

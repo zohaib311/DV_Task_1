@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use App\Services\Notifications\AcademicNotificationService;
 
 class AssessmentSubmissionController extends Controller
 {
@@ -34,11 +35,11 @@ class AssessmentSubmissionController extends Controller
 
         $newPath = $request->file('attachment')?->store('student-assessments');
         $oldPath = null;
-        DB::transaction(function () use ($request, $data, $course, $assessment, $newPath, &$oldPath) {
+        $savedSubmission = DB::transaction(function () use ($request, $data, $course, $assessment, $newPath, &$oldPath) {
             $submission = StudentAssessmentSubmission::where('assessment_id', $assessment->id)
                 ->where('student_enrollment_course_id', $course->id)->lockForUpdate()->first();
             $oldPath = $newPath ? $submission?->attachment_path : null;
-            StudentAssessmentSubmission::updateOrCreate(
+            return StudentAssessmentSubmission::updateOrCreate(
                 ['assessment_id' => $assessment->id, 'student_enrollment_course_id' => $course->id],
                 ['submitted_by' => $request->user()->id, 'answer_text' => trim($data['answer_text'] ?? ''),
                     'attachment_path' => $newPath ?: $submission?->attachment_path,
@@ -50,6 +51,11 @@ class AssessmentSubmissionController extends Controller
         if ($oldPath) {
             Storage::disk('local')->delete($oldPath);
         }
+        $notifications = app(AcademicNotificationService::class);
+        $notifications->users($notifications->assignedTeachers($course->offering), 'Student assessment submitted',
+            "{$course->enrollment->student->name} submitted {$assessment->title} for {$course->course_code}.",
+            route('teaching.assessments.student-submissions.show', [$course->offering, $assessment, $savedSubmission]),
+            'submission', ['assessment_id' => $assessment->id, 'submission_id' => $savedSubmission->id]);
 
         return back()->with('success', 'Your assessment submission has been saved.');
     }
