@@ -347,4 +347,46 @@ class AssessmentWorkflowTest extends TestCase
         $this->actingAs($student)->get(route('student.assessments.show', $course))->assertOk()->assertSee('16.00 / 20.00')->assertSee('Good work');
         $this->get(route('student.assessment-submissions.download', $submission))->assertOk();
     }
+
+    public function test_student_cannot_submit_or_update_after_the_submission_deadline(): void
+    {
+        $this->approveScheme();
+        $component = $this->offering->assessmentComponents()->where('code', 'assignment')->firstOrFail();
+        $this->post(route('teaching.assessments.store', $this->offering), [
+            'component_id' => $component->id,
+            'title' => 'Expired Assignment',
+            'held_on' => '2026-10-01',
+            'maximum' => 20,
+            'weight' => 10,
+            'submission_required' => 1,
+            'submissions_due_at' => '2026-10-01T13:00',
+        ])->assertSessionHasNoErrors();
+
+        $assessment = Assessment::where('title', 'Expired Assignment')->firstOrFail();
+        $course = $this->offering->enrollmentCourses()->firstOrFail();
+        $student = User::create([
+            'name' => 'Deadline Student',
+            'email' => 'deadline@student.test',
+            'phone' => '03009999113',
+            'password' => bcrypt('password'),
+        ]);
+        $student->assignRole('Student');
+        $course->enrollment->student->update(['user_id' => $student->id]);
+        $this->travelTo(Carbon::parse('2026-10-01 13:01:00'));
+
+        $this->actingAs($student)
+            ->get(route('student.assessments.show', $course))
+            ->assertOk()
+            ->assertSee('Deadline passed 01 Oct 2026 13:00')
+            ->assertDontSee('Submit work');
+
+        $this->post(route('student.assessment-submissions.store', [$course, $assessment]), [
+            'answer_text' => 'This late answer must be rejected.',
+        ])->assertSessionHasErrors('submission');
+
+        $this->assertDatabaseMissing('student_assessment_submissions', [
+            'assessment_id' => $assessment->id,
+            'student_enrollment_course_id' => $course->id,
+        ]);
+    }
 }

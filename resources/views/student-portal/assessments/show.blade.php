@@ -2,6 +2,12 @@
 @section('heading', $course->course_code.' — Assessments & Marks')
 @section('student-content')
     @if(session('success'))<div class="alert alert-success" role="status">{{ session('success') }}</div>@endif
+    @if($errors->any())
+        <div class="alert alert-danger" role="alert">
+            <strong>Submission was not saved.</strong>
+            <ul class="mb-0 mt-2">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+        </div>
+    @endif
     <h2>{{ $course->course_name }}</h2><p>{{ $course->enrollment->semester }} · {{ $course->enrollment->academic_year }} · {{ $course->enrollment->term?->name }}</p>
     <h2 class="mt-4">Current assessment activity</h2>
     <div class="table-responsive"><table class="table academic-table align-middle">
@@ -9,7 +15,8 @@
         <tbody>@forelse($liveAssessments as $assessment)
             @php($submission = $assessment->studentSubmissions->firstWhere('student_enrollment_course_id', $course->id))
             @php($mark = $assessment->marks->firstWhere('student_enrollment_course_id', $course->id))
-            @php($submissionOpen = $assessment->submission_required && $course->enrollment->status === 'active' && $course->enrollment->term?->status === 'active' && $assessment->submissions_due_at && now()->lte($assessment->submissions_due_at))
+            @php($deadlineOpen = $assessment->isSubmissionDeadlineOpen())
+            @php($submissionOpen = $deadlineOpen && $course->enrollment->status === 'active' && $course->enrollment->term?->status === 'active')
             <tr>
                 <td><strong>{{ $assessment->title }}</strong><small>{{ ucfirst($assessment->component->code) }} · Weight {{ $assessment->weight }}</small>@if($assessment->instructions)<p class="small mt-2 mb-0">{{ $assessment->instructions }}</p>@endif
                     @if($assessment->question_file_path)<p class="small mt-2 mb-0"><a class="btn btn-sm btn-outline-primary" href="{{ route('student.assessments.question-file', [$course, $assessment]) }}"><i class="bi bi-download"></i> Download question file</a><br><span class="text-muted">{{ $assessment->question_original_filename }} · {{ number_format(($assessment->question_file_size ?? 0) / 1024, 1) }} KB</span></p>@endif
@@ -19,6 +26,9 @@
                     @if(!$assessment->submission_required)<span class="text-muted">No upload required</span>
                     @else
                         <span>{{ $submission ? ucfirst($submission->status) : ($submissionOpen ? 'Awaiting submission' : 'Closed') }}</span>
+                        @if($assessment->submissions_due_at && !$deadlineOpen)<small class="text-danger">Deadline passed {{ $assessment->submissions_due_at->format('d M Y H:i') }}</small>
+                        @elseif(!$assessment->submissions_due_at)<small class="text-danger">Submission deadline is not configured.</small>
+                        @elseif(!$submissionOpen)<small class="text-danger">This course or teaching term is closed.</small>@endif
                         @if($submission?->attachment_path)<small><a href="{{ route('student.assessment-submissions.download', $submission) }}">Download submitted file</a></small>@endif
                         @if($submissionOpen)
                             <details class="mt-2"><summary>{{ $submission ? 'Update submission' : 'Submit work' }}</summary>

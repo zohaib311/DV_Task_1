@@ -26,4 +26,11 @@ class Assessment extends Model
     {
         return $this->hasMany(StudentAssessmentSubmission::class);
     }
+
+    public function isSubmissionDeadlineOpen(): bool
+    {
+        return $this->submission_required
+            && $this->submissions_due_at !== null
+            && now()->lessThanOrEqualTo($this->submissions_due_at);
+    }
 }

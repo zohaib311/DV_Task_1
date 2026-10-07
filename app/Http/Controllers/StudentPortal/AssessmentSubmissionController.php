@@ -29,7 +29,7 @@ class AssessmentSubmissionController extends Controller
         if (! $assessment->submission_required || $course->enrollment->status !== 'active' || $course->enrollment->term?->status !== 'active') {
             throw ValidationException::withMessages(['submission' => 'This assessment is not open for student submissions.']);
         }
-        if (! $assessment->submissions_due_at || now()->isAfter($assessment->submissions_due_at)) {
+        if (! $assessment->isSubmissionDeadlineOpen()) {
             throw ValidationException::withMessages(['submission' => 'The submission deadline has passed.']);
         }
 
