@@ -37,6 +37,10 @@ body {
 .live-notification-menu { position: fixed !important; inset: 64px 16px auto auto !important; transform: none !important; width: min(360px, calc(100vw - 24px)); max-height: min(420px, calc(100vh - 80px)); padding: 0; overflow: hidden; border: 1px solid #ede9fe; border-radius: 14px; box-shadow: 0 20px 50px rgba(76, 61, 160, .18); z-index: 1060; }
 .live-notification-menu.show { display: flex; flex-direction: column; }
 .live-notification-heading { flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; border-bottom: 1px solid #ede9fe; background: #fff; }
+.live-notification-heading > div { display: flex; flex-direction: column; gap: 1px; }
+.live-notification-status { color: #6b7280; font-size: .7rem; font-weight: 500; }
+.live-notification-status.is-live { color: #059669; }
+.live-notification-status.is-fallback { color: #b45309; }
 .live-notification-list { flex: 1 1 auto; min-height: 0; max-height: 280px; overflow-x: hidden; overflow-y: scroll; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #c4b5fd #f5f3ff; }
 .live-notification-list::-webkit-scrollbar { width: 7px; }
 .live-notification-list::-webkit-scrollbar-track { background: #f5f3ff; }

@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 class AcademicUpdateNotification extends Notification
 {
@@ -19,12 +20,26 @@ class AcademicUpdateNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     public function toArray(object $notifiable): array
     {
         return ['title' => $this->title, 'message' => $this->message, 'url' => $this->url,
             'category' => $this->category, 'context' => $this->context];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage($this->toArray($notifiable) + [
+            'read' => false,
+            'created_label' => 'Just now',
+            'read_url' => route('account.notifications.read', $this->id, false),
+        ]);
+    }
+
+    public function broadcastType(): string
+    {
+        return 'academic.update';
     }
 }

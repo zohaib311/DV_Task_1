@@ -11,6 +11,9 @@ use App\Notifications\AcademicUpdateNotification;
 use Database\Seeders\AccessControlSeeder;
 use Database\Seeders\Demo\TeacherPanelDemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Broadcasting\BroadcastEvent;
+use Illuminate\Broadcasting\BroadcastManager;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class OperationalHardeningTest extends TestCase
@@ -99,6 +102,55 @@ class OperationalHardeningTest extends TestCase
         $this->assertNotNull($unsafe);
         $this->postJson(route('account.notifications.read', $unsafe))->assertOk()
             ->assertJsonPath('redirect_url', route('account.notifications.index'));
+    }
+
+    public function test_academic_notifications_are_broadcast_on_the_users_private_channel(): void
+    {
+        config(['broadcasting.default' => 'reverb']);
+        app(BroadcastManager::class)->forgetDrivers();
+        require base_path('routes/channels.php');
+        Queue::fake();
+
+        $this->admin->notify(new AcademicUpdateNotification(
+            'Realtime update',
+            'This notification should use database history and broadcasting.'
+        ));
+
+        $this->assertDatabaseHas('notifications', [
+            'notifiable_id' => $this->admin->id,
+            'notifiable_type' => User::class,
+        ]);
+        Queue::assertPushed(BroadcastEvent::class, function (BroadcastEvent $job) {
+            $payload = $job->event->broadcastWith();
+
+            return $payload['title'] === 'Realtime update'
+                && $payload['type'] === 'academic.update'
+                && str_starts_with($payload['read_url'], '/notifications/');
+        });
+
+        $this->actingAs($this->admin)->postJson('/broadcasting/auth', [
+            'socket_id' => '1234.5678',
+            'channel_name' => 'private-users.'.$this->admin->id.'.notifications',
+        ])->assertOk();
+    }
+
+    public function test_users_cannot_subscribe_to_another_users_notification_channel(): void
+    {
+        config(['broadcasting.default' => 'reverb']);
+        app(BroadcastManager::class)->forgetDrivers();
+        require base_path('routes/channels.php');
+        $other = User::create([
+            'name' => 'Other realtime user',
+            'email' => 'other.realtime@example.test',
+            'phone' => '03009999799',
+            'password' => bcrypt('password'),
+        ]);
+        $other->assignRole('Academic Admin');
+
+        $this->actingAs($other)->postJson('/broadcasting/auth', [
+            'socket_id' => '1234.5678',
+            'channel_name' => 'private-users.'.$this->admin->id.'.notifications',
+        ])->assertForbidden();
     }
 
     public function test_sensitive_publication_requests_are_rate_limited(): void

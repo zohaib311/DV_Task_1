@@ -31,4 +31,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Teacher::class);
     }
+
+    public function receivesBroadcastNotificationsOn(): string
+    {
+        return 'users.'.$this->getKey().'.notifications';
+    }
 }
