@@ -14,9 +14,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     @yield('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/admin-panel.css') }}">
 </head>
 
-<body class="@auth has-sidebar @else is-guest @endauth">
+<body @class([
+    'has-sidebar' => auth()->check(),
+    'is-guest' => !auth()->check(),
+    'admin-workspace' => auth()->check() && !request()->is('teaching*', 'student-portal*'),
+])>
 
     @auth
         <!-- Mobile Sidebar Backdrop Overlay -->

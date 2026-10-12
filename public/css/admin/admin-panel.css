@@ -1,0 +1,190 @@
+/* Shared Admin Panel polish. This file is scoped to admin-workspace only. */
+.admin-workspace {
+    --admin-purple: #6958db;
+    --admin-purple-dark: #5847c9;
+    --admin-soft: #f6f4ff;
+    --admin-border: #e7e5f0;
+    --admin-text: #35405a;
+    --admin-muted: #748098;
+}
+
+.admin-workspace .content-container { max-width: 1360px; }
+.admin-workspace .main-content { background: linear-gradient(135deg, #fafaff 0%, #f6f3ff 100%); }
+.admin-workspace .navbar { border-bottom-color: #e6e3f1; }
+.admin-workspace .user-nav-btn { border-color: #ded8f4; }
+
+/* Sidebar remains familiar, but has clearer groups and active paths for admin work. */
+.admin-workspace .sidebar { border-right: 1px solid #eceaf4; }
+.admin-workspace .sidebar-header { border-bottom-color: #eeeaf8; }
+.admin-workspace .sidebar-link { border: 1px solid transparent; }
+.admin-workspace .sidebar-link:hover { border-color: #e3def8; }
+.admin-workspace .sidebar-link.active { box-shadow: 0 6px 16px rgb(91 69 203 / 14%); }
+.admin-workspace .sidebar-sublink { position: relative; }
+.admin-workspace .sidebar-sublink.active::before { content: ''; position: absolute; left: -13px; top: 9px; bottom: 9px; width: 3px; border-radius: 4px; background: #725de0; }
+
+/* Shared form controls: tables, filters, drawers and admin forms all retain the same palette. */
+.admin-workspace .form-label { color: #556079; font-size: .8rem; font-weight: 750; }
+.admin-workspace :is(.form-control, .form-select) {
+    min-height: 43px;
+    border-color: #dedfeb;
+    border-radius: 9px;
+    box-shadow: none;
+    transition: border-color .16s ease, box-shadow .16s ease;
+}
+.admin-workspace textarea.form-control { min-height: auto; }
+.admin-workspace :is(.form-control, .form-select):hover { border-color: #c9c0ec; }
+.admin-workspace :is(.form-control, .form-select):focus { border-color: #806de1; box-shadow: 0 0 0 .2rem rgb(111 87 218 / 12%); }
+.admin-workspace .form-check-input:checked { background-color: var(--admin-purple); border-color: var(--admin-purple); }
+.admin-workspace .btn { border-radius: 9px; font-weight: 700; transition: transform .16s ease, box-shadow .16s ease, background-color .16s ease; }
+.admin-workspace .btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgb(74 55 165 / 14%); }
+.admin-workspace .btn-primary { background: var(--admin-purple); border-color: var(--admin-purple); }
+.admin-workspace .btn-primary:hover:not(:disabled) { background: var(--admin-purple-dark); border-color: var(--admin-purple-dark); }
+.admin-workspace :is(a, button, input, select, textarea):focus-visible { outline: 2px solid #7964db; outline-offset: 3px; }
+
+/* List pages: Students, Teachers, Courses, Departments, Sections, Users and Events. */
+.admin-workspace .table__content { max-width: 1320px; margin-inline: auto; }
+.admin-workspace .table__content .card {
+    overflow: hidden;
+    border: 1px solid #e8e5f2 !important;
+    border-radius: 16px;
+    box-shadow: 0 14px 36px rgb(48 38 101 / 8%) !important;
+}
+.admin-workspace .table__content .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    min-height: 82px;
+    padding: 18px 22px;
+    background: linear-gradient(125deg, #5d4bd0, #8158e9) !important;
+    border: 0;
+}
+.admin-workspace .table__content .card-header h4 { font-size: 1.18rem; font-weight: 800; letter-spacing: -.015em; }
+.admin-workspace .table__content .card-body { padding: 22px; }
+.admin-workspace .add__user__btn { margin: 0; }
+.admin-workspace .add__user__btn a,
+.admin-workspace .add__user__btn .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 13px;
+    color: #fff;
+    background: rgb(255 255 255 / 15%);
+    border: 1px solid rgb(255 255 255 / 35%);
+    border-radius: 9px;
+    font-size: .8rem;
+    font-weight: 750;
+    text-decoration: none;
+}
+.admin-workspace .add__user__btn a:hover { color: #fff; background: rgb(255 255 255 / 25%); }
+
+.admin-workspace .table__content .table-responsive,
+.admin-workspace .academic-page .table-responsive,
+.admin-workspace .results-shell .table-responsive { border: 1px solid var(--admin-border); border-radius: 12px; background: #fff; }
+.admin-workspace .table__content .table { margin: 0; }
+.admin-workspace .table__content .table thead th,
+.admin-workspace .academic-table thead th {
+    padding: 13px 14px;
+    color: #73748f;
+    background: #f7f6fd;
+    border-bottom-color: #ebe9f3;
+    font-size: .67rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.admin-workspace .table__content .table td,
+.admin-workspace .academic-table td { padding: 14px; color: #4e5973; border-color: #efeff5; vertical-align: middle; }
+.admin-workspace .table__content .table tbody tr,
+.admin-workspace .academic-table tbody tr { transition: background-color .16s ease; }
+.admin-workspace .table__content .table tbody tr:hover,
+.admin-workspace .academic-table tbody tr:hover { background: #fcfbff; }
+.admin-workspace .table__content .badge { padding: 5px 9px; border-radius: 20px; font-size: .72rem; font-weight: 700; }
+.admin-workspace .action__buttons { gap: 7px; }
+.admin-workspace .action__btn { width: 36px; height: 36px; border-radius: 9px; }
+.admin-workspace .promotion-action,
+.admin-workspace .table__content td a:not(.action__btn):not(.btn),
+.admin-workspace .academic-table td a:not(.btn) {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    width: fit-content;
+    padding: 6px 9px;
+    color: #5e4fc4;
+    background: #f3f1ff;
+    border: 1px solid #e3dffa;
+    border-radius: 7px;
+    font-size: .76rem;
+    font-weight: 750;
+    line-height: 1.2;
+    text-decoration: none;
+    transition: transform .16s ease, background-color .16s ease, border-color .16s ease;
+}
+.admin-workspace .promotion-action:hover,
+.admin-workspace .table__content td a:not(.action__btn):not(.btn):hover,
+.admin-workspace .academic-table td a:not(.btn):hover { color: #4f3fb8; background: #ece8ff; border-color: #cdc4f2; transform: translateY(-1px); }
+.admin-workspace .table__content .text-center.py-4,
+.admin-workspace .table__content .text-center.py-5,
+.admin-workspace .academic-empty { color: #7c8597; }
+
+/* Create and edit forms use the existing markup, now with a more predictable panel treatment. */
+.admin-workspace .add__form_cont { max-width: 980px; }
+.admin-workspace .add__form {
+    padding: 28px;
+    background: #fff;
+    border: 1px solid #e8e5f2;
+    border-radius: 16px;
+    box-shadow: 0 14px 36px rgb(48 38 101 / 8%);
+}
+.admin-workspace .add__form h2,
+.admin-workspace .edit__header h2 { color: #3b315e; font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; }
+.admin-workspace .add__form .alert { border-radius: 10px; }
+.admin-workspace .assessment-scheme-heading { border-radius: 10px; }
+.admin-workspace .form__actions { gap: 10px; }
+.admin-workspace .cancel__btn, .admin-workspace .update__btn { border-radius: 9px; }
+
+/* Academic Setup inherits its familiar design but gains the same density and action treatment. */
+.admin-workspace .academic-page { max-width: 1400px; }
+.admin-workspace .academic-shell { border-color: #e7e3f3; box-shadow: 0 16px 42px rgb(49 38 102 / 9%); }
+.admin-workspace .academic-header { position: relative; isolation: isolate; min-height: 138px; background: linear-gradient(125deg, #5b4acb, #7c57e7 62%, #895ce7); }
+.admin-workspace .academic-header::after { content: ''; position: absolute; z-index: -1; top: -62px; right: 24px; width: 182px; height: 182px; border: 28px solid rgb(255 255 255 / 8%); border-radius: 50%; }
+.admin-workspace .academic-header h1 { font-size: clamp(1.45rem, 2vw, 1.8rem); letter-spacing: -.025em; }
+.admin-workspace .academic-header-actions { position: relative; z-index: 1; }
+.admin-workspace .academic-header-btn { display: inline-flex; align-items: center; gap: 7px; min-height: 39px; border-radius: 9px; transition: transform .16s ease, background-color .16s ease; }
+.admin-workspace .academic-header-btn:hover { transform: translateY(-1px); }
+.admin-workspace .academic-body { padding: 29px 30px 32px; }
+.admin-workspace .academic-tabs { gap: 25px; background: #fff; }
+.admin-workspace .academic-tabs a { transition: color .16s ease, border-color .16s ease; }
+.admin-workspace .academic-form-section { padding: 18px; background: #fbfaff; border: 1px solid #ebe8f7; border-radius: 12px; }
+.admin-workspace .academic-note { border: 1px solid #e9e4ff; border-left: 3px solid #8875e9; border-radius: 10px; }
+.admin-workspace .academic-actions { gap: 9px; }
+.admin-workspace .academic-badge { font-weight: 750; }
+.admin-workspace .academic-body details summary { cursor: pointer; color: #55477f; font-weight: 700; }
+.admin-workspace .academic-body pre { padding: 12px; background: #292640; color: #eeecff; border-radius: 8px; }
+
+/* Dashboard, result and permission screens retain their content but become visually consistent with admin cards. */
+.admin-workspace .dashboard-hero-banner { border: 1px solid rgb(255 255 255 / 25%); box-shadow: 0 15px 35px rgb(96 74 206 / 21%); }
+.admin-workspace .quick-actions-card, .admin-workspace .stat-card { border-color: #e7e4f0; box-shadow: 0 8px 22px rgb(47 37 98 / 6%); }
+.admin-workspace .quick-actions-card { border-radius: 16px; }
+.admin-workspace .action-shortcut-btn { border-radius: 10px; }
+.admin-workspace .access-control-shell, .admin-workspace .results-shell { border-color: #e7e3f3; box-shadow: 0 16px 42px rgb(49 38 102 / 9%); }
+.admin-workspace .modal-content { border: 1px solid #e8e5f2; border-radius: 15px; box-shadow: 0 18px 48px rgb(42 33 93 / 20%); }
+
+.admin-workspace .page-link { color: #6453ca; border-color: #e5e1f0; }
+.admin-workspace .page-item.active .page-link { background: #6958db; border-color: #6958db; }
+
+@media (max-width: 991px) {
+    .admin-workspace .table__content .card-header { min-height: 0; }
+    .admin-workspace .academic-header::after { right: -46px; }
+}
+@media (max-width: 767px) {
+    .admin-workspace .table__content .card-header { align-items: flex-start; flex-direction: column; padding: 18px; }
+    .admin-workspace .table__content .card-body { padding: 15px; }
+    .admin-workspace .add__form { padding: 21px 17px; }
+    .admin-workspace .academic-body { padding: 21px 16px 25px; }
+    .admin-workspace .academic-header { min-height: 0; padding: 24px 18px; }
+    .admin-workspace .academic-tabs { padding-inline: 16px; gap: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .admin-workspace * { scroll-behavior: auto !important; transition: none !important; }
+}
