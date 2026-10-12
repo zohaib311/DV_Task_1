@@ -6,7 +6,7 @@
     <div class="col-12"><label for="assessment-instructions" class="form-label">Instructions <span class="text-muted">(optional)</span></label><textarea id="assessment-instructions" class="form-control" name="instructions" maxlength="5000" rows="3">{{ old('instructions', $assessment->instructions ?? '') }}</textarea></div>
     <div class="col-12"><label for="assessment-question-file" class="form-label">Question/instructions file <span class="text-muted">(optional, maximum 10 MB)</span></label><input id="assessment-question-file" class="form-control" type="file" name="question_file" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.txt,.jpg,.jpeg,.png"><small class="text-muted">PDF, Word, PowerPoint, ZIP, text, or image.</small>
         @if(isset($assessment) && $assessment->question_file_path)
-            <div class="mt-2"><a href="{{ route('teaching.assessments.question-file', [$offering, $assessment]) }}">Download current file: {{ $assessment->question_original_filename }}</a></div>
+            <div class="mt-2"><a class="teaching-inline-link" href="{{ route('teaching.assessments.question-file', [$offering, $assessment]) }}"><i class="bi bi-download" aria-hidden="true"></i> Download current file: {{ $assessment->question_original_filename }}</a></div>
             <div class="form-check mt-2"><input type="hidden" name="remove_question_file" value="0"><input id="remove-question-file" class="form-check-input" type="checkbox" name="remove_question_file" value="1"><label class="form-check-label" for="remove-question-file">Remove current question file</label></div>
         @endif
     </div>
