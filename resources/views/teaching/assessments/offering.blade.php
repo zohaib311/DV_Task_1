@@ -49,7 +49,8 @@
     <h2 class="mt-4">Change history</h2>
     @foreach($audits as $audit)
         <details class="teaching-footnote"><summary>{{ ucfirst(str_replace('_', ' ', $audit->action)) }} · {{ $audit->user?->name ?? 'Former account' }} · {{ $audit->created_at->format('d M Y H:i') }}</summary>
-            <p>{{ $audit->reason }}</p><pre class="small overflow-auto">{{ json_encode(['before' => $audit->before, 'after' => $audit->after], JSON_PRETTY_PRINT) }}</pre>
+            @if($audit->reason)<p class="teaching-history-reason"><i class="bi bi-chat-left-text" aria-hidden="true"></i>{{ $audit->reason }}</p>@endif
+            @include('teaching.partials.audit-evidence', ['before' => $audit->before, 'after' => $audit->after])
         </details>
     @endforeach
     <div class="mt-3">{{ $audits->links('pagination::bootstrap-5') }}</div>

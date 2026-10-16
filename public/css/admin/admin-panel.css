@@ -162,6 +162,34 @@
 .admin-workspace .academic-body details summary { cursor: pointer; color: #55477f; font-weight: 700; }
 .admin-workspace .academic-body pre { padding: 12px; background: #292640; color: #eeecff; border-radius: 8px; }
 
+/* Audit viewer: show operational evidence as a readable comparison, not raw JSON. */
+.admin-workspace .audit-filter { padding: 16px; margin-inline: 0; background: #fbfaff; border: 1px solid #ebe8f7; border-radius: 12px; }
+.admin-workspace .audit-note { display: flex; align-items: flex-start; gap: 9px; line-height: 1.6; }
+.admin-workspace .audit-note i { flex: 0 0 auto; margin-top: 2px; }
+.admin-workspace .audit-note strong { color: #51427d; }
+.admin-workspace .audit-table .audit-when { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.admin-workspace .audit-when i { margin-right: 6px; color: #7460cf; }
+.admin-workspace .audit-type, .admin-workspace .audit-action { display: inline-flex; width: fit-content; padding: 4px 8px; border-radius: 20px; font-size: .72rem; font-weight: 750; }
+.admin-workspace .audit-type { color: #5c4bba; background: #f0edff; }
+.admin-workspace .audit-action { color: #3f5076; background: #f1f4fa; text-transform: capitalize; }
+.admin-workspace .audit-reason { max-width: 215px; color: #6d7589; font-size: .8rem; }
+.admin-workspace .audit-evidence { min-width: 220px; }
+.admin-workspace .audit-evidence summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 9px; background: #f7f5ff; border: 1px solid #e5dffd; border-radius: 8px; color: #55449b; font-size: .79rem; }
+.admin-workspace .audit-evidence summary span { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; }
+.admin-workspace .audit-evidence summary small { color: #7b739e; font-size: .69rem; white-space: nowrap; }
+.admin-workspace .audit-evidence[open] summary { margin-bottom: 8px; background: #eeebff; border-color: #cec4fa; }
+.admin-workspace .audit-evidence-panel { display: grid; gap: 8px; min-width: min(100%, 430px); padding: 10px; background: #fcfbff; border: 1px solid #ebe7f7; border-radius: 9px; }
+.admin-workspace .audit-change { display: grid; gap: 7px; padding: 9px; background: #fff; border: 1px solid #efecf7; border-radius: 8px; }
+.admin-workspace .audit-change-label { color: #59637d; font-size: .69rem; font-weight: 800; letter-spacing: .025em; text-transform: uppercase; }
+.admin-workspace .audit-change-values { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 7px; align-items: center; }
+.admin-workspace .audit-change-values > div { min-width: 0; padding: 7px; background: #f8f8fb; border-radius: 6px; }
+.admin-workspace .audit-change-values > div:last-child { background: #f2efff; }
+.admin-workspace .audit-change-values small { display: block; margin-bottom: 2px; color: #858da0; font-size: .64rem; font-weight: 700; text-transform: uppercase; }
+.admin-workspace .audit-change-values strong { display: block; overflow-wrap: anywhere; color: #434d67; font-size: .75rem; font-weight: 700; line-height: 1.4; }
+.admin-workspace .audit-change-values i { color: #7a66d7; font-size: .78rem; }
+.admin-workspace .audit-no-change { padding: 8px; color: #67728a; font-size: .78rem; }
+.admin-workspace .audit-no-change i { color: #16815f; margin-right: 5px; }
+
 /* Dashboard, result and permission screens retain their content but become visually consistent with admin cards. */
 .admin-workspace .dashboard-hero-banner { border: 1px solid rgb(255 255 255 / 25%); box-shadow: 0 15px 35px rgb(96 74 206 / 21%); }
 .admin-workspace .quick-actions-card, .admin-workspace .stat-card { border-color: #e7e4f0; box-shadow: 0 8px 22px rgb(47 37 98 / 6%); }
@@ -184,6 +212,8 @@
     .admin-workspace .academic-body { padding: 21px 16px 25px; }
     .admin-workspace .academic-header { min-height: 0; padding: 24px 18px; }
     .admin-workspace .academic-tabs { padding-inline: 16px; gap: 16px; }
+    .admin-workspace .audit-filter { padding: 13px; }
+    .admin-workspace .audit-evidence { min-width: 205px; }
 }
 @media (prefers-reduced-motion: reduce) {
     .admin-workspace * { scroll-behavior: auto !important; transition: none !important; }

@@ -3,7 +3,7 @@
 @section('title', 'Teacher Workspace')
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/academic/academic.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/teaching/workspace.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/teaching/workspace.css') }}?v={{ filemtime(public_path('css/teaching/workspace.css')) }}">
 @endsection
 
 @section('content')

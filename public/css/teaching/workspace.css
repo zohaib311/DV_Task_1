@@ -150,6 +150,22 @@
 .teaching-page details.teaching-footnote summary { cursor: pointer; color: #535e77; font-weight: 700; }
 .teaching-page details.teaching-footnote[open] summary { margin-bottom: 12px; }
 .teaching-page pre { padding: 12px; background: #27253e; border-radius: 8px; color: #e9e6ff; }
+.teaching-page details.teaching-footnote:has(.teaching-history-evidence) { padding: 0; overflow: hidden; background: #fbfaff; border-color: #ebe8f7; }
+.teaching-page details.teaching-footnote:has(.teaching-history-evidence) summary { display: flex; align-items: center; gap: 7px; min-height: 48px; margin: 0; padding: 13px 15px; color: #4c426f; }
+.teaching-page details.teaching-footnote:has(.teaching-history-evidence)[open] summary { padding-bottom: 13px; background: #f4f1ff; border-bottom: 1px solid #e7e2f7; }
+.teaching-history-reason { display: flex; align-items: flex-start; gap: 7px; margin: 12px 14px 0; color: #67738d; font-size: .79rem; line-height: 1.55; }
+.teaching-history-reason i { color: #7662d3; margin-top: 2px; }
+.teaching-history-evidence { display: grid; gap: 8px; padding: 12px 14px 14px; }
+.teaching-history-change { display: grid; gap: 7px; padding: 9px; background: #fff; border: 1px solid #efecf7; border-radius: 8px; }
+.teaching-history-label { color: #59637d; font-size: .68rem; font-weight: 800; letter-spacing: .025em; text-transform: uppercase; }
+.teaching-history-values { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: center; }
+.teaching-history-values > div { min-width: 0; padding: 7px; background: #f8f8fb; border-radius: 6px; }
+.teaching-history-values > div:last-child { background: #f2efff; }
+.teaching-history-values small { display: block; margin-bottom: 2px; color: #858da0; font-size: .63rem; font-weight: 700; text-transform: uppercase; }
+.teaching-history-values strong { display: block; overflow-wrap: anywhere; color: #424d67; font-size: .75rem; font-weight: 700; line-height: 1.4; }
+.teaching-history-values > i { color: #7764d4; font-size: .78rem; }
+.teaching-history-empty { padding: 8px; color: #69758d; font-size: .78rem; }
+.teaching-history-empty i { color: #16815f; margin-right: 5px; }
 .teaching-page .pagination { margin-bottom: 0; }
 .teaching-page .page-link { color: #6958d1; border-color: #e7e4f2; }
 .teaching-page .page-item.active .page-link { background-color: #6b59df; border-color: #6b59df; }
@@ -172,6 +188,7 @@
     .teaching-roster-search > div { width: 100%; }
     .teaching-page .academic-actions { justify-content: stretch; }
     .teaching-page .academic-actions .btn { flex: 1 1 auto; }
+    .teaching-page details.teaching-footnote:has(.teaching-history-evidence) summary { align-items: flex-start; }
 }
 @media (max-width: 440px) {
     .teaching-intro { align-items: flex-start; }

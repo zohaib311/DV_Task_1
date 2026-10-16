@@ -51,9 +51,122 @@ class AuditController extends Controller
 
             return ['type' => ucfirst($entry->audit_type), 'at' => $row->created_at,
                 'actor' => $row->$actor?->name, 'action' => $row->action, 'reason' => $row->reason,
-                'subject' => data_get($row, $subject.'.'.$field), 'before' => $row->before, 'after' => $row->after];
+                'subject' => data_get($row, $subject.'.'.$field),
+                'evidence' => $this->evidence($row->before, $row->after)];
         });
 
         return view('academic.audits.index', compact('audits'));
+    }
+
+    /**
+     * The database retains full snapshots. The viewer receives a short,
+     * readable comparison instead of raw database JSON.
+     */
+    private function evidence(?array $before, ?array $after): array
+    {
+        $before = $this->snapshotSummary($before);
+        $after = $this->snapshotSummary($after);
+        $changes = [];
+
+        foreach (array_unique([...array_keys($before), ...array_keys($after)]) as $label) {
+            $old = $before[$label] ?? null;
+            $new = $after[$label] ?? null;
+
+            if ($old !== $new) {
+                $changes[] = ['label' => $label, 'before' => $old, 'after' => $new];
+            }
+        }
+
+        return ['changes' => $changes];
+    }
+
+    private function snapshotSummary(?array $snapshot): array
+    {
+        if (empty($snapshot)) {
+            return [];
+        }
+
+        if (isset($snapshot['records']) && is_array($snapshot['records'])) {
+            $counts = collect($snapshot['records'])->countBy('status')->filter()->map(
+                fn ($count, $status) => ucfirst((string) $status).': '.$count
+            )->implode(', ');
+
+            return array_filter([
+                'Session status' => $this->value($snapshot['status'] ?? null),
+                'Revision' => $this->value($snapshot['revision'] ?? null),
+                'Attendance records' => count($snapshot['records']).' student record(s)'.($counts ? ' — '.$counts : ''),
+            ]);
+        }
+
+        if (isset($snapshot['marks']) && is_array($snapshot['marks'])) {
+            $scored = collect($snapshot['marks'])->filter(fn ($mark) => ($mark['obtained'] ?? null) !== null)->count();
+
+            return array_filter([
+                'Assessment reference' => $this->reference('Assessment', $snapshot['assessment_id'] ?? null),
+                'Saved marks' => count($snapshot['marks']).' student record(s), '.$scored.' score(s) entered',
+            ]);
+        }
+
+        if (isset($snapshot['items']) && is_array($snapshot['items'])) {
+            return array_filter([
+                'Result status' => $this->value($snapshot['status'] ?? null),
+                'Percentage' => isset($snapshot['percentage']) ? $snapshot['percentage'].'%' : null,
+                'SGPA' => $this->value($snapshot['sgpa'] ?? null),
+                'CGPA' => $this->value($snapshot['cgpa'] ?? null),
+                'Course results' => count($snapshot['items']).' course result(s)',
+                'Published at' => $this->value($snapshot['published_at'] ?? null),
+            ]);
+        }
+
+        $labels = [
+            'submission_id' => 'Submission reference',
+            'assessment_id' => 'Assessment reference',
+            'semester_result_id' => 'Semester result reference',
+            'title' => 'Assessment title',
+            'held_on' => 'Assessment date',
+            'maximum' => 'Raw maximum',
+            'weight' => 'Course weight',
+            'submission_required' => 'Student submission required',
+            'submissions_due_at' => 'Submission deadline',
+            'marks_released_at' => 'Marks released at',
+            'status' => 'Status',
+            'revision' => 'Revision',
+            'attendance' => 'Attendance allocation',
+            'midterm' => 'Midterm allocation',
+            'final' => 'Final allocation',
+            'quiz' => 'Quiz allocation',
+            'assignment' => 'Assignment allocation',
+        ];
+        $summary = [];
+
+        foreach ($labels as $key => $label) {
+            if (! array_key_exists($key, $snapshot)) {
+                continue;
+            }
+
+            $summary[$label] = str_ends_with($key, '_id')
+                ? $this->reference(str_replace(' reference', '', $label), $snapshot[$key])
+                : $this->value($snapshot[$key]);
+        }
+
+        return array_filter($summary, fn ($value) => $value !== null && $value !== '');
+    }
+
+    private function reference(string $label, mixed $id): ?string
+    {
+        return $id === null ? null : $label.' #'.$id;
+    }
+
+    private function value(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_bool($value)) {
+            return $value ? 'Yes' : 'No';
+        }
+
+        return (string) $value;
     }
 }
