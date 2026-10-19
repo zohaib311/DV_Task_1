@@ -85,6 +85,23 @@ class StudentPortalTest extends TestCase
         $this->get(route('student.dashboard'))->assertOk()->assertSee('Open result sheet');
     }
 
+    public function test_published_history_shows_cumulative_degree_progress_and_a_clear_backlog_label(): void
+    {
+        $result = $this->createResult();
+        $result->items()->firstOrFail()->update(['status' => 'Fail', 'grade' => 'F', 'grade_point' => 0]);
+        $result->update(['status' => 'Fail', 'sgpa' => 0, 'cgpa' => 0]);
+
+        $this->get(route('student.results.index'))
+            ->assertOk()
+            ->assertSee('Overall degree progress')
+            ->assertSee('1 backlog course')
+            ->assertSee('Backlog');
+        $this->get(route('student.results.show', $result))
+            ->assertOk()
+            ->assertSee('Semester completed with backlog')
+            ->assertSee('1 course needs to be repeated');
+    }
+
     public function test_other_students_records_are_not_accessible_even_with_super_admin_gate_bypass(): void
     {
         $foreign = StudentSemesterEnrollment::whereKeyNot($this->enrollment->id)->first();

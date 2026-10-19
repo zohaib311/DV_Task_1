@@ -38,9 +38,34 @@ class PortalController extends Controller
 
     public function results(Request $request, StudentWorkspace $workspace)
     {
-        $results = $workspace->results($request->user())->with('enrollment')->orderByDesc('id')->paginate(15);
+        $history = $workspace->results($request->user())->with(['enrollment', 'items'])->get();
+        $sortKey = fn ($result) => sprintf(
+            '%s-%02d-%s-%010d',
+            $result->enrollment->academic_year ?? '0000-0000',
+            (int) preg_replace('/\D/', '', $result->enrollment->semester ?? ''),
+            $result->published_at?->format('YmdHis') ?? '',
+            $result->id,
+        );
+        $latestAttempts = collect();
+        $history->sortBy($sortKey)->each(function ($result) use ($latestAttempts) {
+            $result->items->each(function ($item) use ($latestAttempts, $result) {
+                $key = $item->course_id ? 'id:'.$item->course_id : 'code:'.$item->course_code;
+                $latestAttempts->put($key, ['item' => $item, 'result' => $result]);
+            });
+        });
+        $latestResult = $history->sortBy($sortKey)->last();
+        $backlogs = $latestAttempts->filter(fn ($attempt) => $attempt['item']->status === 'Fail');
+        $degreeProgress = [
+            'current_cgpa' => $latestResult?->cgpa,
+            'published_semesters' => $history->count(),
+            'cgpa_credits' => $latestAttempts->sum(fn ($attempt) => (float) $attempt['item']->credit_hours),
+            'passed_credits' => $latestAttempts->reject(fn ($attempt) => $attempt['item']->status === 'Fail')->sum(fn ($attempt) => (float) $attempt['item']->credit_hours),
+            'backlog_courses' => $backlogs->count(),
+            'backlog_credits' => $backlogs->sum(fn ($attempt) => (float) $attempt['item']->credit_hours),
+        ];
+        $results = $workspace->results($request->user())->with(['enrollment', 'items'])->orderByDesc('id')->paginate(15);
 
-        return view('student-portal.results.index', compact('results'));
+        return view('student-portal.results.index', compact('results', 'degreeProgress'));
     }
 
     public function result(Request $request, int $result, StudentWorkspace $workspace)

@@ -730,6 +730,15 @@
     color: var(--portal-heading);
 }
 
+.portal-degree-progress { margin: 0 0 27px; padding: 20px; background: linear-gradient(145deg, #fbfaff, #f6f4ff); border: 1px solid #e8e3fb; border-radius: 15px; }
+.portal-degree-progress .portal-section-heading { margin: 0 0 14px; }
+.portal-degree-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11px; }
+.portal-degree-card { display: grid; gap: 7px; min-height: 124px; padding: 15px; background: #fff; border: 1px solid #e9e6f3; border-radius: 11px; }
+.portal-degree-card > span { color: #74809a; font-size: .71rem; font-weight: 750; }.portal-degree-card > span i { color: #7560d6; margin-right: 5px; }.portal-degree-card strong { color: #3f4964; font-size: 1.55rem; line-height: 1; }.portal-degree-card small { align-self: end; color: #7f899e; font-size: .7rem; line-height: 1.35; }
+.portal-degree-card.is-primary { color: #fff; background: linear-gradient(135deg, #6754d9, #8360e8); border-color: transparent; }.portal-degree-card.is-primary > span, .portal-degree-card.is-primary > span i, .portal-degree-card.is-primary strong, .portal-degree-card.is-primary small { color: #fff; }.portal-degree-card.is-primary small { opacity: .82; }.portal-degree-card.is-backlog { border-color: #f3dac5; background: #fffaf4; }.portal-degree-card.is-backlog > span i, .portal-degree-card.is-backlog strong { color: #b96726; }
+.portal-degree-note { display: flex; align-items: flex-start; gap: 7px; margin: 14px 0 0; color: #717b92; font-size: .75rem; line-height: 1.5; }.portal-degree-note i { color: #7560d6; margin-top: 2px; }.portal-outcome-detail { margin-top: 5px; font-size: .69rem !important; }
+.portal-result-outcome { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 20px; padding: 13px 15px; border-radius: 11px; }.portal-result-outcome > i { margin-top: 1px; font-size: 1.05rem; }.portal-result-outcome strong, .portal-result-outcome span { display: block; }.portal-result-outcome strong { font-size: .84rem; }.portal-result-outcome span { margin-top: 2px; font-size: .77rem; }.portal-result-outcome.is-pass { color: #167055; background: #edf9f2; border: 1px solid #d8f0e3; }.portal-result-outcome.is-fail { color: #9c4c43; background: #fff3f0; border: 1px solid #f4ded8; }
+
 .portal-breakdown {
     display: grid;
     gap: 4px;
@@ -791,6 +800,7 @@
     .portal-result-summary {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
+    .portal-degree-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 767.98px) {
@@ -818,7 +828,8 @@
     .portal-summary-grid,
     .portal-attendance-summary,
     .portal-credit-panel,
-    .portal-result-summary {
+    .portal-result-summary,
+    .portal-degree-grid {
         grid-template-columns: 1fr;
     }
 
