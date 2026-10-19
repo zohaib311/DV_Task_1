@@ -22,7 +22,7 @@ class CourseOfferingController extends Controller
         $filters = $request->validate(['term_id' => ['nullable', 'integer', 'exists:academic_terms,id']]);
 
         return view('academic.offerings', [
-            'offerings' => CourseOffering::with(['term.academicYear', 'department', 'program', 'section', 'teachers', 'curriculumCourse.curriculum'])
+            'offerings' => CourseOffering::with(['term.academicYear', 'department', 'program', 'section', 'teachers', 'curriculumCourse.curriculum', 'assessmentComponents'])
                 ->withCount('enrollmentCourses')->when($filters['term_id'] ?? null, fn ($query, $id) => $query->where('academic_term_id', $id))->latest()->paginate(20)->withQueryString(),
             'terms' => AcademicTerm::with('academicYear')->orderByDesc('starts_on')->get(),
         ]);

@@ -159,6 +159,9 @@
 .admin-workspace .academic-note { border: 1px solid #e9e4ff; border-left: 3px solid #8875e9; border-radius: 10px; }
 .admin-workspace .academic-actions { gap: 9px; }
 .admin-workspace .academic-badge { font-weight: 750; }
+.admin-workspace .academic-offering-legend { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 17px; padding: 11px 13px; color: #67718b; background: #f8f7ff; border: 1px solid #e9e5fb; border-radius: 10px; font-size: .78rem; line-height: 1.5; }
+.admin-workspace .academic-offering-legend i { flex: 0 0 auto; color: #7561d3; margin-top: 2px; }.admin-workspace .academic-offering-legend strong { color: #50427f; }
+.admin-workspace .assessment-scheme-state { display: grid; gap: 5px; min-width: 185px; }.admin-workspace .assessment-scheme-state .academic-badge { width: fit-content; }.admin-workspace .assessment-scheme-state .academic-badge i { margin-right: 4px; }.admin-workspace .assessment-scheme-state small { color: #768199; font-size: .7rem; line-height: 1.4; }.admin-workspace .assessment-scheme-state.is-approved .academic-badge { color: #137456; background: #e9f8f0; }.admin-workspace .assessment-scheme-state.is-pending .academic-badge { color: #96641c; background: #fff6de; }
 .admin-workspace .academic-body details summary { cursor: pointer; color: #55477f; font-weight: 700; }
 .admin-workspace .academic-body pre { padding: 12px; background: #292640; color: #eeecff; border-radius: 8px; }
 
