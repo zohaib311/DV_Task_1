@@ -7,6 +7,9 @@
 @can('student.registration.manage-own')
     <a href="{{ route('student.registration.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.registration.*')])><i class="bi bi-journal-plus portal-nav-icon" aria-hidden="true"></i><span>Course Registration</span></a>
 @endcan
+@can('student.leaves.manage-own')
+    <a href="{{ route('student.leaves.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.leaves.*')])><i class="bi bi-calendar-heart portal-nav-icon" aria-hidden="true"></i><span>Leave Requests</span></a>
+@endcan
 @can('student.attendance.view-own')
     <a href="{{ route('student.attendance.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.attendance.*')])><i class="bi bi-calendar2-check portal-nav-icon" aria-hidden="true"></i><span>My Attendance</span></a>
 @endcan

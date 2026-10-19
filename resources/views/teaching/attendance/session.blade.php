@@ -18,7 +18,7 @@
                     <thead><tr><th>Student</th><th>Attendance status</th><th>Teacher note (optional)</th></tr></thead>
                     <tbody>@foreach($session->records as $index => $record)
                         <tr>
-                            <td><strong>{{ $record->enrollmentCourse->enrollment->student->name }}</strong><small>{{ $record->enrollmentCourse->enrollment->student->registration_no }}</small><input type="hidden" name="records[{{ $index }}][id]" value="{{ $record->id }}"></td>
+                            <td><strong>{{ $record->enrollmentCourse->enrollment->student->name }}</strong><small>{{ $record->enrollmentCourse->enrollment->student->registration_no }}</small>@if($approvedLeaves->has($record->student_enrollment_course_id))<span class="teaching-leave-indicator"><i class="bi bi-calendar-heart" aria-hidden="true"></i> Approved leave</span>@endif<input type="hidden" name="records[{{ $index }}][id]" value="{{ $record->id }}"></td>
                             <td>@include('teaching.attendance.partials.status-options')</td>
                             <td><input class="form-control" name="records[{{ $index }}][note]" maxlength="500" aria-label="Note for {{ $record->enrollmentCourse->enrollment->student->name }}" value="{{ old('records.'.$index.'.note', $record->note) }}"></td>
                         </tr>

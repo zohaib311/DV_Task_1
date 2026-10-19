@@ -866,3 +866,33 @@
         border-radius: 0;
     }
 }
+
+/* Leave requests */
+.portal-header-chip { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; color: #fff; border: 1px solid rgb(255 255 255 / 35%); border-radius: 9px; font-size: .78rem; font-weight: 700; }
+.portal-leave-form { padding: 20px; background: linear-gradient(145deg, #fbfaff, #f7f5ff); border: 1px solid #e8e3fb; border-radius: 14px; }
+.portal-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px 16px; }
+.portal-field-wide { grid-column: 1 / -1; }
+.portal-leave-form .form-label { margin-bottom: 7px; color: #56617c; font-size: .77rem; font-weight: 750; }
+.portal-leave-form small { display: block; margin-top: 5px; color: #8490a7; font-size: .7rem; }
+.portal-optional { color: #8992a6; font-weight: 500; }
+.portal-form-footer { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #e8e4f6; color: #727e95; font-size: .76rem; }
+.portal-form-footer > span i { color: #7561d4; margin-right: 4px; }
+.portal-leave-list { display: grid; gap: 12px; }
+.portal-leave-card { padding: 17px 18px; background: #fff; border: 1px solid #ebe8f4; border-radius: 13px; box-shadow: 0 4px 13px rgb(59 48 109 / 4%); }
+.portal-leave-card-top, .portal-leave-card-bottom { display: flex; justify-content: space-between; gap: 14px; }
+.portal-leave-card-top h3 { margin: 4px 0 3px; color: #39445e; font-size: .98rem; }
+.portal-leave-card-top p, .portal-leave-card-bottom { margin: 0; color: #7a859b; font-size: .76rem; }
+.portal-code { color: #765fd2; font-size: .69rem; font-weight: 800; letter-spacing: .06em; }
+.portal-leave-reason { margin: 14px 0; color: #59647b; font-size: .84rem; line-height: 1.55; }
+.portal-review-note { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 14px; padding: 10px 11px; color: #59647b; background: #f6f4ff; border-radius: 8px; font-size: .77rem; line-height: 1.5; }
+.portal-review-note i { color: #735ed2; margin-top: 2px; }
+.portal-review-note strong { display: block; color: #4d4775; font-size: .7rem; text-transform: uppercase; letter-spacing: .03em; }
+.portal-inline-actions { display: flex; align-items: center; gap: 9px; }
+.portal-inline-actions form { margin: 0; }
+.portal-action-link, .portal-text-button { border: 0; color: #6052c1; background: transparent; font-size: .75rem; font-weight: 750; text-decoration: none; }
+.portal-action-link { display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; background: #f4f2ff; border: 1px solid #e4dffc; border-radius: 7px; }
+.portal-text-button.is-danger { color: #bd4c62; }
+.portal-empty-card { display: grid; justify-items: center; gap: 6px; padding: 42px 20px; color: #7f899c; background: #fff; border: 1px dashed #dfdbea; border-radius: 13px; text-align: center; }
+.portal-empty-card i { color: #806ce2; font-size: 1.55rem; }.portal-empty-card strong { color: #505b74; }.portal-empty-card span { font-size: .8rem; }
+.portal-field-error { margin-top: 5px; color: #b44258; font-size: .74rem; font-weight: 650; line-height: 1.4; }
+@media (max-width: 767.98px) { .portal-form-grid { grid-template-columns: 1fr; }.portal-field-wide { grid-column: auto; }.portal-form-footer, .portal-leave-card-top, .portal-leave-card-bottom { align-items: flex-start; flex-direction: column; }.portal-form-footer .portal-btn { width: 100%; } }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\StudentPortal\PortalController;
 use App\Http\Controllers\StudentPortal\CourseRegistrationController;
 use App\Http\Controllers\StudentPortal\AssessmentSubmissionController;
+use App\Http\Controllers\StudentPortal\LeaveController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('student-portal')->name('student.')->middleware('auth')->controller(PortalController::class)->group(function () {
@@ -23,4 +24,11 @@ Route::prefix('student-portal/assessment-submissions')->name('student.assessment
 Route::prefix('student-portal/course-registration')->name('student.registration.')->middleware(['auth', 'permission:student.registration.manage-own'])->controller(CourseRegistrationController::class)->group(function () {
     Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->middleware('throttle:10,1')->name('store');
+});
+
+Route::prefix('student-portal/leaves')->name('student.leaves.')->middleware(['auth', 'permission:student.leaves.manage-own'])->controller(LeaveController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::post('/', 'store')->middleware('throttle:10,1')->name('store');
+    Route::post('/{leave}/cancel', 'cancel')->whereNumber('leave')->name('cancel');
+    Route::get('/{leave}/attachment', 'attachment')->whereNumber('leave')->name('attachment');
 });

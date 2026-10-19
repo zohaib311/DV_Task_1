@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Attendance\AttendanceCalculator;
 use App\Services\Attendance\AttendanceService;
 use App\Services\Teaching\TeacherWorkspace;
+use App\Models\Leave\StudentLeaveRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -48,8 +49,15 @@ class AttendanceController extends Controller
                 return $enrollment->status !== 'active' || ($enrollment->semesterResult?->published_at && in_array($enrollment->semesterResult->status, ['Pass', 'Fail']));
             });
         $audits = $session->audits()->with('user')->latest('id')->paginate(10);
+        $approvedLeaves = StudentLeaveRequest::query()
+            ->where('course_offering_id', $offering->id)
+            ->where('status', 'approved')
+            ->whereIn('student_enrollment_course_id', $session->records->pluck('student_enrollment_course_id'))
+            ->whereDate('starts_on', '<=', $session->held_on)
+            ->whereDate('ends_on', '>=', $session->held_on)
+            ->get()->keyBy('student_enrollment_course_id');
 
-        return view('teaching.attendance.session', compact('offering', 'session', 'locked', 'audits'));
+        return view('teaching.attendance.session', compact('offering', 'session', 'locked', 'audits', 'approvedLeaves'));
     }
 
     public function update(Request $request, int $offering, int $session, AttendanceService $service)

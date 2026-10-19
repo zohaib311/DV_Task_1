@@ -10,6 +10,9 @@
                 @can('attendance.manage-assigned')
                     <li><a href="{{ route('teaching.attendance.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('teaching.attendance.*')]) @if(request()->routeIs('teaching.attendance.*')) aria-current="page" @endif>Attendance</a></li>
                 @endcan
+                @can('leaves.review-assigned')
+                    <li><a href="{{ route('teaching.leaves.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('teaching.leaves.*')]) @if(request()->routeIs('teaching.leaves.*')) aria-current="page" @endif>Leave Requests</a></li>
+                @endcan
                 <li><a href="{{ route('teaching.dashboard') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('teaching.dashboard')]) @if(request()->routeIs('teaching.dashboard')) aria-current="page" @endif>Overview</a></li>
                 <li><a href="{{ route('teaching.offerings.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('teaching.offerings.*')]) @if(request()->routeIs('teaching.offerings.*')) aria-current="page" @endif>My Courses &amp; Rosters</a></li>
             </ul>

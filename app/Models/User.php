@@ -36,4 +36,14 @@ class User extends Authenticatable
     {
         return 'users.'.$this->getKey().'.notifications';
     }
+
+    public function requestedLeaveRequests()
+    {
+        return $this->hasMany(\App\Models\Leave\StudentLeaveRequest::class, 'requested_by');
+    }
+
+    public function reviewedLeaveRequests()
+    {
+        return $this->hasMany(\App\Models\Leave\StudentLeaveRequest::class, 'reviewed_by');
+    }
 }

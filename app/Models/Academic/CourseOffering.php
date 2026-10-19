@@ -74,4 +74,9 @@ class CourseOffering extends Model
     {
         return $this->hasMany(StudentEnrollmentCourse::class);
     }
+
+    public function leaveRequests()
+    {
+        return $this->hasMany(\App\Models\Leave\StudentLeaveRequest::class);
+    }
 }

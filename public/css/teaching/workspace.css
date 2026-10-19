@@ -167,6 +167,10 @@
 .teaching-history-empty { padding: 8px; color: #69758d; font-size: .78rem; }
 .teaching-history-empty i { color: #16815f; margin-right: 5px; }
 .teaching-page .pagination { margin-bottom: 0; }
+.teaching-header-chip { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; color: #fff; border: 1px solid rgb(255 255 255 / 35%); border-radius: 9px; font-size: .78rem; font-weight: 700; }
+.teaching-field-error { margin-top: 6px; color: #b24356; font-size: .76rem; font-weight: 650; }
+.teaching-filter-bar { display: flex; align-items: end; gap: 11px; margin-bottom: 26px; padding: 15px; background: #fbfaff; border: 1px solid #ebe8f7; border-radius: 12px; }
+.teaching-filter-bar > div:first-child { width: min(100%, 320px); }.teaching-filter-bar .form-label { display: block; }.teaching-leave-detail { padding: 21px; background: #fbfaff; border: 1px solid #e9e6f4; border-radius: 13px; }.teaching-leave-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; margin-bottom: 20px; }.teaching-leave-heading h2 { margin: 6px 0 4px; font-size: 1.25rem; }.teaching-leave-heading p { margin: 0; color: #79849b; font-size: .79rem; }.teaching-leave-reason { padding: 13px 14px; color: #637087; background: #fff; border: 1px solid #eceaf3; border-radius: 9px; font-size: .84rem; }.teaching-leave-reason strong { color: #4c5770; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; }.teaching-leave-reason p { margin: 7px 0 0; line-height: 1.55; }.teaching-leave-review { margin-top: 21px; padding: 18px; background: #fbfaff; border: 1px solid #e9e6f4; border-radius: 13px; }.teaching-leave-review .academic-actions { display: flex; gap: 9px; }.teaching-leave-indicator { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; padding: 3px 7px; color: #54703c; background: #edf8e8; border-radius: 20px; font-size: .67rem; font-weight: 750; }
 .teaching-page .page-link { color: #6958d1; border-color: #e7e4f2; }
 .teaching-page .page-item.active .page-link { background-color: #6b59df; border-color: #6b59df; }
 .teaching-page :is(a, button, input, select, textarea):focus-visible { outline: 2px solid #7964db; outline-offset: 3px; }
@@ -189,6 +193,7 @@
     .teaching-page .academic-actions { justify-content: stretch; }
     .teaching-page .academic-actions .btn { flex: 1 1 auto; }
     .teaching-page details.teaching-footnote:has(.teaching-history-evidence) summary { align-items: flex-start; }
+    .teaching-filter-bar, .teaching-leave-heading, .teaching-leave-review .academic-actions { align-items: stretch; flex-direction: column; }.teaching-filter-bar > div:first-child { width: 100%; }
 }
 @media (max-width: 440px) {
     .teaching-intro { align-items: flex-start; }

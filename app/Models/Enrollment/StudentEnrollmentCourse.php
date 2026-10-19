@@ -57,4 +57,9 @@ class StudentEnrollmentCourse extends Model
     {
         return $this->hasMany(\App\Models\Assessment\StudentAssessmentSubmission::class, 'student_enrollment_course_id');
     }
+
+    public function leaveRequests(): HasMany
+    {
+        return $this->hasMany(\App\Models\Leave\StudentLeaveRequest::class, 'student_enrollment_course_id');
+    }
 }

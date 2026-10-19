@@ -32,12 +32,12 @@ class AccessControlSeeder extends Seeder
         'Teacher' => [
             'dashboard.view', 'offerings.view-assigned', 'attendance.manage-assigned',
             'assessments.manage-assigned', 'marks.manage-assigned', 'results.submit',
-            'notifications.view-own',
+            'notifications.view-own', 'leaves.review-assigned',
         ],
         'Student' => [
             'dashboard.view', 'student.profile.view-own', 'student.attendance.view-own',
             'student.result.view-own', 'student.courses.view-own', 'student.assessments.view-own', 'notifications.view-own',
-            'student.registration.manage-own', 'student.assessments.submit-own',
+            'student.registration.manage-own', 'student.assessments.submit-own', 'student.leaves.manage-own',
         ],
     ];
 
@@ -53,7 +53,7 @@ class AccessControlSeeder extends Seeder
         'results.publish', 'results.edit-published',
         'student.profile.view-own', 'student.attendance.view-own', 'student.result.view-own',
         'student.courses.view-own', 'student.assessments.view-own', 'notifications.view-own', 'reports.view',
-        'student.registration.manage-own', 'student.assessments.submit-own',
+        'student.registration.manage-own', 'student.assessments.submit-own', 'student.leaves.manage-own', 'leaves.review-assigned',
         'academic-history.view', 'audit.view', 'assessments.review',
     ];
 

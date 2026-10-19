@@ -42,7 +42,7 @@ class NotificationController extends Controller
         // Only follow known, authorized portal destinations, never arbitrary stored URLs.
         foreach (['student.dashboard' => 'student.profile.view-own', 'student.courses' => 'student.courses.view-own',
             'student.attendance.index' => 'student.attendance.view-own', 'student.assessments.index' => 'student.assessments.view-own',
-            'student.results.index' => 'student.result.view-own'] as $route => $permission) {
+            'student.results.index' => 'student.result.view-own', 'student.leaves.index' => 'student.leaves.manage-own'] as $route => $permission) {
             if ($url === route($route) && $request->user()->can($permission)) {
                 return redirect()->route($route);
             }
