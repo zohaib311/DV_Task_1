@@ -145,6 +145,7 @@ class ResultController extends Controller
         return response()->json([
             'student' => $this->resultStudent($student),
             'history' => $this->studentAcademicHistory($student->id),
+            'all_course_outcomes' => $this->studentCourseOutcomes($student->id),
         ]);
     }
 
@@ -532,6 +533,39 @@ class ResultController extends Controller
                 'status' => $enrollment->semesterResult?->status ?? 'Not entered',
                 'published_at' => $enrollment->semesterResult?->published_at?->toIso8601String(),
             ])->values();
+    }
+
+    /**
+     * A compact, semester-labelled course record for the history drawer.
+     * Individual semester sheets still contain the complete assessment breakdown.
+     *
+     * @return \Illuminate\Support\Collection<int, array<string, mixed>>
+     */
+    private function studentCourseOutcomes(int $studentId)
+    {
+        return SemesterResult::query()
+            ->where('student_id', $studentId)
+            ->with(['enrollment', 'items'])
+            ->get()
+            ->sortBy(fn (SemesterResult $result) => sprintf(
+                '%s-%03d-%010d',
+                $result->enrollment?->academic_year,
+                $this->semesterNumber($result->enrollment?->semester),
+                $result->id,
+            ))
+            ->flatMap(fn (SemesterResult $result) => $result->items->map(fn (SemesterResultItem $item) => [
+                'semester' => $result->enrollment?->semester,
+                'academic_year' => $result->enrollment?->academic_year,
+                'course_code' => $item->course_code,
+                'course_name' => $item->course_name,
+                'credit_hours' => $item->credit_hours,
+                'percentage' => $item->percentage,
+                'grade' => $item->grade,
+                'grade_point' => $item->grade_point,
+                'status' => $item->status,
+                'record_state' => $result->published_at ? 'Published' : 'Draft',
+            ]))
+            ->values();
     }
 
     private function semesterNumber(?string $semester): int

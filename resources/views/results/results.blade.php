@@ -267,7 +267,7 @@
                     <div class="semester-sheet-title-group">
                         <span class="sheet-eyebrow"><i class="bi bi-patch-check-fill"></i> Official academic record</span>
                         <h5 class="modal-title" id="semesterResultSheetModalLabel">Semester Result Sheet</h5>
-                        <p>Published course outcomes, semester standing, and academic history.</p>
+                        <p id="sheet_modal_description">Published course outcomes, semester standing, and academic history.</p>
                     </div>
                     <div class="semester-sheet-header-actions">
                         <span class="semester-sheet-header-badge"><i class="bi bi-shield-check" aria-hidden="true"></i> Read-only</span>
@@ -301,6 +301,9 @@
                                 </div>
                                 <span id="sheet_status" class="semester-status is-draft">—</span>
                             </div>
+                            <div class="semester-sheet-detail-navigation">
+                                <button id="sheet_back_to_history" type="button" class="semester-view-action"><i class="bi bi-arrow-left" aria-hidden="true"></i> All semesters</button>
+                            </div>
                             <div class="semester-sheet-metrics">
                                 <div><span>Percentage</span><strong id="sheet_percentage">—</strong></div>
                                 <div><span>SGPA</span><strong id="sheet_sgpa">—</strong></div>
@@ -320,7 +323,7 @@
                             </div>
                         </section>
 
-                        <section class="semester-history-section">
+                        <section id="semester_sheet_history" class="semester-history-section">
                             <div class="semester-history-heading">
                                 <div>
                                     <span class="summary-kicker">Academic history</span>
@@ -328,10 +331,31 @@
                                 </div>
                                 <span id="sheet_history_count" class="course-count">0 semesters</span>
                             </div>
+                            <div class="semester-history-actions">
+                                <button id="sheet_all_courses_button" type="button" class="semester-view-action"><i class="bi bi-collection" aria-hidden="true"></i> All course outcomes</button>
+                            </div>
                             <div class="semester-history-table-wrap">
                                 <table class="semester-history-table">
                                     <thead><tr><th>Semester</th><th>Academic Year</th><th>SGPA</th><th>CGPA</th><th>Status</th><th></th></tr></thead>
                                     <tbody id="sheet_history_rows"></tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <section id="semester_sheet_all_courses" class="semester-history-section" hidden>
+                            <div class="semester-history-heading">
+                                <div>
+                                    <span class="summary-kicker">Complete academic record</span>
+                                    <h6>All course outcomes</h6>
+                                </div>
+                                <div class="semester-history-actions">
+                                    <span id="sheet_all_courses_count" class="course-count">0 courses</span>
+                                    <button id="sheet_back_from_courses" type="button" class="semester-view-action"><i class="bi bi-arrow-left" aria-hidden="true"></i> All semesters</button>
+                                </div>
+                            </div>
+                            <div class="semester-history-table-wrap">
+                                <table class="semester-history-table semester-all-courses-table">
+                                    <thead><tr><th>Semester</th><th>Course</th><th>Credits</th><th>%</th><th>Grade</th><th>GP</th><th>Outcome</th><th>Record</th></tr></thead>
+                                    <tbody id="sheet_all_course_rows"></tbody>
                                 </table>
                             </div>
                         </section>

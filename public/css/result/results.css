@@ -128,6 +128,11 @@
 .semester-sheet-record-heading, .semester-history-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .semester-sheet-record h6, .semester-history-heading h6 { margin: 0; color: #2d3950; font-size: 15px; font-weight: 800; }
 .semester-sheet-record small { color: #778197; font-size: 11px; font-weight: 650; }
+.semester-sheet-detail-navigation { display: flex; justify-content: flex-end; margin: -4px 0 11px; }
+.semester-history-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin: 0 0 10px; }
+.semester-history-heading .semester-history-actions { margin: 0; }
+.semester-view-action { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 10px; border: 1px solid #d8d3f4; border-radius: 8px; background: #f7f5ff; color: #5e4ec1; font-size: 10.5px; font-weight: 800; transition: background .16s ease, border-color .16s ease, transform .16s ease; }
+.semester-view-action:hover { border-color: #bcb2eb; background: #edeaff; transform: translateY(-1px); }
 .semester-sheet-metrics { display: grid; grid-template-columns: repeat(4, minmax(110px, 1fr)); margin-bottom: 17px; border-left: 1px solid #e2e6ee; }
 .semester-sheet-metrics > div { padding: 0 14px; border-right: 1px solid #e2e6ee; }
 .semester-sheet-metrics span { display: block; margin-bottom: 3px; color: #8a94a7; font-size: 9.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
@@ -142,6 +147,9 @@
 .semester-history-section { padding-top: 23px; }
 .semester-history-table { width: 100%; border-collapse: collapse; }
 .semester-history-table .action__btn { width: 28px; height: 28px; }
+.semester-all-courses-table { min-width: 860px; }
+.semester-all-courses-table td:first-child strong, .semester-all-courses-table td:nth-child(2) strong { display: block; color: #2d3950; }
+.semester-all-courses-table td:first-child small, .semester-all-courses-table td:nth-child(2) small { color: #8a94a7; font-size: 10px; }
 
 /* Add and edit result use the same right-side drawer pattern as student creation. */
 .result-drawer {
