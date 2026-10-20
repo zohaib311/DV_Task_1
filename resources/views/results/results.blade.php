@@ -261,14 +261,18 @@
 
     <div class="modal fade semester-sheet-modal" id="semesterResultSheetModal" tabindex="-1"
         aria-labelledby="semesterResultSheetModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl semester-sheet-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <div>
-                        <span class="sheet-eyebrow"><i class="bi bi-mortarboard-fill"></i> Academic record</span>
+                    <div class="semester-sheet-title-group">
+                        <span class="sheet-eyebrow"><i class="bi bi-patch-check-fill"></i> Official academic record</span>
                         <h5 class="modal-title" id="semesterResultSheetModalLabel">Semester Result Sheet</h5>
+                        <p>Published course outcomes, semester standing, and academic history.</p>
                     </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="semester-sheet-header-actions">
+                        <span class="semester-sheet-header-badge"><i class="bi bi-shield-check" aria-hidden="true"></i> Read-only</span>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
                 </div>
                 <div class="modal-body">
                     <div id="semester_sheet_loading" class="semester-sheet-loading">
