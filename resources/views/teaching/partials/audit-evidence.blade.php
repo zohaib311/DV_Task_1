@@ -19,60 +19,75 @@
         return (string) $value;
     };
     $summarize = function ($snapshot) use ($displayValue) {
-        if (empty($snapshot) || ! is_array($snapshot)) {
+        if (empty($snapshot) || !is_array($snapshot)) {
             return [];
         }
 
         if (isset($snapshot['records']) && is_array($snapshot['records'])) {
-            $counts = collect($snapshot['records'])->countBy('status')->filter()->map(
-                fn ($count, $status) => ucfirst((string) $status).': '.$count
-            )->implode(', ');
+            $counts = collect($snapshot['records'])
+                ->countBy('status')
+                ->filter()
+                ->map(fn($count, $status) => ucfirst((string) $status) . ': ' . $count)
+                ->implode(', ');
 
             return array_filter([
                 'Session status' => $snapshot['status'] ?? null,
                 'Revision' => isset($snapshot['revision']) ? (string) $snapshot['revision'] : null,
-                'Attendance records' => count($snapshot['records']).' student record(s)'.($counts ? ' — '.$counts : ''),
+                'Attendance records' =>
+                    count($snapshot['records']) . ' student record(s)' . ($counts ? ' — ' . $counts : ''),
             ]);
         }
 
         if (isset($snapshot['marks']) && is_array($snapshot['marks'])) {
-            $scored = collect($snapshot['marks'])->filter(fn ($mark) => ($mark['obtained'] ?? null) !== null)->count();
+            $scored = collect($snapshot['marks'])->filter(fn($mark) => ($mark['obtained'] ?? null) !== null)->count();
 
             return array_filter([
-                'Assessment reference' => isset($snapshot['assessment_id']) ? 'Assessment #'.$snapshot['assessment_id'] : null,
-                'Saved marks' => count($snapshot['marks']).' student record(s), '.$scored.' score(s) entered',
+                'Assessment reference' => isset($snapshot['assessment_id'])
+                    ? 'Assessment #' . $snapshot['assessment_id']
+                    : null,
+                'Saved marks' => count($snapshot['marks']) . ' student record(s), ' . $scored . ' score(s) entered',
             ]);
         }
 
         if (isset($snapshot['items']) && is_array($snapshot['items'])) {
             return array_filter([
                 'Result status' => $snapshot['status'] ?? null,
-                'Percentage' => isset($snapshot['percentage']) ? $snapshot['percentage'].'%' : null,
+                'Percentage' => isset($snapshot['percentage']) ? $snapshot['percentage'] . '%' : null,
                 'SGPA' => isset($snapshot['sgpa']) ? (string) $snapshot['sgpa'] : null,
                 'CGPA' => isset($snapshot['cgpa']) ? (string) $snapshot['cgpa'] : null,
-                'Course results' => count($snapshot['items']).' course result(s)',
+                'Course results' => count($snapshot['items']) . ' course result(s)',
             ]);
         }
 
         $labels = [
-            'submission_id' => 'Submission reference', 'assessment_id' => 'Assessment reference',
-            'semester_result_id' => 'Semester result reference', 'title' => 'Assessment title',
-            'held_on' => 'Assessment date', 'maximum' => 'Raw maximum', 'weight' => 'Course weight',
-            'submission_required' => 'Student submission required', 'submissions_due_at' => 'Submission deadline',
-            'marks_released_at' => 'Marks released at', 'status' => 'Status', 'revision' => 'Revision',
-            'attendance' => 'Attendance allocation', 'midterm' => 'Midterm allocation',
-            'final' => 'Final allocation', 'quiz' => 'Quiz allocation', 'assignment' => 'Assignment allocation',
+            'submission_id' => 'Submission reference',
+            'assessment_id' => 'Assessment reference',
+            'semester_result_id' => 'Semester result reference',
+            'title' => 'Assessment title',
+            'held_on' => 'Assessment date',
+            'maximum' => 'Raw maximum',
+            'weight' => 'Course weight',
+            'submission_required' => 'Student submission required',
+            'submissions_due_at' => 'Submission deadline',
+            'marks_released_at' => 'Marks released at',
+            'status' => 'Status',
+            'revision' => 'Revision',
+            'attendance' => 'Attendance allocation',
+            'midterm' => 'Midterm allocation',
+            'final' => 'Final allocation',
+            'quiz' => 'Quiz allocation',
+            'assignment' => 'Assignment allocation',
         ];
         $summary = [];
 
         foreach ($labels as $key => $label) {
-            if (! array_key_exists($key, $snapshot)) {
+            if (!array_key_exists($key, $snapshot)) {
                 continue;
             }
 
             $value = $snapshot[$key];
             if (str_ends_with($key, '_id')) {
-                $value = $value === null ? null : str_replace(' reference', '', $label).' #'.$value;
+                $value = $value === null ? null : str_replace(' reference', '', $label) . ' #' . $value;
             } else {
                 $value = $displayValue($key, $value);
             }
@@ -107,6 +122,7 @@
             </div>
         </div>
     @empty
-        <div class="teaching-history-empty"><i class="bi bi-check2-circle" aria-hidden="true"></i> A snapshot was retained, but no displayable value changed.</div>
+        <div class="teaching-history-empty"><i class="bi bi-check2-circle" aria-hidden="true"></i> A snapshot was retained,
+            but no displayable value changed.</div>
     @endforelse
 </div>
