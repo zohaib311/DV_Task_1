@@ -1,5 +1,5 @@
 .enrollment-alert { border: 0; border-radius: 0; font-size: 13px; }
-.enrollment-registration, .enrollment-semester { display: inline-block; padding: 5px 9px; border-radius: 7px; background: #eeedff; color: #5f54cf; font-size: 12px; font-weight: 700; }
+.enrollment-registration, .enrollment-semester { display: inline-flex; width: max-content; max-width: none; padding: 5px 9px; border-radius: 7px; background: #eeedff; color: #5f54cf; font-size: 12px; font-weight: 700; white-space: nowrap; }
 .enrollment-semester { background: #effaf5; color: #07845d; }
 .enrollment-result-state { display: inline-flex; padding: 4px 7px; border-radius: 20px; font-size: 10px; font-weight: 800; white-space: nowrap; }
 .enrollment-result-state.is-pass { background: #e7f8f0; color: #087f55; }
