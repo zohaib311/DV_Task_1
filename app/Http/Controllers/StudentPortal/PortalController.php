@@ -76,6 +76,76 @@ class PortalController extends Controller
         return view('student-portal.results.show', compact('result', 'student'));
     }
 
+    /**
+     * A student-owned, publication-only transcript. Failed attempts are kept in
+     * the academic record for progression, but are deliberately excluded from
+     * the transcript's course rows. A later passed attempt remains visible and
+     * is labelled as a repeat when an earlier attempt exists.
+     */
+    public function transcript(Request $request, StudentWorkspace $workspace)
+    {
+        $student = $workspace->student($request->user())->load(['department', 'program', 'section']);
+        $results = $workspace->results($request->user())->with(['enrollment', 'items'])->get()
+            ->sortBy(fn ($result) => sprintf(
+                '%s-%02d-%s-%010d',
+                $result->enrollment->academic_year ?? '0000-0000',
+                (int) preg_replace('/\D/', '', $result->enrollment->semester ?? ''),
+                $result->published_at?->format('YmdHis') ?? '',
+                $result->id,
+            ))->values();
+
+        $attemptCounts = collect();
+        $latestPassedCourses = collect();
+        $semesters = $results->map(function ($result) use ($attemptCounts, $latestPassedCourses) {
+            $courses = $result->items->map(function ($item) use ($attemptCounts, $latestPassedCourses) {
+                $key = $item->course_id ? 'id:'.$item->course_id : 'code:'.$item->course_code;
+                $isRepeat = $attemptCounts->has($key);
+                $attemptCounts->put($key, ((int) $attemptCounts->get($key, 0)) + 1);
+
+                if ($item->status !== 'Pass') {
+                    return null;
+                }
+
+                $latestPassedCourses->put($key, $item);
+
+                return [
+                    'code' => $item->course_code,
+                    'name' => $item->course_name,
+                    'credits' => (float) $item->credit_hours,
+                    'percentage' => (float) $item->percentage,
+                    'grade' => $item->grade,
+                    'grade_point' => (float) $item->grade_point,
+                    'repeated' => $isRepeat,
+                ];
+            })->filter()->values();
+
+            return [
+                'semester' => $result->enrollment->semester,
+                'academic_year' => $result->enrollment->academic_year,
+                'sgpa' => $result->sgpa,
+                'cgpa' => $result->cgpa,
+                'published_at' => $result->published_at,
+                'courses' => $courses,
+            ];
+        });
+
+        $latestResult = $results->last();
+        $transcript = [
+            'semesters' => $semesters,
+            'published_semesters' => $results->count(),
+            'shown_courses' => $semesters->sum(fn ($semester) => $semester['courses']->count()),
+            'earned_credits' => $latestPassedCourses->sum(fn ($course) => (float) $course->credit_hours),
+            'cgpa' => $latestResult?->cgpa,
+            'issued_at' => now(),
+        ];
+
+        return view('student-portal.transcript', [
+            'student' => $student,
+            'transcript' => $transcript,
+            'print' => $request->boolean('print'),
+        ]);
+    }
+
     public function assessments(Request $request, StudentWorkspace $workspace)
     {
         $courses = $workspace->courses($request->user())->with('enrollment')->orderByDesc('id')->paginate(20);

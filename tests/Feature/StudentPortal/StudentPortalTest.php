@@ -85,6 +85,27 @@ class StudentPortalTest extends TestCase
         $this->get(route('student.dashboard'))->assertOk()->assertSee('Open result sheet');
     }
 
+    public function test_transcript_shows_only_cleared_published_course_outcomes(): void
+    {
+        $result = $this->createResult();
+        $failedCourse = $this->enrollment->courses->skip(1)->firstOrFail();
+        $result->items()->create(array_merge($failedCourse->only(['course_id', 'course_code', 'course_name', 'credit_hours', 'total_marks']), [
+            'student_enrollment_course_id' => $failedCourse->id,
+            'obtained_marks' => 40,
+            'percentage' => 40,
+            'grade' => 'F',
+            'grade_point' => 0,
+            'status' => 'Fail',
+        ]));
+
+        $this->get(route('student.transcript'))
+            ->assertOk()
+            ->assertSee('Transcript of Record')
+            ->assertSee($result->items()->firstOrFail()->course_name)
+            ->assertDontSee($failedCourse->course_name)
+            ->assertSee('Credits earned');
+    }
+
     public function test_published_history_shows_cumulative_degree_progress_and_a_clear_backlog_label(): void
     {
         $result = $this->createResult();

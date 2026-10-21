@@ -1,6 +1,9 @@
 @extends('student-portal.layout')
 @section('heading', 'My results & academic history')
 @section('description', 'Review your officially published semester outcomes, SGPA, CGPA, and result sheets.')
+@section('header-actions')
+    <a class="btn academic-header-btn" href="{{ route('student.transcript') }}"><i class="bi bi-file-earmark-text" aria-hidden="true"></i> View transcript</a>
+@endsection
 @section('student-content')
     <p class="academic-note portal-note-with-icon"><i class="bi bi-shield-check" aria-hidden="true"></i><span>Only published semester results appear here. Drafts and pending reviews remain private until the university releases them.</span></p>
     @if($degreeProgress['published_semesters'])

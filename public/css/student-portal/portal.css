@@ -907,3 +907,173 @@
 .portal-empty-card i { color: #806ce2; font-size: 1.55rem; }.portal-empty-card strong { color: #505b74; }.portal-empty-card span { font-size: .8rem; }
 .portal-field-error { margin-top: 5px; color: #b44258; font-size: .74rem; font-weight: 650; line-height: 1.4; }
 @media (max-width: 767.98px) { .portal-form-grid { grid-template-columns: 1fr; }.portal-field-wide { grid-column: auto; }.portal-form-footer, .portal-leave-card-top, .portal-leave-card-bottom { align-items: flex-start; flex-direction: column; }.portal-form-footer .portal-btn { width: 100%; } }
+
+/* Student transcript */
+.transcript-note { margin-bottom: 18px; }
+.transcript-document { overflow: hidden; border: 1px solid #e5e1f3; border-radius: 16px; background: #fff; box-shadow: 0 10px 28px rgb(48 39 102 / 6%); }
+.transcript-document-header { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 24px 26px; overflow: hidden; background: linear-gradient(135deg, #5d50d5, #8461ea); color: #fff; }
+.transcript-document-header::after { position: absolute; width: 160px; height: 160px; right: -48px; bottom: -96px; border: 22px solid rgb(255 255 255 / 10%); border-radius: 50%; content: ''; }
+.transcript-document-header > * { position: relative; z-index: 1; }
+.transcript-eyebrow { display: inline-flex; align-items: center; gap: 6px; color: rgb(255 255 255 / 76%); font-size: .66rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.transcript-document-header h2 { margin: 6px 0 4px; color: #fff; font-size: 1.42rem; font-weight: 800; letter-spacing: -.35px; }
+.transcript-document-header p { margin: 0; color: rgb(255 255 255 / 84%); font-size: .79rem; }
+.transcript-document-reference { display: grid; min-width: 108px; gap: 2px; padding: 9px 11px; border: 1px solid rgb(255 255 255 / 25%); border-radius: 10px; background: rgb(255 255 255 / 11%); text-align: right; }
+.transcript-document-reference span { color: rgb(255 255 255 / 72%); font-size: .61rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.transcript-document-reference strong { color: #fff; font-size: .8rem; }
+.transcript-document-reference small { color: rgb(255 255 255 / 78%); font-size: .63rem; }
+.transcript-student-profile { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; padding: 22px 26px; border-bottom: 1px solid #ebe8f5; }
+.transcript-student-name { display: grid; gap: 3px; min-width: 185px; }
+.transcript-student-name span, .transcript-student-profile dt, .transcript-summary span, .transcript-semester-label, .transcript-semester dt { color: #8791a5; font-size: .62rem; font-weight: 800; letter-spacing: .055em; text-transform: uppercase; }
+.transcript-student-name strong { color: #303a54; font-size: 1.05rem; font-weight: 800; }
+.transcript-student-profile dl { display: grid; grid-template-columns: repeat(4, minmax(110px, 1fr)); flex: 1; gap: 16px; margin: 0; }
+.transcript-student-profile dt { margin-bottom: 4px; }
+.transcript-student-profile dd { margin: 0; color: #4c5872; font-size: .77rem; font-weight: 700; }
+.transcript-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 20px 26px 0; border: 1px solid #e8e4f5; border-radius: 11px; background: #fbfaff; }
+.transcript-summary > div { min-width: 0; padding: 13px 15px; border-right: 1px solid #e8e4f5; }
+.transcript-summary > div:last-child { border-right: 0; }
+.transcript-summary span { display: block; margin-bottom: 4px; }
+.transcript-summary strong { color: #37425e; font-size: 1rem; font-weight: 800; }
+.transcript-records { padding: 26px; }
+.transcript-records-heading { margin-bottom: 16px; }
+.transcript-semester { overflow: hidden; margin-top: 16px; border: 1px solid #e9e6f4; border-radius: 11px; background: #fff; }
+.transcript-semester > header { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 13px 15px; background: #faf9fe; border-bottom: 1px solid #ece9f6; }
+.transcript-semester h3 { margin: 3px 0 0; color: #3a4561; font-size: .96rem; font-weight: 800; }
+.transcript-semester p { margin: 2px 0 0; color: #7d889f; font-size: .72rem; }
+.transcript-semester dl { display: flex; gap: 20px; margin: 0; }
+.transcript-semester dt { margin-bottom: 3px; }
+.transcript-semester dd { margin: 0; color: #46516b; font-size: .79rem; font-weight: 800; text-align: right; }
+.transcript-table-wrap { border: 0; border-radius: 0; box-shadow: none; }
+.transcript-table { min-width: 650px; }
+.transcript-table td:nth-child(n+2), .transcript-table th:nth-child(n+2) { text-align: center; }
+.transcript-repeat { display: inline-flex; align-items: center; gap: 3px; margin-left: 6px; padding: 2px 5px; border-radius: 5px; color: #7961cf; background: #f0edff; font-size: .61rem; font-weight: 800; }
+.transcript-empty-semester { display: flex; align-items: center; gap: 7px; margin: 0; padding: 16px; color: #717c92; font-size: .77rem; }
+.transcript-empty-semester i { color: #7968dc; }
+.transcript-empty-state { margin-top: 0; }
+.transcript-document-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 26px; border-top: 1px solid #e9e6f3; color: #7c8698; background: #fbfaff; font-size: .68rem; }
+.transcript-document-footer i { margin-right: 4px; color: #6c5bd4; }
+.transcript-print-hint { margin: 14px 0 0; color: #69758c; font-size: .75rem; text-align: center; }
+.transcript-print-hint i { margin-right: 4px; color: #735fd4; }
+
+@media (max-width: 767.98px) {
+    .transcript-document-header, .transcript-student-profile, .transcript-semester > header, .transcript-document-footer { align-items: flex-start; flex-direction: column; }
+    .transcript-document-reference { text-align: left; }
+    .transcript-student-profile dl, .transcript-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+    .transcript-summary > div:nth-child(2) { border-right: 0; }
+    .transcript-summary > div:nth-child(-n+2) { border-bottom: 1px solid #e8e4f5; }
+    .transcript-semester dl { width: 100%; justify-content: space-between; }
+}
+
+@media print {
+    body { background: #fff !important; }
+    .navbar, #appSidebar, #sidebarBackdrop, .student-portal-header, .student-portal-tabs, .no-print, .portal-alert { display: none !important; }
+    .main-content, .content-container, .student-portal-page, .student-portal-shell, .student-portal-body { width: 100% !important; max-width: none !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; background: #fff !important; border: 0 !important; box-shadow: none !important; }
+    .transcript-document { border: 0; border-radius: 0; box-shadow: none; }
+    .transcript-document-header { padding: 18px 20px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .transcript-student-profile, .transcript-records { padding-right: 0; padding-left: 0; }
+    .transcript-summary { margin-right: 0; margin-left: 0; }
+    .transcript-semester { break-inside: avoid; page-break-inside: avoid; }
+    .transcript-table { min-width: 0; }
+}
+
+/* Consolidated official transcript sheet */
+.official-transcript { overflow: hidden; color: #263451; border: 1px solid #d9d6e5; border-radius: 12px; background: #fff; box-shadow: 0 12px 30px rgb(43 35 90 / 7%); }
+.official-transcript-header { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(260px, 1.4fr) minmax(150px, .8fr); align-items: center; gap: 18px; padding: 20px 24px 17px; border-bottom: 3px solid #6d58d8; background: linear-gradient(135deg, #fff 0%, #faf9ff 100%); }
+.official-transcript-brand { display: flex; align-items: center; gap: 10px; color: #413580; }
+.official-transcript-mark { display: inline-grid; place-items: center; flex: 0 0 auto; width: 42px; height: 42px; border-radius: 8px; color: #fff; background: #6552d2; font-size: 1.25rem; }
+.official-transcript-brand strong, .official-transcript-brand span { display: block; }
+.official-transcript-brand strong { font-size: .93rem; font-weight: 850; }
+.official-transcript-brand span { margin-top: 2px; color: #7b7890; font-size: .62rem; font-weight: 700; letter-spacing: .025em; }
+.official-transcript-title { text-align: center; }
+.official-transcript-title > span, .official-transcript-section-title > div > span { display: block; color: #7562d4; font-size: .6rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.official-transcript-title h2 { margin: 4px 0; color: #2f3952; font-size: 1.28rem; font-weight: 850; letter-spacing: .015em; text-transform: uppercase; }
+.official-transcript-title p { margin: 0; color: #606d85; font-size: .72rem; font-weight: 650; }
+.official-transcript-reference { display: grid; justify-items: end; gap: 3px; color: #68758b; text-align: right; }
+.official-transcript-reference span { color: #8791a2; font-size: .58rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.official-transcript-reference strong { color: #3d4761; font-size: .78rem; }
+.official-transcript-reference small { font-size: .62rem; }
+.official-transcript-profile { display: grid; grid-template-columns: 1.1fr 1fr 1fr 1.4fr; gap: 14px; padding: 15px 24px; border-bottom: 1px solid #dedbe8; background: #fff; }
+.official-transcript-profile div, .official-transcript-totals div { min-width: 0; }
+.official-transcript-profile span, .official-transcript-totals span { display: block; margin-bottom: 4px; color: #808a9d; font-size: .57rem; font-weight: 850; letter-spacing: .065em; text-transform: uppercase; }
+.official-transcript-profile strong { display: block; overflow: hidden; color: #35405a; font-size: .76rem; font-weight: 780; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.official-transcript-records { padding: 16px 24px 0; }
+.official-transcript-section-title { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
+.official-transcript-section-title h3 { margin: 2px 0 0; color: #35405a; font-size: .91rem; font-weight: 850; }
+.official-transcript-section-title > small { color: #7f899b; font-size: .65rem; text-align: right; }
+.official-transcript-table-wrap { overflow: hidden; border: 1px solid #cbc7d9; border-radius: 5px; }
+.official-transcript-table { width: 100%; min-width: 750px; margin: 0; border-collapse: collapse; color: #303b54; font-size: .69rem; }
+.official-transcript-table > :not(caption) > * > * { padding: 6px 8px; border-right: 1px solid #d4d1dc; border-bottom: 1px solid #d4d1dc; background: #fff; }
+.official-transcript-table > :not(caption) > * > *:last-child { border-right: 0; }
+.official-transcript-table thead th { color: #3c3862; background: #eeecfb !important; font-size: .6rem; font-weight: 850; letter-spacing: .035em; line-height: 1.2; text-align: center; text-transform: uppercase; white-space: nowrap; }
+.official-transcript-table tbody td:not(.official-course-title):not(.official-semester-cell) { text-align: center; white-space: nowrap; }
+.official-transcript-table tbody tr:last-child > * { border-bottom: 0; }
+.official-semester-cell { width: 118px; background: #faf9ff !important; vertical-align: middle; }
+.official-semester-cell strong, .official-semester-cell span, .official-semester-cell small { display: block; }
+.official-semester-cell strong { color: #3b4661; font-size: .69rem; font-weight: 850; }
+.official-semester-cell span { margin: 2px 0 5px; color: #787f96; font-size: .61rem; }
+.official-semester-cell small { color: #6056ad; font-size: .58rem; font-weight: 750; line-height: 1.45; }
+.official-course-code { width: 78px; color: #5b50a8; font-weight: 800; }
+.official-course-title { min-width: 260px; color: #35405a; font-weight: 700; }
+.official-empty-semester-row td:last-child { color: #7d8798; font-style: italic; text-align: left !important; }
+.official-cleared, .official-repeat { display: inline-flex; align-items: center; gap: 3px; padding: 2px 5px; border-radius: 4px; font-size: .59rem; font-weight: 800; }
+.official-cleared { color: #187b59; background: #e8f8f0; }
+.official-repeat { color: #7059c6; background: #f0edff; }
+.official-transcript-footer { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-top: 16px; padding: 14px 24px 17px; border-top: 1px solid #dedbe8; background: #fbfaff; }
+.official-transcript-totals { display: grid; grid-template-columns: repeat(4, minmax(85px, 1fr)); gap: 19px; }
+.official-transcript-totals strong { color: #343e58; font-size: .91rem; font-weight: 850; }
+.official-transcript-certification { display: grid; justify-items: end; gap: 11px; min-width: 190px; color: #748096; font-size: .63rem; text-align: right; }
+.official-transcript-certification span i { color: #6654ce; }
+.official-transcript-certification strong { min-width: 155px; padding-top: 8px; border-top: 1px solid #9692a7; color: #4d566e; font-size: .65rem; font-weight: 800; text-align: center; }
+.official-transcript-empty { margin: 0; }
+
+@media (max-width: 767.98px) {
+    .official-transcript-header { grid-template-columns: 1fr; text-align: left; }
+    .official-transcript-title, .official-transcript-reference { justify-items: start; text-align: left; }
+    .official-transcript-profile { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .official-transcript-footer { align-items: flex-start; flex-direction: column; }
+    .official-transcript-certification { justify-items: start; text-align: left; }
+    .official-transcript-certification strong { text-align: left; }
+}
+
+@media print {
+    @page { size: A4 portrait; margin: 8mm; }
+    html, body { width: 194mm; min-height: auto; }
+    .official-transcript { display: block; min-height: 0; border: 1px solid #aaa !important; border-radius: 0; box-shadow: none; }
+    .official-transcript-header { grid-template-columns: .85fr 1.3fr .85fr; gap: 8px; padding: 11px 12px 9px; border-bottom-width: 2px; }
+    .official-transcript-mark { width: 29px; height: 29px; font-size: .84rem; }
+    .official-transcript-brand strong { font-size: .63rem; }
+    .official-transcript-title h2 { font-size: .84rem; }
+    .official-transcript-title > span, .official-transcript-title p, .official-transcript-reference, .official-transcript-brand span { font-size: .46rem; }
+    .official-transcript-profile { gap: 7px; padding: 7px 12px; }
+    .official-transcript-profile span, .official-transcript-totals span { font-size: .43rem; }
+    .official-transcript-profile strong { font-size: .55rem; }
+    .official-transcript-records { padding: 8px 12px 0; }
+    .official-transcript-section-title { margin-bottom: 6px; }
+    .official-transcript-section-title h3 { font-size: .71rem; }
+    .official-transcript-table { width: 100%; min-width: 0 !important; table-layout: fixed; font-size: .5rem; }
+    .official-transcript-table > :not(caption) > * > * { padding: 3px 3px; }
+    .official-transcript-table thead th { font-size: .43rem; }
+    .official-transcript-table th:nth-child(1) { width: 13%; }
+    .official-transcript-table th:nth-child(2) { width: 9%; }
+    .official-transcript-table th:nth-child(3) { width: 35%; }
+    .official-transcript-table th:nth-child(4) { width: 8%; }
+    .official-transcript-table th:nth-child(5) { width: 9%; }
+    .official-transcript-table th:nth-child(6), .official-transcript-table th:nth-child(7) { width: 7%; }
+    .official-transcript-table th:nth-child(8) { width: 12%; }
+    .official-semester-cell, .official-course-code, .official-course-title { width: auto; min-width: 0 !important; }
+    .official-semester-cell strong { font-size: .5rem; }
+    .official-semester-cell span, .official-semester-cell small, .official-cleared, .official-repeat { font-size: .4rem; }
+    .official-course-title { overflow-wrap: anywhere; }
+    .official-transcript-footer { break-inside: avoid; page-break-inside: avoid; margin-top: 7px; padding: 7px 12px 9px; }
+    .official-transcript-totals { gap: 9px; }
+    .official-transcript-totals strong { font-size: .58rem; }
+    .official-transcript-certification { gap: 5px; min-width: 110px; font-size: .43rem; }
+    .official-transcript-certification strong { min-width: 105px; padding-top: 4px; font-size: .44rem; }
+    .official-transcript-table tr { break-inside: avoid; page-break-inside: avoid; }
+    .official-transcript.is-dense .official-transcript-header { padding: 8px 10px 7px; }
+    .official-transcript.is-dense .official-transcript-profile { padding: 5px 10px; }
+    .official-transcript.is-dense .official-transcript-records { padding: 5px 10px 0; }
+    .official-transcript.is-dense .official-transcript-table { font-size: .43rem; }
+    .official-transcript.is-dense .official-transcript-table > :not(caption) > * > * { padding: 2px 2px; }
+    .official-transcript.is-dense .official-transcript-table thead th { font-size: .38rem; }
+    .official-transcript.is-dense .official-transcript-footer { margin-top: 5px; padding: 5px 10px 7px; }
+}

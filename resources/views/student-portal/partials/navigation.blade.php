@@ -18,6 +18,7 @@
 @endcan
 @can('student.result.view-own')
     <a href="{{ route('student.results.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.results.*')])><i class="bi bi-award portal-nav-icon" aria-hidden="true"></i><span>Results &amp; History</span></a>
+    <a href="{{ route('student.transcript') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.transcript')])><i class="bi bi-file-earmark-text portal-nav-icon" aria-hidden="true"></i><span>My Transcript</span></a>
 @endcan
 @can('notifications.view-own')
     <a href="{{ route('student.notifications.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.notifications.*')])><i class="bi bi-bell portal-nav-icon" aria-hidden="true"></i><span>Notifications</span></a>
