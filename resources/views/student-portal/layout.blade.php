@@ -16,7 +16,6 @@
             <div class="student-portal-header-actions">@yield('header-actions')</div>
             <i class="bi bi-mortarboard student-portal-header-mark" aria-hidden="true"></i>
         </header>
-        <nav class="academic-tabs student-portal-tabs" aria-label="Student portal">@include('student-portal.partials.navigation')</nav>
         <div class="academic-body student-portal-body">
             @if(session('success'))
                 <div class="alert alert-success portal-alert" role="status"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span>{{ session('success') }}</span></div>
