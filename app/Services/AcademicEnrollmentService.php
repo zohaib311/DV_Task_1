@@ -136,6 +136,7 @@ class AcademicEnrollmentService
             ])->all());
             $promotion?->update(['status' => 'promoted', 'completed_at' => today()]);
             $student->update(['semester' => $curriculum->semester, 'course_ids' => $offerings->pluck('course_id')->all()]);
+            app(\App\Services\Fee\FeeInvoiceService::class)->generate($enrollment);
             if ($student->user) {
                 $student->user->notify(new AcademicUpdateNotification(
                     'Semester enrollment updated',
@@ -323,6 +324,7 @@ class AcademicEnrollmentService
                     : ($failed->contains($offering->course_id) ? 'repeat' : 'elective'),
             ])->all());
             $student->update(['course_ids' => $enrollment->courses()->pluck('course_id')->all()]);
+            app(\App\Services\Fee\FeeInvoiceService::class)->generate($enrollment);
             $notifications = app(AcademicNotificationService::class);
             $codes = $selected->pluck('course_code')->implode(', ');
             $notifications->user($student->user, 'Course registration updated', "Registered courses: {$codes}.",

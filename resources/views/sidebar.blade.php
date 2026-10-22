@@ -30,7 +30,7 @@
         @include('layouts.partials.sidebar-teaching')
         @if (auth()->user()->studentProfile)
             @canany(['student.profile.view-own', 'student.courses.view-own', 'student.attendance.view-own',
-                'student.assessments.view-own', 'student.result.view-own', 'notifications.view-own'])
+                'student.assessments.view-own', 'student.result.view-own', 'student.fees.view-own', 'notifications.view-own'])
                 <li class="nav-item">
                     <details class="sidebar-group" @if (request()->is('student-portal*')) open @endif>
                         <summary class="sidebar-link"><i class="bi bi-mortarboard me-2" aria-hidden="true"></i> Student
@@ -60,6 +60,10 @@
                 </a>
             </li>
         @endcan
+
+        @canany(['fees.manage', 'fees.review'])
+            <li class="nav-item"><details class="sidebar-group" @if(request()->is('fees*')) open @endif><summary class="sidebar-link"><i class="bi bi-wallet2 me-2 fs-5"></i><span>Fees</span><i class="bi bi-chevron-down sidebar-group-arrow"></i></summary><div class="sidebar-submenu">@can('fees.manage')<a href="{{ route('fees.structures.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('fees.structures.*')])>Fee Structures</a>@endcan @can('fees.review')<a href="{{ route('fees.payments.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('fees.payments.*')])>Payment Review</a>@endcan</div></details></li>
+        @endcanany
 
         @can('teachers.manage')
             <li class="nav-item">

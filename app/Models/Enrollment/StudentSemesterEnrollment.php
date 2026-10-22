@@ -71,4 +71,9 @@ class StudentSemesterEnrollment extends Model
     {
         return $this->hasOne(SemesterResult::class);
     }
+
+    public function feeInvoice(): HasOne
+    {
+        return $this->hasOne(\App\Models\Fee\StudentFeeInvoice::class, 'student_semester_enrollment_id');
+    }
 }

@@ -26,6 +26,7 @@ require __DIR__.'/result-moderation.php';
 require __DIR__.'/student-portal.php';
 require __DIR__.'/notifications.php';
 require __DIR__.'/reports.php';
+require __DIR__.'/fees.php';
 
 Route::get('/', function () {
     if (Auth::check()) {

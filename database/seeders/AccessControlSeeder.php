@@ -22,6 +22,7 @@ class AccessControlSeeder extends Seeder
             'enrollments.view', 'enrollments.create', 'enrollments.promote', 'enrollments.manage-courses',
             'results.view-all', 'results.create', 'results.edit', 'results.approve', 'results.publish',
             'academic-history.view', 'audit.view', 'reports.view',
+            'fees.manage', 'fees.review',
             'notifications.view-own',
         ],
         'HOD / Program Coordinator' => [
@@ -38,6 +39,7 @@ class AccessControlSeeder extends Seeder
             'dashboard.view', 'student.profile.view-own', 'student.attendance.view-own',
             'student.result.view-own', 'student.courses.view-own', 'student.assessments.view-own', 'notifications.view-own',
             'student.registration.manage-own', 'student.assessments.submit-own', 'student.leaves.manage-own',
+            'student.fees.view-own', 'student.fees.submit-own',
         ],
     ];
 
@@ -54,6 +56,7 @@ class AccessControlSeeder extends Seeder
         'student.profile.view-own', 'student.attendance.view-own', 'student.result.view-own',
         'student.courses.view-own', 'student.assessments.view-own', 'notifications.view-own', 'reports.view',
         'student.registration.manage-own', 'student.assessments.submit-own', 'student.leaves.manage-own', 'leaves.review-assigned',
+        'student.fees.view-own', 'student.fees.submit-own', 'fees.manage', 'fees.review',
         'academic-history.view', 'audit.view', 'assessments.review',
     ];
 
@@ -72,6 +75,11 @@ class AccessControlSeeder extends Seeder
                 $role->syncPermissions($permissions);
             }
         }
+
+        // Fee access is a new baseline capability. Grant only these new
+        // permissions on reruns so existing custom role assignments remain intact.
+        Role::findByName('Academic Admin', 'web')->givePermissionTo(['fees.manage', 'fees.review']);
+        Role::findByName('Student', 'web')->givePermissionTo(['student.fees.view-own', 'student.fees.submit-own']);
 
         $this->linkExistingProfiles();
 

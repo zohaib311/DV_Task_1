@@ -20,6 +20,9 @@
     <a href="{{ route('student.results.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.results.*')])><span class="student-nav-icon is-results"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span><span>Results &amp; History</span></a>
     <a href="{{ route('student.transcript') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.transcript')])><span class="student-nav-icon is-transcript"><i class="bi bi-file-earmark-medical" aria-hidden="true"></i></span><span>My Transcript</span></a>
 @endcan
+@can('student.fees.view-own')
+    <a href="{{ route('student.fees.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.fees.*')])><span class="student-nav-icon is-fees"><i class="bi bi-wallet2" aria-hidden="true"></i></span><span>Fees &amp; Payments</span></a>
+@endcan
 @can('notifications.view-own')
     <a href="{{ route('student.notifications.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.notifications.*')])><span class="student-nav-icon is-notifications"><i class="bi bi-bell" aria-hidden="true"></i></span><span>Notifications</span></a>
 @endcan
