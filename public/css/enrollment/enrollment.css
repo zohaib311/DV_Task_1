@@ -50,8 +50,18 @@
 .academic-enrollment-note span { margin-top: 2px; color: #5b61a8; }
 .academic-enrollment-note a { width: max-content; margin-top: 6px; color: #5d51cb; font-weight: 700; text-decoration: none; }
 .academic-enrollment-note a:hover { text-decoration: underline; }
+.enrollment-form-actions { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 24px; padding-top: 18px; border-top: 1px solid #e7eaf0; }
+.enrollment-back-btn, .enrollment-submit-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 0 16px; border-radius: 9px; font-size: 13px; font-weight: 750; text-decoration: none; transition: transform .18s ease, box-shadow .18s ease, color .18s ease, background-color .18s ease; }
+.enrollment-back-btn { color: #596579; border: 1px solid #dce1e9; background: #fff; }
+.enrollment-back-btn:hover { color: #4c3ac2; border-color: #beb5f0; background: #f8f7ff; transform: translateY(-1px); }
+.enrollment-submit-btn { border: 1px solid #6555d6; color: #fff; background: linear-gradient(135deg, #6555d6, #805ee9); box-shadow: 0 6px 14px rgb(101 85 214 / 22%); }
+.enrollment-submit-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 9px 19px rgb(101 85 214 / 29%); }
+.enrollment-submit-btn:disabled { cursor: not-allowed; border-color: #d8d6e3; color: #9290a2; background: #edecf2; box-shadow: none; }
+.enrollment-submit-btn i { font-size: 15px; }
 
 @media (max-width: 640px) {
     .enrollment-course-grid { grid-template-columns: 1fr; }
     .enrollment-form-header { align-items: flex-start; }
+    .enrollment-form-actions { align-items: stretch; flex-direction: column-reverse; }
+    .enrollment-back-btn, .enrollment-submit-btn { width: 100%; }
 }

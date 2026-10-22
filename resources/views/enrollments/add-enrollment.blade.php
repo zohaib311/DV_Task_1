@@ -70,7 +70,10 @@
                     <div class="table-responsive"><table class="table academic-table align-middle"><thead><tr><th>Include</th><th>Course / Teacher</th><th>Type</th><th>Credits</th><th>Assessment</th></tr></thead><tbody id="enrollmentOfferingRows"></tbody></table></div>
                     <p class="text-muted small mb-0">Assessment: Attendance / Midterm / Final. Approved credit hours and marking schemes are saved with this enrollment.</p>
                 </section>
-                <div class="form__actions mt-4"><a href="{{ route('allEnrollments') }}" class="cancel__btn">Back</a><button type="submit" class="update__btn" id="saveEnrollment" disabled>{{ $isPromotion ? 'Promote Student' : 'Create Enrollment' }}</button></div>
+                <div class="enrollment-form-actions">
+                    <a href="{{ route('allEnrollments') }}" class="enrollment-back-btn"><i class="bi bi-arrow-left" aria-hidden="true"></i><span>Back to enrollments</span></a>
+                    <button type="submit" class="enrollment-submit-btn" id="saveEnrollment" disabled><i class="bi {{ $isPromotion ? 'bi-arrow-up-right-circle' : 'bi-journal-check' }}" aria-hidden="true"></i><span>{{ $isPromotion ? 'Promote Student' : 'Create Enrollment' }}</span></button>
+                </div>
             </form>
         </div>
     </div>
