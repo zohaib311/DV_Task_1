@@ -11,14 +11,20 @@
     <div class="container py-5">
         <div class="table__content">
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Students List</h4>
-                    @if (session('success'))
-                        <div class="alert alert-success mt-2 mb-0" id="success-message">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-
+                <div class="card-header bg-primary text-white student-list-header">
+                    <div class="student-list-heading">
+                        <h4 class="mb-0">Students List</h4>
+                        <span id="student-search-count" class="student-search-count" aria-live="polite">{{ $students->count() }} students</span>
+                    </div>
+                    <div class="student-search-field student-header-search">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        <input id="student-live-search" type="search" autocomplete="off"
+                            placeholder="Search by registration no., name, email or phone"
+                            aria-label="Search students by registration number, name, email or phone">
+                        <button id="student-search-clear" type="button" aria-label="Clear student search" hidden>
+                            <i class="bi bi-x-lg" aria-hidden="true"></i>
+                        </button>
+                    </div>
                     <div class="add__user__btn">
                         <button type="button" class="btn text-white d-inline-flex align-items-center gap-2 border-0 px-3 py-2 rounded-3 shadow-sm" style="background: rgba(255, 255, 255, 0.2);" data-bs-toggle="offcanvas" data-bs-target="#addStudentDrawer" aria-controls="addStudentDrawer">
                             <i class="bi bi-person-plus-fill"></i>
@@ -28,8 +34,13 @@
                 </div>
 
                 <div class="card-body">
+                    @if (session('success'))
+                        <div class="alert alert-success m-3 mb-0" id="success-message">
+                            {{ session('success') }}
+                        </div>
+                    @endif
                     @if (session('error'))
-                        <div class="alert alert-danger" role="alert">{{ session('error') }}</div>
+                        <div class="alert alert-danger m-3 mb-0" role="alert">{{ session('error') }}</div>
                     @endif
                     <div class="table-responsive">
                         <table class="table table-hover table-bordered align-middle mb-0">
@@ -45,9 +56,10 @@
                                     <th scope="col">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="students-table-body">
                                 @forelse ($students as $student)
-                                    <tr>
+                                    <tr class="student-search-row"
+                                        data-search="{{ strtolower(implode(' ', [$student->registration_no ?? '', $student->name, $student->email, $student->phone])) }}">
                                         <th scope="row">{{ $student->id }}</th>
                                         <td>
                                             <span class="badge bg-secondary text-wrap reg-no-badge">
@@ -95,10 +107,15 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr>
+                                    <tr id="students-empty-state">
                                         <td colspan="9" class="text-center py-4">No students found.</td>
                                     </tr>
                                 @endforelse
+                                <tr id="students-no-search-results" hidden>
+                                    <td colspan="9" class="text-center py-4 text-muted">
+                                        <i class="bi bi-search me-1"></i> No student matches your search.
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -349,6 +366,41 @@
     <script src="{{ asset('js/student/department-section-filter.js') }}"></script>
     <script src="{{ asset('js/student/alert-dismiss.js') }}"></script>
     <script src="{{ asset('js/student/student-account-flow.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const search = document.getElementById('student-live-search');
+            const clear = document.getElementById('student-search-clear');
+            const count = document.getElementById('student-search-count');
+            const rows = Array.from(document.querySelectorAll('.student-search-row'));
+            const emptyState = document.getElementById('students-empty-state');
+            const noResults = document.getElementById('students-no-search-results');
+
+            if (!search || !count || !noResults) return;
+
+            const filterStudents = function () {
+                const query = search.value.trim().toLowerCase();
+                let matches = 0;
+
+                rows.forEach(function (row) {
+                    const matchesSearch = !query || (row.dataset.search || '').includes(query);
+                    row.hidden = !matchesSearch;
+                    if (matchesSearch) matches++;
+                });
+
+                noResults.hidden = rows.length === 0 || matches > 0;
+                if (emptyState) emptyState.hidden = Boolean(query);
+                if (clear) clear.hidden = !query;
+                count.textContent = query ? `${matches} of ${rows.length} students` : `${rows.length} students`;
+            };
+
+            search.addEventListener('input', filterStudents);
+            clear?.addEventListener('click', function () {
+                search.value = '';
+                filterStudents();
+                search.focus();
+            });
+        });
+    </script>
     @if ($errors->any())
         <script>
             document.addEventListener('DOMContentLoaded', function () {
