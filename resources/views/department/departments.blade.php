@@ -10,25 +10,23 @@
         <div class="table__content">
             <div class="card shadow-sm border-0">
 
-                <div class="card-header flex-auto bg-primary text-white">
-                    <h4 class="mb-0">Departments List</h4>
+                <div class="card-header flex-auto bg-primary text-white student-list-header">
+                    <div class="student-list-heading">
+                        <h4 class="mb-0">Departments List</h4>
+                        <span data-live-list-count class="student-search-count" aria-live="polite">{{ $departments->count() }} departments</span>
+                    </div>
 
-                    @if (session('success'))
-                        <div class="alert alert-success mt-2 mb-0" id="success-message">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-
-                    <script>
-                        setTimeout(function() {
-                            const message = document.getElementById('success-message');
-                            if (message) {
-                                message.style.transition = 'opacity 0.5s ease';
-                                message.style.opacity = '0';
-                                setTimeout(() => message.remove(), 500);
-                            }
-                        }, 2000);
-                    </script>
+                    <div class="student-search-field student-header-search" data-live-list-search
+                        data-rows=".department-search-row" data-empty="#departments-empty-state"
+                        data-no-results="#departments-no-search-results" data-label="departments">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        <input data-live-list-input type="search" autocomplete="off"
+                            placeholder="Search by department name"
+                            aria-label="Search departments by name">
+                        <button data-live-list-clear type="button" aria-label="Clear department search" hidden>
+                            <i class="bi bi-x-lg" aria-hidden="true"></i>
+                        </button>
+                    </div>
 
                     <div class="add__user__btn">
                         <a href="{{ route('addDepartmentForm') }}" class="nav-link">
@@ -38,6 +36,11 @@
                 </div>
 
                 <div class="card-body">
+                    @if (session('success'))
+                        <div class="alert alert-success m-3 mb-0" data-auto-dismiss>
+                            {{ session('success') }}
+                        </div>
+                    @endif
                     <div class="table-responsive">
                         <table class="table table-hover table-bordered align-middle mb-0">
                             <thead class="table-light">
@@ -49,7 +52,7 @@
                             </thead>
                             <tbody>
                                 @forelse ($departments as $department)
-                                    <tr>
+                                    <tr class="department-search-row" data-search="{{ strtolower($department->name) }}">
                                         <th>{{ $department->id }}</th>
                                         <td class="fw-semibold">{{ $department->name }}</td>
                                         <td>
@@ -68,12 +71,17 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr>
+                                    <tr id="departments-empty-state">
                                         <td colspan="3" class="text-center py-4">
                                             No departments found.
                                         </td>
                                     </tr>
                                 @endforelse
+                                <tr id="departments-no-search-results" hidden>
+                                    <td colspan="3" class="text-center py-4 text-muted">
+                                        <i class="bi bi-search me-1"></i> No department matches your search.
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -121,4 +129,8 @@
             </div>
         </div>
     @endforeach
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('js/universal/live-list-search.js') }}"></script>
 @endsection

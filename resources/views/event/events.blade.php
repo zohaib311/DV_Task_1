@@ -12,28 +12,24 @@
 
             <div class="card shadow-sm border-0">
 
-                <div class="card-header flex-auto bg-primary text-white">
+                <div class="card-header flex-auto bg-primary text-white student-list-header">
 
-                    <h4 class="mb-0">Events List</h4>
+                    <div class="student-list-heading">
+                        <h4 class="mb-0">Events List</h4>
+                        <span data-live-list-count class="student-search-count" aria-live="polite">{{ $events->count() }} events</span>
+                    </div>
 
-                    @if (session('success'))
-                        <div class="alert alert-success mt-2 mb-0" id="success-message">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-
-                    <script>
-                        setTimeout(function() {
-                            const message = document.getElementById('success-message');
-
-                            if (message) {
-                                message.style.transition = 'opacity 0.5s ease';
-                                message.style.opacity = '0';
-
-                                setTimeout(() => message.remove(), 500);
-                            }
-                        }, 2000);
-                    </script>
+                    <div class="student-search-field student-header-search" data-live-list-search
+                        data-rows=".event-search-row" data-empty="#events-empty-state"
+                        data-no-results="#events-no-search-results" data-label="events">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        <input data-live-list-input type="search" autocomplete="off"
+                            placeholder="Search by event name, day, date or description"
+                            aria-label="Search events by name, day, date or description">
+                        <button data-live-list-clear type="button" aria-label="Clear event search" hidden>
+                            <i class="bi bi-x-lg" aria-hidden="true"></i>
+                        </button>
+                    </div>
 
                     <div class="add__user__btn">
                         <a href="{{ route('addEventForm') }}" class="nav-link">
@@ -44,6 +40,12 @@
                 </div>
 
                 <div class="card-body">
+
+                    @if (session('success'))
+                        <div class="alert alert-success m-3 mb-0" data-auto-dismiss>
+                            {{ session('success') }}
+                        </div>
+                    @endif
 
                     <div class="table-responsive">
 
@@ -65,7 +67,8 @@
                             <tbody>
 
                                 @forelse ($events as $event)
-                                    <tr>
+                                    <tr class="event-search-row"
+                                        data-search="{{ strtolower(implode(' ', [$event->event_name, $event->day, $event->date, $event->description ?? ''])) }}">
 
                                         <th>
                                             {{ $event->id }}
@@ -118,12 +121,18 @@
 
                                 @empty
 
-                                    <tr>
+                                    <tr id="events-empty-state">
                                         <td colspan="8" class="text-center py-4">
                                             No events found.
                                         </td>
                                     </tr>
                                 @endforelse
+
+                                <tr id="events-no-search-results" hidden>
+                                    <td colspan="8" class="text-center py-4 text-muted">
+                                        <i class="bi bi-search me-1"></i> No event matches your search.
+                                    </td>
+                                </tr>
 
                             </tbody>
 
@@ -177,4 +186,8 @@
             </div>
         </div>
     @endforeach
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('js/universal/live-list-search.js') }}"></script>
 @endsection

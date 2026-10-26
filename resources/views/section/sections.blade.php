@@ -12,28 +12,24 @@
 
             <div class="card shadow-sm border-0">
 
-                <div class="card-header flex-auto bg-primary text-white">
+                <div class="card-header flex-auto bg-primary text-white student-list-header">
 
-                    <h4 class="mb-0">Sections List</h4>
+                    <div class="student-list-heading">
+                        <h4 class="mb-0">Sections List</h4>
+                        <span data-live-list-count class="student-search-count" aria-live="polite">{{ $sections->count() }} sections</span>
+                    </div>
 
-                    @if (session('success'))
-                        <div class="alert alert-success mt-2 mb-0" id="success-message">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-
-                    <script>
-                        setTimeout(function() {
-                            const message = document.getElementById('success-message');
-
-                            if (message) {
-                                message.style.transition = 'opacity 0.5s ease';
-                                message.style.opacity = '0';
-
-                                setTimeout(() => message.remove(), 500);
-                            }
-                        }, 2000);
-                    </script>
+                    <div class="student-search-field student-header-search" data-live-list-search
+                        data-rows=".section-search-row" data-empty="#sections-empty-state"
+                        data-no-results="#sections-no-search-results" data-label="sections">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        <input data-live-list-input type="search" autocomplete="off"
+                            placeholder="Search by section or department"
+                            aria-label="Search sections by section or department name">
+                        <button data-live-list-clear type="button" aria-label="Clear section search" hidden>
+                            <i class="bi bi-x-lg" aria-hidden="true"></i>
+                        </button>
+                    </div>
 
                     <div class="add__user__btn">
                         <a href="{{ route('addSectionForm') }}" class="nav-link">
@@ -44,6 +40,12 @@
                 </div>
 
                 <div class="card-body">
+
+                    @if (session('success'))
+                        <div class="alert alert-success m-3 mb-0" data-auto-dismiss>
+                            {{ session('success') }}
+                        </div>
+                    @endif
 
                     <div class="table-responsive">
 
@@ -61,7 +63,8 @@
                             <tbody>
 
                                 @forelse ($sections as $section)
-                                    <tr>
+                                    <tr class="section-search-row"
+                                        data-search="{{ strtolower(implode(' ', [$section->name, $section->department?->name ?? ''])) }}">
 
                                         <th>
                                             {{ $section->id }}
@@ -103,7 +106,7 @@
 
                                 @empty
 
-                                    <tr>
+                                    <tr id="sections-empty-state">
 
                                         <td colspan="4" class="text-center py-4">
                                             No sections found.
@@ -111,6 +114,12 @@
 
                                     </tr>
                                 @endforelse
+
+                                <tr id="sections-no-search-results" hidden>
+                                    <td colspan="4" class="text-center py-4 text-muted">
+                                        <i class="bi bi-search me-1"></i> No section matches your search.
+                                    </td>
+                                </tr>
 
                             </tbody>
 
@@ -181,4 +190,8 @@
 
         </div>
     @endforeach
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('js/universal/live-list-search.js') }}"></script>
 @endsection
