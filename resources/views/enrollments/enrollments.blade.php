@@ -9,10 +9,22 @@
     <div class="container py-5">
         <div class="table__content">
             <div class="card shadow-sm border-0">
-                <div class="card-header">
-                    <div>
-                        <h4 class="mb-1">Semester Enrollments</h4>
-                        <small class="text-white-50">Academic history and assigned-course snapshots</small>
+                <div class="card-header student-list-header">
+                    <div class="student-list-heading">
+                        <div>
+                            <h4 class="mb-1">Semester Enrollments</h4>
+                            <small class="text-white-50">Academic history and assigned-course snapshots</small>
+                        </div>
+                        <span id="enrollment-search-count" class="student-search-count" aria-live="polite">{{ $enrollments->count() }} enrollments</span>
+                    </div>
+                    <div class="student-search-field student-header-search">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        <input id="enrollment-live-search" type="search" autocomplete="off"
+                            placeholder="Search by reg. no., student, email, term or semester"
+                            aria-label="Search enrollments by registration number, student, email, term or semester">
+                        <button id="enrollment-search-clear" type="button" aria-label="Clear enrollment search" hidden>
+                            <i class="bi bi-x-lg" aria-hidden="true"></i>
+                        </button>
                     </div>
                     <div class="add__user__btn">
                         @can('enrollments.create')
@@ -47,9 +59,20 @@
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="enrollments-table-body">
                                 @forelse ($enrollments as $enrollment)
-                                    <tr>
+                                    <tr class="enrollment-search-row"
+                                        data-search="{{ strtolower(implode(' ', [
+                                            $enrollment->student->registration_no ?? '',
+                                            $enrollment->student->name ?? '',
+                                            $enrollment->student->email ?? '',
+                                            $enrollment->academic_year ?? '',
+                                            $enrollment->term?->name ?? '',
+                                            $enrollment->semester ?? '',
+                                            $enrollment->department?->name ?? '',
+                                            $enrollment->section?->name ?? '',
+                                            $enrollment->status ?? '',
+                                        ])) }}">
                                         <td><span class="enrollment-registration">{{ $enrollment->student->registration_no ?? 'N/A' }}</span></td>
                                         <td>
                                             <div class="fw-semibold">{{ $enrollment->student->name }}</div>
@@ -92,13 +115,19 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr>
+                                    <tr id="enrollments-empty-state">
                                         <td colspan="10" class="text-center py-5 text-muted">
                                             <i class="bi bi-journal-x d-block fs-3 mb-2"></i>
                                             No semester enrollments created yet.
                                         </td>
                                     </tr>
                                 @endforelse
+                                <tr id="enrollments-no-search-results" hidden>
+                                    <td colspan="10" class="text-center py-5 text-muted">
+                                        <i class="bi bi-search d-block fs-4 mb-2"></i>
+                                        No enrollment matches your search.
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -110,6 +139,40 @@
 
 @section('scripts')
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const search = document.getElementById('enrollment-live-search');
+            const clear = document.getElementById('enrollment-search-clear');
+            const count = document.getElementById('enrollment-search-count');
+            const rows = Array.from(document.querySelectorAll('.enrollment-search-row'));
+            const emptyState = document.getElementById('enrollments-empty-state');
+            const noResults = document.getElementById('enrollments-no-search-results');
+
+            if (!search || !count || !noResults) return;
+
+            const filterEnrollments = function () {
+                const query = search.value.trim().toLowerCase();
+                let matches = 0;
+
+                rows.forEach(function (row) {
+                    const matchesSearch = !query || (row.dataset.search || '').includes(query);
+                    row.hidden = !matchesSearch;
+                    if (matchesSearch) matches++;
+                });
+
+                noResults.hidden = rows.length === 0 || matches > 0;
+                if (emptyState) emptyState.hidden = Boolean(query);
+                if (clear) clear.hidden = !query;
+                count.textContent = query ? `${matches} of ${rows.length} enrollments` : `${rows.length} enrollments`;
+            };
+
+            search.addEventListener('input', filterEnrollments);
+            clear?.addEventListener('click', function () {
+                search.value = '';
+                filterEnrollments();
+                search.focus();
+            });
+        });
+
         setTimeout(function() {
             const message = document.getElementById('success-message');
             if (message) {
