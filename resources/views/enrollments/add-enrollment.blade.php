@@ -23,6 +23,21 @@
             @endif
             @if($isPromotion)
                 <div class="promotion-policy-note {{ $promotionEligibility['allowed'] ? 'is-allowed' : 'is-blocked' }}" role="status"><i class="bi bi-shield-check"></i><div><strong>{{ $promotionEnrollment->semester }} → {{ $nextSemester ?? 'Final semester' }}</strong><span>{{ $promotionEligibility['message'] }}</span></div></div>
+                @if(($promotionEligibility['blocker'] ?? null) === 'fee')
+                    @php($fee = $promotionEligibility['fee'] ?? [])
+                    <div class="promotion-fee-clearance" role="alert">
+                        <i class="bi bi-wallet2" aria-hidden="true"></i>
+                        <div>
+                            <strong>Fee clearance required before promotion</strong>
+                            @if(($fee['status'] ?? null) === 'missing')
+                                <span>No invoice has been generated for this semester yet.</span>
+                            @else
+                                <span>Invoice {{ $fee['invoice_number'] }} · Status: {{ ucfirst($fee['status'] ?? 'unpaid') }}</span>
+                                <small>Approved: PKR {{ number_format((float) ($fee['amount_paid'] ?? 0), 0) }} of PKR {{ number_format((float) ($fee['total_amount'] ?? 0), 0) }} · Remaining: PKR {{ number_format((float) ($fee['outstanding_amount'] ?? 0), 0) }}</small>
+                            @endif
+                        </div>
+                    </div>
+                @endif
             @endif
             @if($terms->isEmpty() || $curricula->isEmpty())
                 <p class="academic-note">Enrollment requires an active academic term, an approved curriculum, and active course offerings with assigned teachers.</p>

@@ -76,5 +76,8 @@ return [
         // Promotion requires a published result, but a failed course becomes
         // a backlog/repeat instead of blocking the student's next semester.
         'require_published_result' => env('ACADEMIC_PROMOTION_REQUIRE_PUBLISHED_RESULT', true),
+        // A student's current-semester invoice must be fully approved by
+        // finance before the next-semester enrollment can be created.
+        'require_approved_fee' => env('ACADEMIC_PROMOTION_REQUIRE_APPROVED_FEE', true),
     ],
 ];

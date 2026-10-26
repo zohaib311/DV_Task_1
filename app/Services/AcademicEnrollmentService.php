@@ -45,7 +45,7 @@ class AcademicEnrollmentService
             // Serialize enrollment and promotion requests for the same student.
             $student = Student::lockForUpdate()->findOrFail($promotion?->student_id ?? $data['student_id']);
             if ($promotion) {
-                $promotion = StudentSemesterEnrollment::with(['semesterResult', 'term'])->lockForUpdate()->findOrFail($promotion->id);
+                $promotion = StudentSemesterEnrollment::with(['semesterResult', 'term', 'feeInvoice'])->lockForUpdate()->findOrFail($promotion->id);
                 $eligibility = $this->promotionEligibility($promotion);
                 if (! $eligibility['allowed']) {
                     $this->invalid('promotion', $eligibility['message']);
@@ -172,6 +172,44 @@ class AcademicEnrollmentService
             $result = $enrollment->semesterResult;
             if (! $result?->published_at || ! in_array($result->status, ['Pass', 'Fail'], true)) {
                 return ['allowed' => false, 'message' => 'A published semester result is required before promotion.'];
+            }
+        }
+
+        if (config('academic.promotion.require_approved_fee', true)) {
+            $invoice = $enrollment->feeInvoice;
+            if (! $invoice) {
+                return [
+                    'allowed' => false,
+                    'blocker' => 'fee',
+                    'message' => 'Promotion is blocked because no fee invoice is available for this semester. Configure the fee structure and generate the student invoice first.',
+                    'fee' => ['status' => 'missing'],
+                ];
+            }
+
+            if ($invoice->status !== 'approved') {
+                $paid = (float) $invoice->amount_paid;
+                $total = (float) $invoice->total_amount;
+                $message = match ($invoice->status) {
+                    'submitted' => 'Promotion is blocked because the student payment proof is awaiting finance approval.',
+                    'rejected' => 'Promotion is blocked because the fee payment was rejected. The student must submit a corrected payment proof.',
+                    'unpaid' => $paid > 0
+                        ? 'Promotion is blocked because the fee is only partially approved. The remaining balance must be cleared.'
+                        : 'Promotion is blocked because the semester fee has not been paid and approved.',
+                    default => 'Promotion is blocked until the semester fee is fully approved.',
+                };
+
+                return [
+                    'allowed' => false,
+                    'blocker' => 'fee',
+                    'message' => $message,
+                    'fee' => [
+                        'status' => $invoice->status,
+                        'invoice_number' => $invoice->invoice_number,
+                        'amount_paid' => $paid,
+                        'total_amount' => $total,
+                        'outstanding_amount' => max(0, $total - $paid),
+                    ],
+                ];
             }
         }
 

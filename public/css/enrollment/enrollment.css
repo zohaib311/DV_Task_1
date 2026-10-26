@@ -20,6 +20,11 @@
 .promotion-policy-note strong { margin-bottom: 2px; font-size: 12px; }
 .promotion-policy-note.is-allowed { border-color: #139b6a; background: #eefaf5; color: #087f55; }
 .promotion-policy-note.is-blocked { border-color: #d15b43; background: #fff5f2; color: #b2442e; }
+.promotion-fee-clearance { display: flex; align-items: flex-start; gap: 10px; margin: -10px 0 20px; padding: 12px 14px; border: 1px solid #f0c9bf; border-left: 3px solid #d15b43; border-radius: 9px; background: #fffaf8; color: #8f3d2b; font-size: 12px; }
+.promotion-fee-clearance > i { margin-top: 1px; font-size: 17px; color: #c65039; }
+.promotion-fee-clearance strong, .promotion-fee-clearance span, .promotion-fee-clearance small { display: block; }
+.promotion-fee-clearance strong { margin-bottom: 2px; font-size: 12px; }
+.promotion-fee-clearance small { margin-top: 5px; color: #a55848; font-weight: 700; }
 .enrollment-form-section { padding: 23px 0; border-top: 1px solid #e7eaf0; }
 .enrollment-form-section:first-of-type { padding-top: 0; border-top: 0; }
 .enrollment-section-title { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 18px; }

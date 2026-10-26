@@ -6,6 +6,7 @@ use App\Models\Course\Course;
 use App\Models\Department\Department;
 use App\Models\Enrollment\StudentSemesterEnrollment;
 use App\Models\Enrollment\StudentEnrollmentCourse;
+use App\Models\Fee\StudentFeeInvoice;
 use App\Models\Result\SemesterResult;
 use App\Models\Section\Section;
 use App\Models\Student;
@@ -176,6 +177,23 @@ class StudentSemesterEnrollmentTest extends TestCase
         $this->assertSame('promoted', $currentEnrollment->refresh()->status);
     }
 
+    public function test_promotion_is_blocked_until_the_current_semester_fee_is_fully_approved(): void
+    {
+        [$user, $student, $currentEnrollment, , $nextCourse] = $this->makePromotionRecord('Pass');
+        $currentEnrollment->feeInvoice()->update([
+            'status' => 'unpaid',
+            'amount_paid' => 0,
+            'approved_at' => null,
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('promoteEnrollment', $currentEnrollment), $this->offeringPlan($student, [$nextCourse]))
+            ->assertSessionHasErrors('promotion');
+
+        $this->assertDatabaseCount('student_semester_enrollments', 1);
+        $this->assertSame('active', $currentEnrollment->refresh()->status);
+    }
+
     private function makePromotionRecord(string $resultStatus): array
     {
         $department = Department::create(['name' => 'Information Technology']);
@@ -208,6 +226,20 @@ class StudentSemesterEnrollmentTest extends TestCase
         SemesterResult::create([
             'student_semester_enrollment_id' => $enrollment->id, 'student_id' => $student->id,
             'status' => $resultStatus, 'published_at' => now(),
+        ]);
+        StudentFeeInvoice::create([
+            'student_id' => $student->id,
+            'student_semester_enrollment_id' => $enrollment->id,
+            'invoice_number' => 'INV-TEST-'.str_pad((string) $enrollment->id, 5, '0', STR_PAD_LEFT),
+            'status' => 'approved',
+            'credit_hours' => 3,
+            'line_items' => [],
+            'subtotal' => 3000,
+            'total_amount' => 3000,
+            'amount_paid' => 3000,
+            'due_date' => today(),
+            'generated_at' => now(),
+            'approved_at' => now(),
         ]);
 
         return [$user, $student, $enrollment, $currentCourse, $nextCourse];
