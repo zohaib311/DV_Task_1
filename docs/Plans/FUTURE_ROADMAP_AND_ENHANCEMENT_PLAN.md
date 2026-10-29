@@ -64,23 +64,25 @@ Recent updates in `AcademicEnrollmentService::promotionEligibility()` block prom
 
 ---
 
-### Phase 10 — Examination & Financial Document PDF Engine
+### Phase 10 — Examination & Financial Document PDF Engine *(Completed ✅)*
 
 #### Scope & Deliverables
-- [ ] Install and configure PDF rendering service (`barryvdh/laravel-dompdf`).
-- [ ] Official Semester Transcript / DMC (Detailed Marks Certificate) with university header, background watermark, Controller signatures, and dynamic QR verification.
-- [ ] Three-copy Bank Fee Challan PDF (Student Copy, Bank Copy, University Accounts Copy).
-- [ ] Examination Admit Card / Roll Number Slip PDF with fee and attendance gates (≥ 75%).
-- [ ] Public document verification endpoint: `/verify/document/{type}/{hash}`.
+- [x] Install and configure PDF rendering service (`barryvdh/laravel-dompdf` v3.1.2) and QR Code generator (`simplesoftwareio/simple-qrcode` v4.2.0).
+- [x] Official Semester Transcript / DMC (Detailed Marks Certificate) with university header, background watermark, Controller signatures, and dynamic inline Base64 SVG QR verification.
+- [x] Three-copy Bank Fee Challan PDF in A4 landscape format (Bank Copy, Accounts Copy, Student Copy) with bank account particulars.
+- [x] Examination Admit Card / Roll Number Slip PDF with dual clearance gates: 100% fee invoice approval and minimum attendance threshold (≥ 75%).
+- [x] Public tamper-proof document verification endpoint: `/verify/document/{type}/{hash}` supporting transcripts, fee challans, and admit cards.
 
 #### Database Schema & Model Updates
-- Add `verification_hash` (`string(64)`, unique, indexed) to `semester_results` and `student_fee_invoices`.
-- Migration: `2026_11_01_000000_add_verification_hash_to_results_and_invoices.php`.
+- Added `verification_hash` (`string(64)`, nullable, unique, indexed) to `semester_results` and `student_fee_invoices` via migration `2026_11_01_000000_add_verification_hash_to_results_and_invoices.php`.
+- Added permission `student.admit-card.view-own` via migration `2026_11_01_000001_add_admit_card_permission.php`.
+- Added auto-hash generation on model creation in `SemesterResult` and `StudentFeeInvoice`.
+- Added configuration in `config/fees.php` for university meta, banking accounts, and admit card thresholds.
 
 #### Permissions & Routes
 - `student.result.view-own` -> `GET /student-portal/transcript/pdf`
 - `student.fees.view-own` -> `GET /student-portal/fees/{invoice}/challan-pdf`
-- `student.admit-card.view-own` -> `GET /student-portal/admit-card/pdf`
+- `student.admit-card.view-own` -> `GET /student-portal/admit-card`, `GET /student-portal/admit-card/pdf`
 - `results.view-all` -> `GET /results/{result}/transcript-pdf`
 - Public / No Auth -> `GET /verify/document/{type}/{hash}`
 
@@ -92,11 +94,15 @@ Recent updates in `AcademicEnrollmentService::promotionEligibility()` block prom
 5. If student attendance is < 75% or fee invoice is unpaid, verify **Download Admit Card** is blocked with an actionable alert.
 
 #### Automated Test Coverage
-- `tests/Feature/Documents/DocumentPdfGenerationTest.php`:
+- `tests/Feature/Documents/DocumentPdfGenerationTest.php` (8 tests, 33 assertions — **100% PASS**):
   - `test_student_can_download_official_transcript_pdf()`
-  - `test_qr_verification_endpoint_resolves_valid_hash()`
-  - `test_fee_challan_generates_three_slips()`
-  - `test_admit_card_blocked_for_unpaid_fee_or_low_attendance()`
+  - `test_student_can_download_fee_challan_pdf()`
+  - `test_student_cannot_download_another_students_challan()`
+  - `test_admin_can_download_semester_result_transcript_pdf()`
+  - `test_public_verification_endpoint_resolves_valid_transcript()`
+  - `test_public_verification_endpoint_resolves_valid_challan()`
+  - `test_public_verification_endpoint_rejects_tampered_hash()`
+  - `test_admit_card_view_and_download_flow_with_clearance_gates()`
 
 ---
 

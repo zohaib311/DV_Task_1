@@ -39,7 +39,7 @@ class AccessControlSeeder extends Seeder
             'dashboard.view', 'student.profile.view-own', 'student.attendance.view-own',
             'student.result.view-own', 'student.courses.view-own', 'student.assessments.view-own', 'notifications.view-own',
             'student.registration.manage-own', 'student.assessments.submit-own', 'student.leaves.manage-own',
-            'student.fees.view-own', 'student.fees.submit-own',
+            'student.fees.view-own', 'student.fees.submit-own', 'student.admit-card.view-own',
         ],
     ];
 
@@ -56,7 +56,7 @@ class AccessControlSeeder extends Seeder
         'student.profile.view-own', 'student.attendance.view-own', 'student.result.view-own',
         'student.courses.view-own', 'student.assessments.view-own', 'notifications.view-own', 'reports.view',
         'student.registration.manage-own', 'student.assessments.submit-own', 'student.leaves.manage-own', 'leaves.review-assigned',
-        'student.fees.view-own', 'student.fees.submit-own', 'fees.manage', 'fees.review',
+        'student.fees.view-own', 'student.fees.submit-own', 'fees.manage', 'fees.review', 'student.admit-card.view-own',
         'academic-history.view', 'audit.view', 'assessments.review',
     ];
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Documents\DocumentPdfController;
 use App\Http\Controllers\StudentPortal\PortalController;
 use App\Http\Controllers\StudentPortal\CourseRegistrationController;
 use App\Http\Controllers\StudentPortal\AssessmentSubmissionController;
@@ -15,6 +16,12 @@ Route::prefix('student-portal')->name('student.')->middleware('auth')->controlle
     Route::get('/assessments', 'assessments')->middleware('permission:student.assessments.view-own')->name('assessments.index');
     Route::get('/assessments/{course}/items/{assessment}/question-file', 'assessmentQuestion')->whereNumber(['course', 'assessment'])->middleware('permission:student.assessments.view-own')->name('assessments.question-file');
     Route::get('/assessments/{course}', 'assessment')->whereNumber('course')->middleware('permission:student.assessments.view-own')->name('assessments.show');
+});
+
+Route::prefix('student-portal')->name('student.')->middleware('auth')->controller(DocumentPdfController::class)->group(function () {
+    Route::get('/transcript/pdf', 'studentTranscriptPdf')->middleware('permission:student.result.view-own')->name('transcript.pdf');
+    Route::get('/admit-card', 'studentAdmitCardView')->middleware('permission:student.admit-card.view-own')->name('admit-card.index');
+    Route::get('/admit-card/pdf', 'studentAdmitCardPdf')->middleware('permission:student.admit-card.view-own')->name('admit-card.pdf');
 });
 
 Route::prefix('student-portal/assessment-submissions')->name('student.assessment-submissions.')->middleware(['auth', 'permission:student.assessments.submit-own'])->controller(AssessmentSubmissionController::class)->group(function () {

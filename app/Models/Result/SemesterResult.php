@@ -7,6 +7,7 @@ use App\Models\Student;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class SemesterResult extends Model
 {
@@ -17,9 +18,19 @@ class SemesterResult extends Model
         'sgpa',
         'cgpa',
         'status',
+        'verification_hash',
         'published_at',
         'source', 'revision', 'reviewed_by', 'reviewed_at',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (SemesterResult $result) {
+            if (empty($result->verification_hash)) {
+                $result->verification_hash = hash('sha256', 'res_' . uniqid('', true) . Str::random(16));
+            }
+        });
+    }
 
     protected $casts = [
         'semester_percentage' => 'decimal:2',

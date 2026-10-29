@@ -6,10 +6,10 @@
 @section('header-actions')
     @if($print)
         <a class="btn academic-header-btn" href="{{ route('student.transcript') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Transcript</a>
-        <button class="btn academic-header-btn" type="button" onclick="window.print()"><i class="bi bi-printer" aria-hidden="true"></i> Print / Save PDF</button>
+        <button class="btn academic-header-btn" type="button" onclick="window.print()"><i class="bi bi-printer" aria-hidden="true"></i> Print Page</button>
     @else
         <a class="btn academic-header-btn" href="{{ route('student.results.index') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Results</a>
-        <a class="btn academic-header-btn" href="{{ route('student.transcript', ['print' => 1]) }}" target="_blank" rel="noopener"><i class="bi bi-file-earmark-pdf" aria-hidden="true"></i> Print / Save PDF</a>
+        <a class="btn academic-header-btn" href="{{ route('student.transcript.pdf') }}"><i class="bi bi-file-earmark-pdf-fill" aria-hidden="true"></i> Download Official PDF</a>
     @endif
 @endsection
 

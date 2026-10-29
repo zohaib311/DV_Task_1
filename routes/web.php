@@ -28,6 +28,8 @@ require __DIR__.'/notifications.php';
 require __DIR__.'/reports.php';
 require __DIR__.'/fees.php';
 
+Route::get('/verify/document/{type}/{hash}', [\App\Http\Controllers\Documents\DocumentPdfController::class, 'verifyDocument'])->name('verify.document');
+
 Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route(app(\App\Services\StudentPortal\StudentWorkspace::class)->landing(Auth::user()) ?? 'dashboardView');
@@ -189,6 +191,10 @@ Route::prefix('result')->controller(ResultController::class)->middleware('auth')
 
     Route::put('/semester-result/{semesterResult}', 'updateSemesterResult')
         ->name('result.semester.update');
+
+    Route::get('/semester-result/{result}/transcript-pdf', [\App\Http\Controllers\Documents\DocumentPdfController::class, 'adminTranscriptPdf'])
+        ->middleware('permission:results.view-all')
+        ->name('result.semester.transcript-pdf');
 
     Route::get('/get-sections/{department_id}', 'getSectionsByDepartment')->middleware('permission:results.view-all')->name('getSectionsByDepartment');
 

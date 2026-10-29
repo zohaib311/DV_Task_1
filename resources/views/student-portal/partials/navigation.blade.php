@@ -23,6 +23,9 @@
 @can('student.fees.view-own')
     <a href="{{ route('student.fees.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.fees.*')])><span class="student-nav-icon is-fees"><i class="bi bi-wallet2" aria-hidden="true"></i></span><span>Fees &amp; Payments</span></a>
 @endcan
+@can('student.admit-card.view-own')
+    <a href="{{ route('student.admit-card.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.admit-card.*')])><span class="student-nav-icon is-admit"><i class="bi bi-card-checklist" aria-hidden="true"></i></span><span>Admit Card</span></a>
+@endcan
 @can('notifications.view-own')
     <a href="{{ route('student.notifications.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.notifications.*')])><span class="student-nav-icon is-notifications"><i class="bi bi-bell" aria-hidden="true"></i></span><span>Notifications</span></a>
 @endcan
