@@ -6,6 +6,7 @@ use App\Models\Academic\CourseOffering;
 use App\Models\Assessment\AssessmentMark;
 use App\Models\Assessment\AssessmentSubmission;
 use App\Models\Enrollment\StudentSemesterEnrollment;
+use App\Models\Fee\StudentFeeInvoice;
 use App\Models\Result\SemesterResult;
 use App\Models\User;
 use App\Services\AcademicEnrollmentService;
@@ -35,7 +36,28 @@ class ResultModerationTest extends TestCase
         $this->admin = User::create(['name' => 'Academic reviewer', 'email' => 'moderation@example.test', 'phone' => '03009999991', 'password' => bcrypt('password')]);
         $this->admin->assignRole('Academic Admin');
         $this->enrollment = StudentSemesterEnrollment::firstOrFail();
+        $this->attachApprovedFee($this->enrollment);
         $this->actingAs($this->admin);
+    }
+
+    private function attachApprovedFee(StudentSemesterEnrollment $enrollment): StudentFeeInvoice
+    {
+        return StudentFeeInvoice::updateOrCreate(
+            ['student_semester_enrollment_id' => $enrollment->id],
+            [
+                'student_id' => $enrollment->student_id,
+                'invoice_number' => 'INV-MOD-'.str_pad((string) $enrollment->id, 5, '0', STR_PAD_LEFT),
+                'status' => 'approved',
+                'credit_hours' => 3,
+                'line_items' => [],
+                'subtotal' => 3000,
+                'total_amount' => 3000,
+                'amount_paid' => 3000,
+                'due_date' => today(),
+                'generated_at' => now(),
+                'approved_at' => now(),
+            ]
+        );
     }
 
     private function ready(): void

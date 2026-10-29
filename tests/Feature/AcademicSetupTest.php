@@ -10,6 +10,7 @@ use App\Models\Course\Course;
 use App\Models\Department\Department;
 use App\Models\Enrollment\StudentEnrollmentCourse;
 use App\Models\Enrollment\StudentSemesterEnrollment;
+use App\Models\Fee\StudentFeeInvoice;
 use App\Models\Result\SemesterResult;
 use App\Models\Section\Section;
 use App\Models\Student;
@@ -233,6 +234,7 @@ class AcademicSetupTest extends TestCase
         $this->post(route('addEnrollment'), $first + ['student_id' => $this->student->id])->assertSessionHasNoErrors();
         $enrollment = StudentSemesterEnrollment::firstOrFail();
         SemesterResult::create(['student_semester_enrollment_id' => $enrollment->id, 'student_id' => $this->student->id, 'status' => 'Pass', 'published_at' => now()]);
+        $this->approveFee($enrollment);
         $nextCourse = $this->course->replicate();
         $nextCourse->code = 'CS201';
         $nextCourse->save();
@@ -265,6 +267,7 @@ class AcademicSetupTest extends TestCase
             'student_enrollment_course_id' => $enrollmentCourse->id, 'obtained_marks' => 40, 'percentage' => 40,
             'grade' => 'F', 'grade_point' => 0, 'status' => 'Fail',
         ]);
+        $this->approveFee($enrollment);
 
         $nextCourse = $this->course->replicate();
         $nextCourse->code = 'CS201';
@@ -304,5 +307,23 @@ class AcademicSetupTest extends TestCase
             'course_id' => $nextOffering->course_id, 'registration_type' => 'required']);
         $this->assertDatabaseHas('student_enrollment_courses', ['student_semester_enrollment_id' => $promoted->id,
             'course_id' => $this->course->id, 'registration_type' => 'repeat']);
+    }
+
+    private function approveFee(StudentSemesterEnrollment $enrollment): StudentFeeInvoice
+    {
+        return StudentFeeInvoice::create([
+            'student_id' => $enrollment->student_id,
+            'student_semester_enrollment_id' => $enrollment->id,
+            'invoice_number' => 'INV-SETUP-'.str_pad((string) $enrollment->id, 5, '0', STR_PAD_LEFT),
+            'status' => 'approved',
+            'credit_hours' => 3,
+            'line_items' => [],
+            'subtotal' => 3000,
+            'total_amount' => 3000,
+            'amount_paid' => 3000,
+            'due_date' => today(),
+            'generated_at' => now(),
+            'approved_at' => now(),
+        ]);
     }
 }

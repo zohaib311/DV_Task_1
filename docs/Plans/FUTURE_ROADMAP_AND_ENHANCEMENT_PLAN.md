@@ -39,9 +39,9 @@ Restore 100% green status across the automated regression test suite (138 tests)
 Recent updates in `AcademicEnrollmentService::promotionEligibility()` block promotion if `config('academic.promotion.require_approved_fee')` is active and the enrollment lacks an approved/paid invoice. Pre-existing test cases in `tests/Feature/Result/ResultModerationTest.php` and `tests/Feature/AcademicSetupTest.php` do not create fee invoices during test fixture setup, causing 4 promotion eligibility assertions to fail.
 
 ### Implementation Checklist
-- [ ] In `tests/Feature/Result/ResultModerationTest.php`, ensure test enrollments undergoing promotion testing either generate a paid invoice or mock fee clearance.
-- [ ] In `tests/Feature/AcademicSetupTest.php`, attach a paid `StudentFeeInvoice` to the promoted test student.
-- [ ] Run `php artisan test` and confirm all 138 tests pass with zero failures.
+- [x] In `tests/Feature/Result/ResultModerationTest.php`, ensure test enrollments undergoing promotion testing either generate a paid invoice or mock fee clearance.
+- [x] In `tests/Feature/AcademicSetupTest.php`, attach a paid `StudentFeeInvoice` to the promoted test student.
+- [x] Run `php artisan test` and confirm all 138 tests pass with zero failures.
 
 ---
 
