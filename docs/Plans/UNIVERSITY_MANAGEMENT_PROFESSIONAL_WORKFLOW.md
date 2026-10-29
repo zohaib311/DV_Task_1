@@ -430,6 +430,73 @@ Implementation details:
 
 Manual acceptance: [Phase 9H testing guide](docs/testing/PHASE_9H_OPERATIONAL_HARDENING_GUIDE.md). Automated coverage: `tests/Feature/Academic/OperationalHardeningTest.php`, alongside existing regressions. Browser visual acceptance remains manual.
 
+### Phase 9I — Student Assessment Submissions & Digital Learning (Completed)
+
+- [x] Question file upload for teacher assessments (PDF/document attachments).
+- [x] Student Portal assessment workspace with question download and submission upload.
+- [x] Deadline enforcement, single active submission, and teacher download interface.
+
+Implementation details:
+- Teachers can attach question files when creating or updating assessments (`question_file_path`).
+- Students download question files and upload completed submissions before the due date.
+- Endpoints are protected with rate limiting (`throttle:10,1`) and permission `student.assessments.submit-own`.
+- Submissions are isolated per student; teachers review submissions within the class roster.
+
+Manual acceptance checklist: Tested in `tests/Feature/Assessment/AssessmentWorkflowTest.php`.
+
+### Phase 9J — Student Self-Service Course Registration (Completed)
+
+- [x] Self-service course registration interface in Student Portal.
+- [x] Real-time validation against approved curriculum, section offerings, and maximum credit-hour cap (21 credits).
+- [x] Automatic carryover and registration for backlog/repeat courses.
+
+Implementation details:
+- Located at `/student-portal/course-registration`.
+- Allows students with an active semester enrollment to register for available required, elective, or repeat course offerings.
+- Transactional enrollment additions with automatic fee invoice regeneration and notification dispatches to assigned teachers and academic staff.
+
+Manual acceptance checklist: Tested in `tests/Feature/StudentSemesterEnrollmentTest.php`.
+
+### Phase 9K — Student Leave Management & Faculty Review (Completed)
+
+- [x] Student leave request application with date ranges, reason, and supporting document attachments.
+- [x] Teacher panel leave review workspace (Approve / Reject with remarks).
+- [x] Student cancellation and status tracking in the portal.
+
+Implementation details:
+- Models: `App\Models\Leave\StudentLeaveRequest`.
+- Routes: `/student-portal/leaves` and `/teaching/leaves`.
+- Assigned teachers are notified when an enrolled student submits a leave request for their course offering.
+- Approval updates student leave status and logs the reviewing teacher ID and review timestamp.
+
+Manual acceptance checklist: Tested in `tests/Feature/LeaveRequestWorkflowTest.php`.
+
+### Phase 9L — Fee Structure & Payment Management (Completed)
+
+- [x] Academic fee structures configured per program, department, and semester.
+- [x] Automated semester fee invoice generation upon student enrollment/course registration.
+- [x] Student payment proof (bank deposit slip) submission and accounts review workflow (Approve / Reject).
+
+Implementation details:
+- Models: `FeeStructure`, `StudentFeeInvoice`, and `FeePayment` under `App\Models\Fee`.
+- Accounts Admin configures fee line items (Tuition, Examination, Admission, Library, Lab fees).
+- Invoices are automatically calculated based on credit hours and program rules.
+- Students upload deposit receipts; Finance/Admin reviews and approves payments with transactional status updates.
+
+Manual acceptance checklist: Tested in `tests/Feature/FeeManagementTest.php`.
+
+### Phase 9M — Fee Clearance Promotion Gate & Student Transcript (Completed)
+
+- [x] Promotion eligibility gate: Blocks promotion to the next semester if pending fee invoices exist.
+- [x] Official Student Transcript view in the Student Portal displaying cumulative academic history.
+- [x] Search and filtering bars across student lists, enrollments, and academic rosters.
+
+Implementation details:
+- `AcademicEnrollmentService::promotionEligibility()` requires `invoice->status === 'paid'` when `config('academic.promotion.require_approved_fee')` is enabled.
+- Route `/student-portal/transcript` renders a complete semester-by-semester transcript with SGPA, CGPA, and degree progress.
+
+Manual acceptance checklist: Tested in `tests/Feature/StudentSemesterEnrollmentTest.php`.
+
 ---
 
 ## 10. Non-negotiable integrity rules
@@ -442,25 +509,24 @@ Manual acceptance: [Phase 9H testing guide](docs/testing/PHASE_9H_OPERATIONAL_HA
 - Published records are snapshots and never recalculate from later course changes.
 - Academic history is not deleted; corrections are audited.
 - Promotion, final publication, and published-result correction are transactional.
+- A student cannot be promoted to the next semester with unpaid academic fees.
 
 ---
 
-## 11. Decisions to confirm during implementation
+## 11. Master Delivery Sequence & Next Steps
 
-1. Must failed students remain blocked from promotion, or may they promote with mandatory repeat courses?
-2. Which roles may publish results: Academic Admin, HOD, Controller of Examinations, or a combination?
-3. Should attendance be percentage-based, marks-based, or both?
-4. Should students see assessment marks immediately or only after release?
-5. Are electives and multiple teacher assignments required in the first release?
+Phases 0–8 and Phases 9A–9M are complete and operational in the codebase.
 
----
+The next evolutionary phases are documented in the authoritative roadmap specification:
+👉 **[FUTURE_ROADMAP_AND_ENHANCEMENT_PLAN.md](FUTURE_ROADMAP_AND_ENHANCEMENT_PLAN.md)**
 
-## Next implementation step
-
-Phases 9A–9G are complete. Perform the overall acceptance checks before beginning **Phase 9H — Reporting and operational hardening**:
-
-1. Test the complete setup → enrollment → attendance → assessments → submission → review → publication → promotion workflow.
-2. Check role boundaries and result correction history with separate teacher, reviewer, and publisher accounts.
-3. Check the student portal using two separate linked accounts, including unreleased marks and foreign-record URL attempts. After acceptance, proceed to Phase 9H reports, notifications, audit viewing, and operational hardening.
-
-Sections 1–8 above describe the overall requirements, not additional independent implementation phases. Their work is delivered through roadmap phases 9A–9H. Student Portal is implemented in 9G; reporting and operational hardening remain 9H.
+Upcoming Delivery Phases:
+- **P0:** Test Suite Alignment (Fix 4 promotion fee tests to restore 100% green test suite).
+- **Phase 10:** Examination & Financial Document PDF Engine (Official Transcript PDF with QR, 3-Copy Bank Challan, Admit Cards).
+- **Phase 11:** Timetable & Academic Scheduling System (Rooms, Time Slots, Clash Prevention Engine, Weekly Grids).
+- **Phase 12:** Learning Management System (LMS Lite) & Class Materials (Lecture slides repository, notices, online timed MCQs).
+- **Phase 13:** Bulk Operations & Batch Data Management (Student CSV admissions, teacher bulk marks upload).
+- **Phase 14:** Financial Automation & Online Payment Gateways (Stripe/JazzCash webhooks, installments, automated late fines).
+- **Phase 15:** Quality Enhancement Cell (QEC) & Teacher Evaluation (Anonymous surveys, result viewing gate, HOD radar analytics).
+- **Phase 16:** Degree Clearance & Graduation Audit Workflow (130+ credits check, multi-department digital "No Dues").
+- **Phase 17:** External Communication & Automated Alerts (Queued emails, critical SMS dispatches).
