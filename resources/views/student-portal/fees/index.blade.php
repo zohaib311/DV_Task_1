@@ -27,8 +27,8 @@
                         <span class="portal-code">{{ $invoice->invoice_number }}</span>
                         <h2>{{ $invoice->enrollment?->semester ?? 'Semester' }} <small>{{ $invoice->enrollment?->academic_year }}</small></h2>
                         <p>{{ number_format((float) $invoice->credit_hours, 1) }} registered credit hours · Due {{ $invoice->due_date?->format('d M Y') ?? '—' }}</p>
-                        <a href="{{ route('student.fees.challan-pdf', $invoice) }}" class="portal-btn" style="padding: 4px 10px; font-size: 0.8rem; margin-top: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
-                            <i class="bi bi-file-earmark-pdf-fill" aria-hidden="true"></i> Download Bank Challan (PDF)
+                        <a href="{{ route('student.fees.challan-pdf', $invoice) }}" class="btn btn-primary portal-btn" style="padding: 6px 14px; font-size: 0.82rem; margin-top: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; color: #ffffff !important; font-weight: 600;">
+                            <i class="bi bi-file-earmark-pdf-fill" aria-hidden="true" style="color: #ffffff !important;"></i> Download Bank Challan (PDF)
                         </a>
                     </div>
                     <span @class(['fee-status', 'is-approved' => $invoice->status === 'approved', 'is-submitted' => $invoice->status === 'submitted', 'is-rejected' => $invoice->status === 'rejected'])>{{ ucfirst($invoice->status) }}</span>

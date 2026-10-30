@@ -399,7 +399,8 @@
 }
 
 .portal-btn,
-.student-portal-body .portal-btn {
+.student-portal-body .portal-btn,
+.student-portal-body a.portal-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -408,7 +409,7 @@
     padding: 8px 13px;
     border: 1px solid transparent;
     border-radius: 9px;
-    color: #fff;
+    color: #fff !important;
     background: var(--portal-primary);
     font-size: .8rem;
     font-weight: 700;
@@ -419,8 +420,9 @@
 }
 
 .portal-btn:hover,
-.student-portal-body .portal-btn:hover {
-    color: #fff;
+.student-portal-body .portal-btn:hover,
+.student-portal-body a.portal-btn:hover {
+    color: #fff !important;
     background: var(--portal-primary-dark);
     box-shadow: 0 7px 18px rgb(103 88 213 / 20%);
     transform: translateY(-1px);

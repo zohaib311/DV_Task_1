@@ -112,9 +112,9 @@
 
     @if ($eligibility['eligible'])
         <div style="margin-top: 24px; text-align: right;">
-            <a href="{{ route('student.admit-card.pdf') }}" class="portal-btn"
-                style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
-                <i class="bi bi-file-earmark-pdf-fill" aria-hidden="true"></i> Download Official Admit Card (PDF)
+            <a href="{{ route('student.admit-card.pdf') }}" class="btn btn-primary portal-btn"
+                style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #ffffff !important; font-weight: 600;">
+                <i class="bi bi-file-earmark-pdf-fill" aria-hidden="true" style="color: #ffffff !important;"></i> Download Official Admit Card (PDF)
             </a>
         </div>
     @endif
