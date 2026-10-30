@@ -1,0 +1,139 @@
+:root {
+    --primary: #4f46e5;
+    --primary-dark: #3730a3;
+    --success: #059669;
+    --danger: #dc2626;
+    --surface: #ffffff;
+    --bg: #f8fafc;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.verify-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    max-width: 600px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.verify-header {
+    background: linear-gradient(135deg, #312e81 0%, #4338ca 100%);
+    color: white;
+    padding: 24px;
+    text-align: center;
+}
+
+.uni-brand {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.uni-dept {
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+.verify-body {
+    padding: 28px 24px;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.status-valid {
+    background-color: #ecfdf5;
+    color: var(--success);
+    border: 1px solid #a7f3d0;
+}
+
+.status-invalid {
+    background-color: #fef2f2;
+    color: var(--danger);
+    border: 1px solid #fecaca;
+}
+
+.status-badge i {
+    font-size: 1.1rem;
+}
+
+.details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+    font-size: 0.92rem;
+}
+
+.details-table tr {
+    border-bottom: 1px solid var(--border);
+}
+
+.details-table tr:last-child {
+    border-bottom: none;
+}
+
+.details-table td {
+    padding: 10px 4px;
+}
+
+.label-col {
+    color: var(--text-muted);
+    width: 40%;
+}
+
+.val-col {
+    font-weight: 600;
+    color: var(--text-main);
+    width: 60%;
+}
+
+.security-footer {
+    background-color: #f8fafc;
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.5;
+}
+
+.hash-code {
+    font-family: monospace;
+    background: #e2e8f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    word-break: break-all;
+    display: block;
+    margin-top: 6px;
+}
