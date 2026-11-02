@@ -24,6 +24,10 @@ Route::prefix('student-portal')->name('student.')->middleware('auth')->controlle
     Route::get('/admit-card/pdf', 'studentAdmitCardPdf')->middleware('permission:student.admit-card.view-own')->name('admit-card.pdf');
 });
 
+Route::prefix('student-portal')->name('student.')->middleware('auth')->group(function () {
+    Route::get('/timetable', [\App\Http\Controllers\StudentPortal\TimetableController::class, 'index'])->middleware('permission:student.courses.view-own')->name('timetable.index');
+});
+
 Route::prefix('student-portal/assessment-submissions')->name('student.assessment-submissions.')->middleware(['auth', 'permission:student.assessments.submit-own'])->controller(AssessmentSubmissionController::class)->group(function () {
     Route::post('/courses/{course}/assessments/{assessment}', 'store')->whereNumber(['course', 'assessment'])->middleware('throttle:10,1')->name('store');
     Route::get('/{submission}/download', 'studentDownload')->whereNumber('submission')->name('download');

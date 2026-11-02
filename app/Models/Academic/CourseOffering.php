@@ -79,4 +79,9 @@ class CourseOffering extends Model
     {
         return $this->hasMany(\App\Models\Leave\StudentLeaveRequest::class);
     }
+
+    public function timetableAllocations(): HasMany
+    {
+        return $this->hasMany(\App\Models\Timetable\TimetableAllocation::class);
+    }
 }

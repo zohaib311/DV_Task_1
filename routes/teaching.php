@@ -9,6 +9,7 @@ Route::prefix('teaching')->name('teaching.')->middleware(['auth', 'permission:of
     Route::get('/', DashboardController::class)->name('dashboard');
     Route::get('/offerings', [OfferingController::class, 'index'])->name('offerings.index');
     Route::get('/offerings/{offering}', [OfferingController::class, 'show'])->whereNumber('offering')->name('offerings.show');
+    Route::get('/timetable', [\App\Http\Controllers\Teaching\TimetableController::class, 'index'])->name('timetable.index');
 });
 
 Route::prefix('teaching/leaves')->name('teaching.leaves.')->middleware(['auth', 'permission:offerings.view-assigned', 'permission:leaves.review-assigned'])->controller(LeaveController::class)->group(function () {

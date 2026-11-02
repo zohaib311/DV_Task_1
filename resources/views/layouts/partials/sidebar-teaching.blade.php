@@ -15,6 +15,7 @@
                 @endcan
                 <li><a href="{{ route('teaching.dashboard') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('teaching.dashboard')]) @if(request()->routeIs('teaching.dashboard')) aria-current="page" @endif>Overview</a></li>
                 <li><a href="{{ route('teaching.offerings.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('teaching.offerings.*')]) @if(request()->routeIs('teaching.offerings.*')) aria-current="page" @endif>My Courses &amp; Rosters</a></li>
+                <li><a href="{{ route('teaching.timetable.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('teaching.timetable.*')]) @if(request()->routeIs('teaching.timetable.*')) aria-current="page" @endif>My Schedule</a></li>
             </ul>
         </details>
     </li>

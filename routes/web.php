@@ -281,4 +281,11 @@ Route::prefix('academic')->name('academic.')->middleware('auth')->group(function
         Route::get('/teaching-setup', 'create')->name('teaching-setup.create');
         Route::post('/teaching-setup', 'store')->name('teaching-setup.store');
     });
+    Route::middleware('permission:timetable.manage')->controller(\App\Http\Controllers\Academic\TimetableController::class)->group(function () {
+        Route::get('/timetable', 'index')->name('timetable.index');
+        Route::post('/timetable/rooms', 'storeRoom')->name('timetable.rooms.store');
+        Route::post('/timetable/time-slots', 'storeTimeSlot')->name('timetable.time-slots.store');
+        Route::post('/timetable/allocations', 'storeAllocation')->name('timetable.allocations.store');
+        Route::delete('/timetable/allocations/{allocation}', 'destroyAllocation')->whereNumber('allocation')->name('timetable.allocations.destroy');
+    });
 });

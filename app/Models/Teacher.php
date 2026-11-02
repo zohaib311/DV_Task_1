@@ -28,4 +28,9 @@ class Teacher extends Model
     {
         return $this->belongsToMany(\App\Models\Academic\CourseOffering::class)->withTimestamps();
     }
+
+    public function timetableAllocations()
+    {
+        return $this->hasMany(\App\Models\Timetable\TimetableAllocation::class);
+    }
 }

@@ -106,14 +106,14 @@ Recent updates in `AcademicEnrollmentService::promotionEligibility()` block prom
 
 ---
 
-### Phase 11 — Timetable & Academic Scheduling System
+### Phase 11 — Timetable & Academic Scheduling System *(Completed ✅)*
 
 #### Scope & Deliverables
-- [ ] Physical infrastructure management: Rooms, Computer Labs, Science Labs, Auditoriums with capacities.
-- [ ] Time slot matrix per academic term (class periods and prayer/lunch break windows).
-- [ ] Course offering timetable allocations (mapping offering, room, slot, day, and teacher).
-- [ ] Real-time server-side clash prevention engine (Room, Teacher, and Student Section conflicts).
-- [ ] Interactive weekly scheduling grid for Admin, personal schedule for Teachers, and "My Timetable" for Students.
+- [x] Physical infrastructure management: Rooms, Computer Labs, Science Labs, Auditoriums with capacities (`rooms` table).
+- [x] Time slot matrix per academic term with class periods and prayer/lunch break windows (`time_slots` table).
+- [x] Course offering timetable allocations mapping offering, room, slot, day, and teacher (`timetable_allocations` table).
+- [x] Real-time server-side clash prevention engine: Room double-booking, Teacher schedule conflict, and Section cohort collision prevention (`TimetableService`).
+- [x] Interactive weekly scheduling grid for Admin (`/academic/timetable`), personal schedule with 1-click attendance for Teachers (`/teaching/timetable`), and "My Timetable" for Students (`/student-portal/timetable`).
 
 #### Database Schema
 
@@ -151,9 +151,11 @@ Recent updates in `AcademicEnrollmentService::promotionEligibility()` block prom
 1. Is the room already occupied at this time slot? -> Reject with conflict message.
 2. Is the teacher assigned to another class at this time slot? -> Reject.
 3. Does this section already have another lecture scheduled at this time slot? -> Reject.
+4. Is the time slot a break slot? -> Reject.
+5. Is the teacher assigned to teach this course offering? -> Reject if unassigned.
 
 #### Permissions & Routes
-- `timetable.manage` -> `GET /academic/timetable`, `POST /academic/timetable/allocations`, `DELETE /academic/timetable/allocations/{id}`
+- `timetable.manage` -> `GET /academic/timetable`, `POST /academic/timetable/rooms`, `POST /academic/timetable/time-slots`, `POST /academic/timetable/allocations`, `DELETE /academic/timetable/allocations/{id}`
 - `offerings.view-assigned` -> `GET /teaching/timetable`
 - `student.courses.view-own` -> `GET /student-portal/timetable`
 
@@ -166,12 +168,18 @@ Recent updates in `AcademicEnrollmentService::promotionEligibility()` block prom
 6. Sign in as an enrolled Student; verify "My Timetable" displays the class, room, and timings.
 
 #### Automated Test Coverage
-- `tests/Feature/Academic/TimetableSchedulingTest.php`:
+- `tests/Feature/Academic/TimetableSchedulingTest.php` (11 tests, 32 assertions — **100% PASS**):
+  - `test_admin_can_create_room_and_time_slot()`
   - `test_admin_can_allocate_valid_class_slot()`
   - `test_room_clash_is_rejected()`
   - `test_teacher_clash_is_rejected()`
   - `test_cohort_section_clash_is_rejected()`
-  - `test_student_and_teacher_see_their_own_schedule()`
+  - `test_break_slot_cannot_be_allocated()`
+  - `test_unassigned_teacher_rejected_for_offering()`
+  - `test_teacher_can_view_assigned_weekly_schedule()`
+  - `test_student_can_view_enrolled_courses_weekly_timetable()`
+  - `test_admin_can_remove_allocation()`
+  - `test_unauthorized_users_cannot_manage_timetable()`
 
 ---
 

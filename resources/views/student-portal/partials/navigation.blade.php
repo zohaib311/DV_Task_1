@@ -3,6 +3,7 @@
 @endcan
 @can('student.courses.view-own')
     <a href="{{ route('student.courses') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.courses')])><span class="student-nav-icon is-courses"><i class="bi bi-journal-richtext" aria-hidden="true"></i></span><span>My Courses</span></a>
+    <a href="{{ route('student.timetable.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.timetable.*')])><span class="student-nav-icon is-courses"><i class="bi bi-calendar-week" aria-hidden="true"></i></span><span>My Timetable</span></a>
 @endcan
 @can('student.registration.manage-own')
     <a href="{{ route('student.registration.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.registration.*')])><span class="student-nav-icon is-registration"><i class="bi bi-pencil-square" aria-hidden="true"></i></span><span>Course Registration</span></a>

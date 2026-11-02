@@ -1,8 +1,9 @@
-@canany(['terms.manage', 'curriculum.manage', 'offerings.manage', 'assessments.review', 'reports.view', 'audit.view'])
+@canany(['terms.manage', 'curriculum.manage', 'offerings.manage', 'assessments.review', 'reports.view', 'audit.view', 'timetable.manage'])
     <li class="nav-item">
         <details class="sidebar-group" @if(request()->routeIs('academic.*')) open @endif>
             <summary class="sidebar-link"><i class="bi bi-journal-richtext me-2 fs-5" aria-hidden="true"></i><span>Academic Setup</span><i class="bi bi-chevron-down sidebar-group-arrow" aria-hidden="true"></i></summary>
             <ul class="sidebar-submenu">
+                @can('timetable.manage')<li><a href="{{ route('academic.timetable.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('academic.timetable.*')]) @if(request()->routeIs('academic.timetable.*')) aria-current="page" @endif>Timetable &amp; Schedule</a></li>@endcan
                 @can('assessments.review')<li><a href="{{ route('academic.assessment-reviews.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('academic.assessment-reviews.*')])>Assessment Reviews</a></li>@endcan
                 @can('reports.view')<li><a href="{{ route('academic.reports.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('academic.reports.*')])>Academic Reports</a></li>@endcan
                 @can('audit.view')<li><a href="{{ route('academic.audits.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('academic.audits.*')])>Audit Viewer</a></li>@endcan

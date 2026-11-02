@@ -19,4 +19,9 @@ class AcademicTerm extends Model
     {
         return $this->hasMany(CourseOffering::class);
     }
+
+    public function timeSlots()
+    {
+        return $this->hasMany(\App\Models\Timetable\TimeSlot::class);
+    }
 }
