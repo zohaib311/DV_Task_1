@@ -22,7 +22,7 @@ class AccessControlSeeder extends Seeder
             'enrollments.view', 'enrollments.create', 'enrollments.promote', 'enrollments.manage-courses',
             'results.view-all', 'results.create', 'results.edit', 'results.approve', 'results.publish',
             'academic-history.view', 'audit.view', 'reports.view',
-            'fees.manage', 'fees.review', 'timetable.manage',
+            'fees.manage', 'fees.review', 'timetable.manage', 'lms.manage-assigned',
             'notifications.view-own',
         ],
         'HOD / Program Coordinator' => [
@@ -33,13 +33,13 @@ class AccessControlSeeder extends Seeder
         'Teacher' => [
             'dashboard.view', 'offerings.view-assigned', 'attendance.manage-assigned',
             'assessments.manage-assigned', 'marks.manage-assigned', 'results.submit',
-            'notifications.view-own', 'leaves.review-assigned',
+            'notifications.view-own', 'leaves.review-assigned', 'lms.manage-assigned',
         ],
         'Student' => [
             'dashboard.view', 'student.profile.view-own', 'student.attendance.view-own',
             'student.result.view-own', 'student.courses.view-own', 'student.assessments.view-own', 'notifications.view-own',
             'student.registration.manage-own', 'student.assessments.submit-own', 'student.leaves.manage-own',
-            'student.fees.view-own', 'student.fees.submit-own', 'student.admit-card.view-own',
+            'student.fees.view-own', 'student.fees.submit-own', 'student.admit-card.view-own', 'student.lms.view-own',
         ],
     ];
 
@@ -58,6 +58,7 @@ class AccessControlSeeder extends Seeder
         'student.registration.manage-own', 'student.assessments.submit-own', 'student.leaves.manage-own', 'leaves.review-assigned',
         'student.fees.view-own', 'student.fees.submit-own', 'fees.manage', 'fees.review', 'student.admit-card.view-own',
         'academic-history.view', 'audit.view', 'assessments.review', 'timetable.manage',
+        'lms.manage-assigned', 'student.lms.view-own',
     ];
 
     public function run(): void
@@ -78,8 +79,9 @@ class AccessControlSeeder extends Seeder
 
         // Fee access is a new baseline capability. Grant only these new
         // permissions on reruns so existing custom role assignments remain intact.
-        Role::findByName('Academic Admin', 'web')->givePermissionTo(['fees.manage', 'fees.review', 'timetable.manage']);
-        Role::findByName('Student', 'web')->givePermissionTo(['student.fees.view-own', 'student.fees.submit-own']);
+        Role::findByName('Academic Admin', 'web')->givePermissionTo(['fees.manage', 'fees.review', 'timetable.manage', 'lms.manage-assigned']);
+        Role::findByName('Teacher', 'web')->givePermissionTo(['lms.manage-assigned']);
+        Role::findByName('Student', 'web')->givePermissionTo(['student.fees.view-own', 'student.fees.submit-own', 'student.lms.view-own']);
 
         $this->linkExistingProfiles();
 

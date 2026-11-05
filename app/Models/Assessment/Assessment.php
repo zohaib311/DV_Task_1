@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Assessment extends Model
 {
-    protected $fillable = ['title', 'instructions', 'question_file_path', 'question_original_filename', 'question_mime_type', 'question_file_size',
+    protected $fillable = ['assessment_component_id', 'title', 'instructions', 'question_file_path', 'question_original_filename', 'question_mime_type', 'question_file_size',
         'held_on', 'maximum', 'weight', 'revision', 'submission_required', 'submissions_due_at', 'marks_released_at'];
 
     protected $casts = ['held_on' => 'date', 'maximum' => 'decimal:2', 'weight' => 'decimal:2', 'revision' => 'integer',

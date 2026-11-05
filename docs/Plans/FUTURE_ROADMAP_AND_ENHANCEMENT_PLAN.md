@@ -186,9 +186,9 @@ Recent updates in `AcademicEnrollmentService::promotionEligibility()` block prom
 ### Phase 12 — Learning Management System (LMS Lite) & Class Materials
 
 #### Scope & Deliverables
-- [ ] Weekly course materials repository (Lecture slides, reading PDFs, assignments, external links).
-- [ ] Course-specific announcements and noticeboard with student notifications.
-- [ ] Online timed objective quizzes (MCQs) with auto-grading directly feeding assessment component marks.
+- [x] Weekly course materials repository (Lecture slides, reading PDFs, assignments, external links).
+- [x] Course-specific announcements and noticeboard with student notifications.
+- [x] Online timed objective quizzes (MCQs) with auto-grading directly feeding assessment component marks.
 
 #### Database Schema
 - `course_materials`: `[id, course_offering_id, title, week_number, description, file_path, file_type, is_published]`
@@ -209,8 +209,24 @@ Recent updates in `AcademicEnrollmentService::promotionEligibility()` block prom
 5. Student starts the quiz; timer counts down; answers are submitted; score auto-grades and populates the assessment gradebook.
 
 #### Automated Test Coverage
-- `tests/Feature/Teaching/CourseLmsTest.php`
-- `tests/Feature/StudentPortal/OnlineQuizTest.php`
+- `tests/Feature/Teaching/CourseLmsTest.php` (8 tests, 25 assertions — **100% PASS**):
+  - `test_teacher_can_view_lms_hub_for_assigned_offering`
+  - `test_teacher_cannot_access_lms_for_unassigned_offering`
+  - `test_teacher_can_upload_and_download_course_material`
+  - `test_teacher_can_delete_course_material`
+  - `test_teacher_can_post_announcement_and_notify_enrolled_students`
+  - `test_teacher_can_create_mcq_quiz_with_questions`
+  - `test_teacher_can_view_quiz_details`
+  - `test_teacher_can_delete_quiz`
+- `tests/Feature/StudentPortal/OnlineQuizTest.php` (8 tests, 20 assertions — **100% PASS**):
+  - `test_enrolled_student_can_view_course_lms_materials_and_announcements`
+  - `test_enrolled_student_can_download_published_material`
+  - `test_unenrolled_student_cannot_access_course_lms_or_download_material`
+  - `test_student_can_start_timed_quiz_attempt`
+  - `test_student_can_submit_quiz_and_receive_auto_graded_score`
+  - `test_quiz_score_auto_syncs_to_assessment_marks_gradebook`
+  - `test_student_can_view_quiz_result_breakdown`
+  - `test_unpublished_or_closed_quiz_cannot_be_started`
 
 ---
 

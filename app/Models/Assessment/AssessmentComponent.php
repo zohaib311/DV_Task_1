@@ -9,7 +9,7 @@ class AssessmentComponent extends Model
 {
     public const CODES = ['attendance', 'assignment', 'quiz', 'midterm', 'final', 'practical', 'project'];
 
-    protected $fillable = ['code', 'allocation'];
+    protected $fillable = ['course_offering_id', 'code', 'allocation'];
 
     protected $casts = ['allocation' => 'decimal:2'];
 

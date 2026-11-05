@@ -26,6 +26,15 @@ Route::prefix('student-portal')->name('student.')->middleware('auth')->controlle
 
 Route::prefix('student-portal')->name('student.')->middleware('auth')->group(function () {
     Route::get('/timetable', [\App\Http\Controllers\StudentPortal\TimetableController::class, 'index'])->middleware('permission:student.courses.view-own')->name('timetable.index');
+
+    // LMS Lite & Course Materials
+    Route::prefix('courses/{course}/lms')->name('courses.lms')->whereNumber('course')->middleware('permission:student.lms.view-own')->controller(\App\Http\Controllers\StudentPortal\CourseLmsController::class)->group(function () {
+        Route::get('/', 'show');
+        Route::get('/materials/{material}/download', 'downloadMaterial')->whereNumber('material')->name('.materials.download');
+        Route::get('/quizzes/{quiz}/take', 'startQuiz')->whereNumber('quiz')->name('.quizzes.take');
+        Route::post('/quizzes/{quiz}/submit', 'submitQuiz')->whereNumber('quiz')->name('.quizzes.submit');
+        Route::get('/quizzes/{quiz}/result', 'quizResult')->whereNumber('quiz')->name('.quizzes.result');
+    });
 });
 
 Route::prefix('student-portal/assessment-submissions')->name('student.assessment-submissions.')->middleware(['auth', 'permission:student.assessments.submit-own'])->controller(AssessmentSubmissionController::class)->group(function () {

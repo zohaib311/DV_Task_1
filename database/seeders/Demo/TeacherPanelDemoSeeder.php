@@ -52,7 +52,7 @@ class TeacherPanelDemoSeeder extends Seeder
             }
 
             $role = Role::create(['name' => 'Demo Teacher (9C)', 'guard_name' => 'web']);
-            foreach (['dashboard.view', 'offerings.view-assigned'] as $permission) {
+            foreach (['dashboard.view', 'offerings.view-assigned', 'lms.manage-assigned'] as $permission) {
                 $role->givePermissionTo(Permission::findOrCreate($permission, 'web'));
             }
             $department = Department::create(['name' => self::DEPARTMENT]);

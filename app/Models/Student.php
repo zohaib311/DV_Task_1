@@ -95,6 +95,11 @@ class Student extends Model
             ->latestOfMany('enrolled_at');
     }
 
+    public function quizAttempts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Models\Lms\StudentQuizAttempt::class);
+    }
+
     // Helper Attribute to get assigned Courses Models
     public function getAssignedCoursesAttribute()
     {

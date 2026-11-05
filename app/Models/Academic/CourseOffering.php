@@ -8,6 +8,7 @@ use App\Models\Enrollment\StudentEnrollmentCourse;
 use App\Models\Section\Section;
 use App\Models\Teacher;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CourseOffering extends Model
 {
@@ -83,5 +84,20 @@ class CourseOffering extends Model
     public function timetableAllocations(): HasMany
     {
         return $this->hasMany(\App\Models\Timetable\TimetableAllocation::class);
+    }
+
+    public function materials(): HasMany
+    {
+        return $this->hasMany(\App\Models\Lms\CourseMaterial::class);
+    }
+
+    public function announcements(): HasMany
+    {
+        return $this->hasMany(\App\Models\Lms\CourseAnnouncement::class);
+    }
+
+    public function quizzes(): HasMany
+    {
+        return $this->hasMany(\App\Models\Lms\Quiz::class);
     }
 }
