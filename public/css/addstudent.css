@@ -1,127 +1,223 @@
 /* ===================================================
-   ADD / EDIT FORM CONTAINER & STYLING
+   STUDENT ADMISSION & REGISTRATION PAGE STYLES
 =================================================== */
 
-.add__form_cont {
-    width: 100%;
-    display: flex;
+:root {
+    --adm-purple: #6958db;
+    --adm-purple-dark: #5847c9;
+    --adm-soft-purple: #f6f4ff;
+    --adm-border: #e2e8f0;
+    --adm-text-dark: #1e293b;
+    --adm-text-muted: #64748b;
+}
+
+.admission-container {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+}
+
+/* Header & Breadcrumb */
+.admission-header .breadcrumb {
+    font-size: 0.85rem;
+}
+.admission-header .breadcrumb-item a {
+    color: var(--adm-purple);
+    text-decoration: none;
+    font-weight: 500;
+}
+.admission-header .breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+/* Cards & Step Badges */
+.admission-card {
+    border: 1px solid var(--adm-border) !important;
+    border-radius: 16px !important;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+    background: #ffffff;
+}
+.admission-card:hover {
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05) !important;
+}
+
+.admission-card .card-header {
+    background: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.step-badge {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 0 30px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--adm-purple), #8b5cf6);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 10px rgba(105, 88, 219, 0.3);
 }
 
-.add__form {
-    width: 100%;
-    max-width: 860px;
-    padding: 35px 40px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--color-outline, #e2e8f0);
-    border-radius: 20px;
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.04);
-}
-
-.add__form h2 {
-    color: var(--color-primary, #6c63ff);
-    font-weight: 700;
-    font-size: 26px;
-    margin-bottom: 24px;
-}
-
-.add__form .form-label {
-    color: #334155;
-    font-weight: 600;
-    font-size: 13.5px;
-    margin-bottom: 7px;
-}
-
-.add__form .form-control {
-    min-height: 48px;
-    padding: 10px 14px;
-    border: 1.5px solid var(--color-outline, #e2e8f0);
-    border-radius: 10px;
-    background: #f8fafc;
-    font-size: 14px;
-    color: #1e293b;
-    transition: all 0.25s ease;
-}
-
-.add__form .form-control:focus {
+/* Interactive Mode Cards (Radio Cards) */
+.admission-mode-card {
+    display: block;
+    position: relative;
+    border: 2px solid var(--adm-border);
+    border-radius: 14px;
+    padding: 18px;
     background: #ffffff;
-    border-color: var(--color-primary, #6c63ff);
-    box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.12);
-    outline: none;
+    cursor: pointer;
+    transition: all 0.22s ease-in-out;
+    height: 100%;
 }
 
-.add__form input[type="file"]::file-selector-button {
-    padding: 6px 12px;
+.admission-mode-card:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+.admission-mode-radio {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.admission-mode-card:has(.admission-mode-radio:checked) {
+    border-color: var(--adm-purple);
+    background: var(--adm-soft-purple);
+    box-shadow: 0 0 0 3px rgba(105, 88, 219, 0.15);
+}
+
+.admission-mode-card .mode-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #475569;
+}
+
+.admission-mode-card:has(.admission-mode-radio:checked) .mode-icon {
+    color: var(--adm-purple);
+}
+
+/* Lateral Entry Collapsible Sub-card */
+.lateral-details-panel {
+    background: #fafafa;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 22px;
+    animation: fadeInSlide 0.25s ease-out;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Portal Account Switch Box */
+.portal-account-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    transition: background 0.2s ease;
+}
+
+.portal-account-card:hover {
+    background: #ffffff;
+}
+
+/* Form Controls & Inputs */
+.admission-card .form-label {
+    color: #334155;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.admission-card .input-group-text {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #64748b;
+    border-radius: 10px 0 0 10px;
+}
+
+.admission-card .form-control,
+.admission-card .form-select {
+    min-height: 44px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: #0f172a;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admission-card .input-group .form-control,
+.admission-card .input-group .form-select {
+    border-radius: 0 10px 10px 0;
+}
+
+.admission-card .form-control:focus,
+.admission-card .form-select:focus {
+    border-color: var(--adm-purple);
+    box-shadow: 0 0 0 0.2rem rgba(105, 88, 219, 0.15);
+    background: #ffffff;
+}
+
+.admission-card input[type="file"]::file-selector-button {
+    padding: 6px 14px;
     margin-right: 12px;
     border: none;
     border-radius: 6px;
-    background: var(--gradient-primary, linear-gradient(135deg, #6c63ff, #8b5cf6));
-    color: #fff;
+    background: linear-gradient(135deg, var(--adm-purple), #8b5cf6);
+    color: #ffffff;
     cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 0.8rem;
+    font-weight: 600;
     transition: all 0.2s ease;
 }
 
-.add__form .btn-primary {
-    min-height: 48px;
+.admission-card input[type="file"]::file-selector-button:hover {
+    filter: brightness(1.1);
+}
+
+/* Sticky Action Footer */
+.admission-footer-bar {
+    position: sticky;
+    bottom: 20px;
+    z-index: 100;
+    border: 1px solid var(--adm-border);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.admission-footer-bar .btn-primary {
+    background: linear-gradient(135deg, var(--adm-purple), #8b5cf6);
     border: none;
-    border-radius: 10px;
-    background: var(--gradient-primary, linear-gradient(135deg, #6c63ff, #8b5cf6));
-    font-weight: 600;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 14px rgba(108, 99, 255, 0.25);
+    box-shadow: 0 4px 14px rgba(105, 88, 219, 0.3);
+    transition: all 0.2s ease;
 }
 
-.add__form .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 7px 20px rgba(108, 99, 255, 0.35);
+.admission-footer-bar .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(105, 88, 219, 0.4);
 }
-
-.add__form .is-invalid {
-    border-color: #ef4444;
-}
-
-.add__form .invalid-feedback {
-    font-size: 12.5px;
-    color: #ef4444;
-}
-
-.assessment-scheme-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 11px 13px;
-    border-left: 3px solid #756ae2;
-    border-radius: 8px;
-    background: #f7f6ff;
-}
-
-.assessment-scheme-heading span,
-.assessment-scheme-heading small { display: block; }
-.assessment-scheme-heading span { color: #3e396e; font-size: 12px; font-weight: 800; }
-.assessment-scheme-heading small { margin-top: 2px; color: #778197; font-size: 11px; }
-.assessment-scheme-heading strong { color: #665bd0; font-size: 14px; white-space: nowrap; }
-.assessment-scheme-heading strong.is-valid { color: #07835b; }
-.assessment-scheme-heading strong.is-invalid { color: #c83f3f; }
 
 @media (max-width: 768px) {
-    .add__form_cont {
-        padding: 5px 0 20px;
+    .admission-container {
+        padding: 12px 10px 36px;
     }
-
-    .add__form {
-        padding: 24px 18px;
-        border-radius: 16px;
+    .admission-mode-card {
+        padding: 14px;
     }
-
-    .add__form h2 {
-        font-size: 22px;
-        margin-bottom: 18px;
+    .lateral-details-panel {
+        padding: 16px;
     }
 }

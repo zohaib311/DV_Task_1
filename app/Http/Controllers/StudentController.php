@@ -37,8 +37,10 @@ class StudentController extends Controller
         $programs    = Program::with('department')->where('is_active', true)->orderBy('name')->get();
         $sections    = Section::with('department')->get();
         $users       = $this->availableUsers();
+        $defaultLateralCredits = config('academic.lateral_entry.default_transferred_credits', 64.0);
+        $defaultAdmittedSemester = config('academic.lateral_entry.default_admitted_semester', 5);
 
-        return view('students.students', compact('students', 'departments', 'programs', 'sections', 'users'));
+        return view('students.students', compact('students', 'departments', 'programs', 'sections', 'users', 'defaultLateralCredits', 'defaultAdmittedSemester'));
     }
 
     function addStudent(Request $request)

@@ -4,7 +4,6 @@
     <link rel="stylesheet" href="{{ asset('css/students.css') }}">
     <link rel="stylesheet" href="{{ asset('css/universal/action-buttons.css') }}">
     <link rel="stylesheet" href="{{ asset('css/student/student-model.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/student/add-student-drawer.css') }}">
 @endsection
 
 @section('content')
@@ -26,10 +25,10 @@
                         </button>
                     </div>
                     <div class="add__user__btn">
-                        <button type="button" class="btn text-white d-inline-flex align-items-center gap-2 border-0 px-3 py-2 rounded-3 shadow-sm" style="background: rgba(255, 255, 255, 0.2);" data-bs-toggle="offcanvas" data-bs-target="#addStudentDrawer" aria-controls="addStudentDrawer">
+                        <a href="{{ route('addStudentForm') }}" class="btn text-white d-inline-flex align-items-center gap-2 border-0 px-3 py-2 rounded-3 shadow-sm" style="background: rgba(255, 255, 255, 0.25);">
                             <i class="bi bi-person-plus-fill"></i>
                             <span>Add Student</span>
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -367,14 +366,10 @@
             </div>
         </div>
     @endforeach
-
-    <x-student.add-student-drawer :departments="$departments" :programs="$programs" :sections="$sections" :users="$users" />
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('js/student/department-section-filter.js') }}"></script>
     <script src="{{ asset('js/student/alert-dismiss.js') }}"></script>
-    <script src="{{ asset('js/student/student-account-flow.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const search = document.getElementById('student-live-search');
@@ -410,15 +405,4 @@
             });
         });
     </script>
-    @if ($errors->any())
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const addDrawerEl = document.getElementById('addStudentDrawer');
-                if (addDrawerEl) {
-                    const addDrawer = new bootstrap.Offcanvas(addDrawerEl);
-                    addDrawer.show();
-                }
-            });
-        </script>
-    @endif
 @endsection

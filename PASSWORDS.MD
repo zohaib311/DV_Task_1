@@ -11,3 +11,6 @@ Admin ==> admin@gmail.com ==> Password: 1234
 ### Students
 
 Student Dawood ==> dawood@gmail.com ==> Password: 1234
+
+Email: adp.student@gmail.com
+Password: 1234
