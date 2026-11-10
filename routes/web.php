@@ -80,6 +80,7 @@ Route::prefix('student')->controller(StudentController::class)->middleware(['aut
     Route::delete('/delete/{id}', 'deleteStudent')->name('deleteStudent');
 
     Route::get('/show', 'allStudents')->name('allStudents');
+    Route::get('/{student}/transfer-document', 'downloadTransferDocument')->name('students.transfer-document');
 });
 
 Route::prefix('enrollment')->controller(StudentSemesterEnrollmentController::class)->middleware(['auth', 'permission:enrollments.view'])->group(function () {

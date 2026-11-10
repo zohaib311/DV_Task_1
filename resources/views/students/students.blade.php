@@ -65,6 +65,15 @@
                                             <span class="badge bg-secondary text-wrap reg-no-badge">
                                                 {{ $student->registration_no ?? 'N/A' }}
                                             </span>
+                                            @if($student->admission_type === 'lateral_adp')
+                                                <span class="badge bg-warning text-dark d-block mt-1" style="font-size: 0.7rem;">
+                                                    <i class="bi bi-award me-1"></i> ADP Lateral
+                                                </span>
+                                            @elseif($student->admission_type === 'migration')
+                                                <span class="badge bg-info text-dark d-block mt-1" style="font-size: 0.7rem;">
+                                                    <i class="bi bi-box-arrow-in-right me-1"></i> Transfer
+                                                </span>
+                                            @endif
                                         </td>
                                         <td class="user__image">
                                             <img src="{{ asset('storage/images/' . $student->image) }}"

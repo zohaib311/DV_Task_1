@@ -27,6 +27,8 @@ class Student extends Model
         'department_id',
         'program_id',
         'section_id',
+        'admission_type',
+        'admitted_semester',
         'semester',
         'course_ids',
         'image',
@@ -98,6 +100,23 @@ class Student extends Model
     public function quizAttempts(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(\App\Models\Lms\StudentQuizAttempt::class);
+    }
+
+    public function creditTransfer(): HasOne
+    {
+        return $this->hasOne(\App\Models\Academic\StudentCreditTransfer::class);
+    }
+
+    public function isLateralEntry(): bool
+    {
+        return $this->admission_type === 'lateral_adp' || $this->relationLoaded('creditTransfer')
+            ? $this->creditTransfer !== null
+            : $this->creditTransfer()->exists();
+    }
+
+    public function getTransferredCredits(): float
+    {
+        return (float) ($this->creditTransfer?->transferred_credits ?? 0.0);
     }
 
     // Helper Attribute to get assigned Courses Models

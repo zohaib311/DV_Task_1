@@ -108,13 +108,13 @@ class DocumentPdfController extends Controller
         if ($type === 'transcript') {
             $result = SemesterResult::where('verification_hash', $hash)
                 ->whereNotNull('published_at')
-                ->with(['student.department', 'student.program', 'enrollment'])
+                ->with(['student.department', 'student.program', 'student.creditTransfer', 'enrollment'])
                 ->first();
 
             if ($result) {
                 $data['is_valid'] = true;
                 $data['title'] = 'Official Transcript Verification';
-                $data['record'] = [
+                $record = [
                     'student_name' => $result->student->name,
                     'registration_no' => $result->student->registration_no,
                     'program' => $result->student->program?->name ?? 'Undergraduate Degree',
@@ -126,6 +126,13 @@ class DocumentPdfController extends Controller
                     'status' => $result->status,
                     'issued_on' => $result->published_at->format('d M Y'),
                 ];
+
+                if ($result->student->creditTransfer) {
+                    $record['admission_entry'] = 'Lateral Entry (Post-ADP)';
+                    $record['transferred_credits'] = number_format((float) $result->student->creditTransfer->transferred_credits, 1) . ' Cr. Hrs.';
+                }
+
+                $data['record'] = $record;
             }
         } elseif ($type === 'challan') {
             $invoice = StudentFeeInvoice::where('verification_hash', $hash)

@@ -24,7 +24,7 @@ class DocumentPdfService
      */
     public function generateTranscriptPdf(Student $student, ?SemesterResult $specificResult = null): DomPdfWrapper
     {
-        $student->loadMissing(['department', 'program', 'section']);
+        $student->loadMissing(['department', 'program', 'section', 'creditTransfer']);
 
         $query = SemesterResult::where('student_id', $student->id)
             ->whereNotNull('published_at')
@@ -89,11 +89,18 @@ class DocumentPdfService
         $verifyUrl = route('verify.document', ['type' => 'transcript', 'hash' => $verificationHash]);
         $qrDataUri = $this->generateQrDataUri($verifyUrl);
 
+        $transferredCredits = (float) ($student->creditTransfer?->transferred_credits ?? 0.0);
+        $institutionalEarnedCredits = (float) $latestPassedCourses->sum(fn ($course) => (float) $course->credit_hours);
+        $totalEarnedCredits = $institutionalEarnedCredits + $transferredCredits;
+
         $transcript = [
             'semesters' => $semesters,
             'published_semesters' => $results->count(),
             'shown_courses' => $semesters->sum(fn ($semester) => $semester['courses']->count()),
-            'earned_credits' => $latestPassedCourses->sum(fn ($course) => (float) $course->credit_hours),
+            'earned_credits' => $totalEarnedCredits,
+            'institutional_earned_credits' => $institutionalEarnedCredits,
+            'transferred_credits' => $transferredCredits,
+            'credit_transfer' => $student->creditTransfer,
             'cgpa' => $latestResult?->cgpa ?? 0.0,
             'issued_at' => now(),
             'verification_hash' => $verificationHash,

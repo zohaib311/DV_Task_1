@@ -54,12 +54,17 @@ class PortalController extends Controller
             });
         });
         $latestResult = $history->sortBy($sortKey)->last();
+        $student = $workspace->student($request->user())->loadMissing('creditTransfer');
+        $transferredCredits = (float) ($student->creditTransfer?->transferred_credits ?? 0.0);
+        $institutionalPassedCredits = (float) $latestAttempts->reject(fn ($attempt) => $attempt['item']->status === 'Fail')->sum(fn ($attempt) => (float) $attempt['item']->credit_hours);
         $backlogs = $latestAttempts->filter(fn ($attempt) => $attempt['item']->status === 'Fail');
         $degreeProgress = [
             'current_cgpa' => $latestResult?->cgpa,
             'published_semesters' => $history->count(),
             'cgpa_credits' => $latestAttempts->sum(fn ($attempt) => (float) $attempt['item']->credit_hours),
-            'passed_credits' => $latestAttempts->reject(fn ($attempt) => $attempt['item']->status === 'Fail')->sum(fn ($attempt) => (float) $attempt['item']->credit_hours),
+            'passed_credits' => $institutionalPassedCredits + $transferredCredits,
+            'institutional_passed_credits' => $institutionalPassedCredits,
+            'transferred_credits' => $transferredCredits,
             'backlog_courses' => $backlogs->count(),
             'backlog_credits' => $backlogs->sum(fn ($attempt) => (float) $attempt['item']->credit_hours),
         ];
@@ -130,11 +135,19 @@ class PortalController extends Controller
         });
 
         $latestResult = $results->last();
+        $student->loadMissing('creditTransfer');
+        $transferredCredits = (float) ($student->creditTransfer?->transferred_credits ?? 0.0);
+        $institutionalEarnedCredits = (float) $latestPassedCourses->sum(fn ($course) => (float) $course->credit_hours);
+        $totalEarnedCredits = $institutionalEarnedCredits + $transferredCredits;
+
         $transcript = [
             'semesters' => $semesters,
             'published_semesters' => $results->count(),
             'shown_courses' => $semesters->sum(fn ($semester) => $semester['courses']->count()),
-            'earned_credits' => $latestPassedCourses->sum(fn ($course) => (float) $course->credit_hours),
+            'earned_credits' => $totalEarnedCredits,
+            'institutional_earned_credits' => $institutionalEarnedCredits,
+            'transferred_credits' => $transferredCredits,
+            'credit_transfer' => $student->creditTransfer,
             'cgpa' => $latestResult?->cgpa,
             'issued_at' => now(),
         ];

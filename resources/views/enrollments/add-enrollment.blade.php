@@ -57,8 +57,8 @@
                             <select name="student_id" id="student_id" class="form-select" required @disabled($isPromotion)>
                                 <option value="">Select student</option>
                                 @foreach($students as $student)
-                                    <option value="{{ $student->id }}" data-department-id="{{ $student->department_id }}" data-program-id="{{ $student->program_id }}" data-placement="{{ $student->registration_no }} · {{ $student->program?->code ?? 'Legacy program' }} · {{ $student->department?->name }} / {{ $student->section?->name }}"
-                                        @selected(old('student_id', $isPromotion ? $promotionEnrollment->student_id : request('student_id')) == $student->id)>{{ $student->name }} ({{ $student->registration_no }})</option>
+                                    <option value="{{ $student->id }}" data-department-id="{{ $student->department_id }}" data-program-id="{{ $student->program_id }}" data-admitted-semester="{{ $student->admitted_semester ?: $student->semester }}" data-placement="{{ $student->registration_no }} · {{ $student->program?->code ?? 'Legacy program' }} · {{ $student->department?->name }} / {{ $student->section?->name }}{{ $student->admission_type === 'lateral_adp' ? ' · [Lateral Entry (Post-ADP) → ' . ($student->admitted_semester ?? 'Semester 5') . ']' : '' }}"
+                                        @selected(old('student_id', $isPromotion ? $promotionEnrollment->student_id : request('student_id')) == $student->id)>{{ $student->name }} ({{ $student->registration_no }}){{ $student->admission_type === 'lateral_adp' ? ' [ADP Lateral]' : '' }}</option>
                                 @endforeach
                             </select>
                         </div>

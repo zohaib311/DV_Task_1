@@ -230,6 +230,29 @@ Recent updates in `AcademicEnrollmentService::promotionEligibility()` block prom
 
 ---
 
+### Phase 12.5 — Lateral Entry & Advanced Standing (Post-ADP BS 5th Semester)
+
+#### Scope & Deliverables
+- [x] Lateral entry admission flow for graduates of 2-year Associate Degree Programs (ADP) or transfer students.
+- [x] `student_credit_transfers` repository storing previous institution, prior degree, prior CGPA, transferred credits (default 64.0), and uploaded transcript documents.
+- [x] Direct placement into Semester 5 curriculum without requiring synthetic dummy records for Semesters 1 to 4.
+- [x] Shared class offerings: Lateral students attend the exact same course offerings, classrooms, timetable slots, LMS resources, and exams as regular students in their section.
+- [x] Degree credit audit: Transferred credits (64.0) count towards degree completion (130+), while CGPA starts fresh from courses attempted at this institution.
+- [x] Official Transcript PDF & Student Web View: Displays an Advanced Standing & Credit Exemption header banner and cumulative degree summary breakdown (Earned + Transferred).
+- [x] Public QR verification endpoint shows Lateral Entry admission status and transferred credit hours.
+
+#### Automated Test Coverage
+- `tests/Feature/Academic/LateralEntryTransferTest.php` (7 tests, 27 assertions — **100% PASS**):
+  - `test_admin_can_admit_student_with_lateral_adp_entry`
+  - `test_lateral_student_can_enroll_directly_in_semester_5_curriculum`
+  - `test_lateral_and_regular_students_share_the_exact_same_class_offering`
+  - `test_official_transcript_pdf_contains_advanced_standing_box`
+  - `test_student_portal_transcript_displays_exemption_details`
+  - `test_admin_can_download_transfer_document`
+  - `test_regular_students_flow_remains_unaffected`
+
+---
+
 ### Phase 13 — Bulk Operations & Batch Data Management (Excel / CSV)
 
 #### Scope & Deliverables

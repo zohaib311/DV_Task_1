@@ -47,6 +47,23 @@
             <div><span>Department / section</span><strong>{{ $student->department?->name ?? 'Not recorded' }}@if($student->section?->name) · {{ $student->section->name }}@endif</strong></div>
         </section>
 
+        @if(!empty($transcript['credit_transfer']))
+            <section class="border rounded-3 p-3 mb-4" style="background-color: #fdfaf2; border-color: #e5d7ad !important;">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-1">
+                    <span class="fw-bold text-dark"><i class="bi bi-award-fill text-warning me-1"></i> Advanced Standing &amp; Credit Exemption</span>
+                    <span class="badge bg-primary fs-6">{{ number_format((float) $transcript['credit_transfer']->transferred_credits, 1) }} Credits Transferred</span>
+                </div>
+                <div class="small text-muted">
+                    Prior Degree: <strong>{{ $transcript['credit_transfer']->previous_degree }}</strong> &bull;
+                    Institution: <strong>{{ $transcript['credit_transfer']->previous_institution }}</strong>
+                    @if($transcript['credit_transfer']->previous_cgpa)
+                        &bull; Prior CGPA: <strong>{{ $transcript['credit_transfer']->previous_cgpa }}</strong>
+                    @endif
+                    &bull; Admitted to: <strong>Semester {{ $transcript['credit_transfer']->admitted_to_semester }}</strong>
+                </div>
+            </section>
+        @endif
+
         <section class="official-transcript-records">
             <div class="official-transcript-section-title">
                 <div>

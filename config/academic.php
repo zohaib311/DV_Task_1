@@ -80,4 +80,21 @@ return [
         // finance before the next-semester enrollment can be created.
         'require_approved_fee' => env('ACADEMIC_PROMOTION_REQUIRE_APPROVED_FEE', true),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Lateral Entry & Credit Transfer (Post-ADP / BS 5th Semester)
+    |--------------------------------------------------------------------------
+    |
+    | Lateral entry allows graduates of 2-year Associate Degree Programs (ADP)
+    | to be admitted directly into 5th semester with transferred block credits.
+    | Transferred credits count towards total degree completion requirements,
+    | while the university CGPA begins from the first semester attempted here.
+    |
+    */
+    'lateral_entry' => [
+        'default_transferred_credits' => (float) env('ACADEMIC_LATERAL_DEFAULT_CREDITS', 64.0),
+        'default_admitted_semester' => (int) env('ACADEMIC_LATERAL_DEFAULT_SEMESTER', 5),
+        'include_in_cgpa' => (bool) env('ACADEMIC_LATERAL_INCLUDE_IN_CGPA', false),
+    ],
 ];

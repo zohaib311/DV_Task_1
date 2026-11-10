@@ -75,6 +75,84 @@
                         @enderror
                     </div>
 
+                    <!-- Admission Entry Type & Credit Transfer -->
+                    <div class="col-12">
+                        <div class="border rounded-3 p-3 bg-light-subtle">
+                            <label class="form-label fw-semibold d-block"><i class="bi bi-mortarboard me-1"></i> Admission Entry Type</label>
+                            <div class="d-flex flex-wrap gap-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="admission_type" id="admission_regular" value="regular" @checked(old('admission_type', $student->admission_type ?? 'regular') === 'regular')>
+                                    <label class="form-check-label fw-medium" for="admission_regular">
+                                        Regular Admission (Semester 1 Entry)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="admission_type" id="admission_lateral_adp" value="lateral_adp" @checked(old('admission_type', $student->admission_type) === 'lateral_adp')>
+                                    <label class="form-check-label fw-medium text-primary" for="admission_lateral_adp">
+                                        Lateral Entry (Post-ADP 5th Semester)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="admission_type" id="admission_migration" value="migration" @checked(old('admission_type', $student->admission_type) === 'migration')>
+                                    <label class="form-check-label fw-medium" for="admission_migration">
+                                        Credit Transfer / Migration
+                                    </label>
+                                </div>
+                            </div>
+
+                            @php($transfer = $student->creditTransfer)
+                            <div class="border-top pt-3 mt-3 {{ in_array(old('admission_type', $student->admission_type), ['lateral_adp', 'migration'], true) ? '' : 'd-none' }}" id="lateral_entry_section">
+                                <div class="alert alert-info py-2 small mb-3">
+                                    <i class="bi bi-info-circle me-1"></i> Lateral entry candidates are admitted directly into <strong>Semester 5</strong> with block credit exemption.
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="previous_institution" class="form-label">Previous Institution / University <span class="text-danger">*</span></label>
+                                        <input type="text" name="previous_institution" id="previous_institution" value="{{ old('previous_institution', $transfer?->previous_institution) }}" class="form-control @error('previous_institution') is-invalid @enderror" placeholder="e.g. University of the Punjab / Govt College">
+                                        @error('previous_institution')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="previous_degree" class="form-label">Previous Qualification / Degree <span class="text-danger">*</span></label>
+                                        <input type="text" name="previous_degree" id="previous_degree" value="{{ old('previous_degree', $transfer?->previous_degree) }}" class="form-control @error('previous_degree') is-invalid @enderror" placeholder="e.g. Associate Degree in Computer Science (ADCS)">
+                                        @error('previous_degree')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="transferred_credits" class="form-label">Transferred Credit Hours <span class="text-danger">*</span></label>
+                                        <input type="number" step="0.5" name="transferred_credits" id="transferred_credits" value="{{ old('transferred_credits', $transfer?->transferred_credits ?? 64.0) }}" class="form-control @error('transferred_credits') is-invalid @enderror">
+                                        @error('transferred_credits')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="previous_cgpa" class="form-label">Prior CGPA / Percentage <small class="text-muted">(Optional)</small></label>
+                                        <input type="text" name="previous_cgpa" id="previous_cgpa" value="{{ old('previous_cgpa', $transfer?->previous_cgpa) }}" class="form-control @error('previous_cgpa') is-invalid @enderror">
+                                        @error('previous_cgpa')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="admitted_to_semester" class="form-label">Admitted to Semester</label>
+                                        <select name="admitted_to_semester" id="admitted_to_semester" class="form-select @error('admitted_to_semester') is-invalid @enderror">
+                                            @for($s = 3; $s <= 6; $s++)
+                                                <option value="{{ $s }}" @selected(old('admitted_to_semester', $transfer?->admitted_to_semester ?? 5) == $s)>Semester {{ $s }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="transcript_document" class="form-label">Update Transcript / Equivalence Proof <small class="text-muted">(PDF or Image)</small></label>
+                                        <input type="file" name="transcript_document" id="transcript_document" class="form-control @error('transcript_document') is-invalid @enderror" accept=".pdf,.jpg,.jpeg,.png">
+                                        @if($transfer?->document_path)
+                                            <div class="mt-1 small">
+                                                <a href="{{ route('students.transfer-document', $student) }}" target="_blank" class="text-primary fw-semibold"><i class="bi bi-file-earmark-arrow-down me-1"></i> Download current file ({{ $transfer->document_name ?? 'Document' }})</a>
+                                            </div>
+                                        @endif
+                                        @error('transcript_document')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="remarks" class="form-label">Equivalence Remarks / Order No. <small class="text-muted">(Optional)</small></label>
+                                        <input type="text" name="remarks" id="remarks" value="{{ old('remarks', $transfer?->remarks) }}" class="form-control @error('remarks') is-invalid @enderror" placeholder="e.g. Equivalence Committee Ref # EC-2026/08">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="col-md-6">
                         <label for="department_id" class="form-label">Department</label>
                         <select name="department_id" id="department_id"
@@ -199,4 +277,17 @@
 @section('scripts')
     <script src="{{ asset('js/student/department-section-filter.js') }}"></script>
     <script src="{{ asset('js/student/student-account-flow.js') }}"></script>
+    <script>
+        document.querySelectorAll('input[name="admission_type"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const sec = document.getElementById('lateral_entry_section');
+                if (!sec) return;
+                if (e.target.value === 'lateral_adp' || e.target.value === 'migration') {
+                    sec.classList.remove('d-none');
+                } else {
+                    sec.classList.add('d-none');
+                }
+            });
+        });
+    </script>
 @endsection

@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const visiblePlans = [...curriculum.options].filter((item) => item.value && !item.disabled);
         if (!curriculum.value) {
-            const defaultPlan = form.dataset.nextSemester
-                ? visiblePlans.find((item) => item.dataset.semester === form.dataset.nextSemester)
-                : visiblePlans.find((item) => item.dataset.semester === 'Semester 1');
+            const targetSemester = form.dataset.nextSemester || option?.dataset.admittedSemester || 'Semester 1';
+            const defaultPlan = visiblePlans.find((item) => item.dataset.semester === targetSemester)
+                || visiblePlans.find((item) => item.dataset.semester === 'Semester 1');
             curriculum.value = defaultPlan?.value || (visiblePlans.length === 1 ? visiblePlans[0].value : '');
         }
     }

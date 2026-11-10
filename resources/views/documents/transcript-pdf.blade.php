@@ -72,6 +72,31 @@
                 </table>
             </div>
 
+            @if(!empty($transcript['credit_transfer']))
+                <!-- Official Advanced Standing / Credit Exemption Banner -->
+                <div class="exemption-box" style="margin: 6px 0 10px 0; border: 1pt solid #c5a059; background: #fffcf0; padding: 6px 10px; border-radius: 4px;">
+                    <table style="width: 100%; font-size: 8pt; border-collapse: collapse;">
+                        <tr>
+                            <td style="font-weight: bold; color: #0c2340; width: 45%;">
+                                &#9733; ADVANCED STANDING / CREDIT EXEMPTION
+                            </td>
+                            <td style="color: #475569; width: 55%; text-align: right;">
+                                <strong>{{ number_format((float) $transcript['credit_transfer']->transferred_credits, 1) }} Credit Hours Transferred</strong> &bull; Admitted to Semester {{ $transcript['credit_transfer']->admitted_to_semester }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="color: #334155; padding-top: 3px;">
+                                Prior Degree: <strong>{{ $transcript['credit_transfer']->previous_degree }}</strong> &bull;
+                                Institution: <strong>{{ $transcript['credit_transfer']->previous_institution }}</strong>
+                                @if($transcript['credit_transfer']->previous_cgpa)
+                                    &bull; Prior CGPA/Marks: <strong>{{ $transcript['credit_transfer']->previous_cgpa }}</strong>
+                                @endif
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            @endif
+
             <!-- Semester Records Flow -->
             @forelse($transcript['semesters'] as $sem)
                 <div class="semester-wrap">
@@ -135,8 +160,13 @@
                             <div class="sum-val">{{ $transcript['published_semesters'] }}</div>
                         </td>
                         <td style="width: 25%; border-right: 0.5pt solid #d1d5db;">
-                            <div class="sum-title">Total Earned Credits</div>
+                            <div class="sum-title">Total Degree Credits</div>
                             <div class="sum-val">{{ number_format((float) $transcript['earned_credits'], 1) }}</div>
+                            @if(!empty($transcript['transferred_credits']) && $transcript['transferred_credits'] > 0)
+                                <div style="font-size: 6.5pt; color: #64748b; margin-top: 2px;">
+                                    (Earned: {{ number_format((float) $transcript['institutional_earned_credits'], 1) }} + Tr: {{ number_format((float) $transcript['transferred_credits'], 1) }})
+                                </div>
+                            @endif
                         </td>
                         <td style="width: 25%; border-right: 0.5pt solid #d1d5db;">
                             <div class="sum-title">Cumulative GPA (CGPA)</div>
