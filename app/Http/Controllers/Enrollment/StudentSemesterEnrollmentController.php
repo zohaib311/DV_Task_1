@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Enrollment;
 use App\Http\Controllers\Controller;
 use App\Models\Academic\AcademicTerm;
 use App\Models\Academic\SemesterCurriculum;
+use App\Models\Department\Department;
 use App\Models\Enrollment\StudentSemesterEnrollment;
 use App\Models\Student;
 use App\Services\AcademicEnrollmentService;
@@ -16,8 +17,9 @@ class StudentSemesterEnrollmentController extends Controller
     {
         $enrollments = StudentSemesterEnrollment::with(['student', 'department', 'program', 'section', 'semesterResult', 'term', 'curriculum', 'courses.course', 'courses.offering.teachers'])
             ->withCount('courses')->orderByDesc('enrolled_at')->orderByDesc('id')->get();
+        $departments = Department::orderBy('name')->get();
 
-        return view('enrollments.enrollments', compact('enrollments'));
+        return view('enrollments.enrollments', compact('enrollments', 'departments'));
     }
 
     public function create()

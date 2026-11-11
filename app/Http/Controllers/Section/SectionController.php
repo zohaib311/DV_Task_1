@@ -35,8 +35,9 @@ class SectionController extends Controller
     {
         // 4. Eager load department relation
         $sections = Section::with('department')->get();
+        $departments = Department::orderBy('name')->get();
 
-        return view('section.sections', compact('sections'));
+        return view('section.sections', compact('sections', 'departments'));
     }
 
     function editSectionForm($id)

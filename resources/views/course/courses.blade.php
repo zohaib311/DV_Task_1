@@ -38,6 +38,60 @@
 
                 </div>
 
+                <!-- Course Filter Toolbar -->
+                <div class="table-filter-toolbar">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-5">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text border-end-0"><i class="bi bi-calculator"></i></span>
+                                <select class="form-select form-select-sm border-start-0" data-filter-field="credits" aria-label="Filter by credit hours">
+                                    <option value="">All Credit Hours</option>
+                                    @foreach($courses->pluck('credit_hours')->unique()->sort() as $cr)
+                                        <option value="{{ number_format((float) $cr, 1) }}">{{ number_format((float) $cr, 1) }} Credits</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text border-end-0"><i class="bi bi-activity"></i></span>
+                                <select class="form-select form-select-sm border-start-0" data-filter-field="status" aria-label="Filter by status">
+                                    <option value="">All Statuses</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <button type="button" data-filter-reset class="btn btn-filter-reset w-100 d-inline-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                <span>Reset Filters</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Filter Pills -->
+                    <div class="filter-pills-wrap">
+                        <span class="filter-pill-label">Quick filter:</span>
+                        <button type="button" class="filter-pill-btn is-active" data-pill-field="status" data-pill-value="">
+                            <span>All</span>
+                            <span class="pill-count">{{ $courses->count() }}</span>
+                        </button>
+                        <button type="button" class="filter-pill-btn" data-pill-field="status" data-pill-value="active">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <span>Active</span>
+                            <span class="pill-count">{{ $courses->where('is_active', true)->count() }}</span>
+                        </button>
+                        <button type="button" class="filter-pill-btn" data-pill-field="status" data-pill-value="inactive">
+                            <i class="bi bi-dash-circle text-muted"></i>
+                            <span>Inactive</span>
+                            <span class="pill-count">{{ $courses->where('is_active', false)->count() }}</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="card-body">
 
                     @if (session('success'))
@@ -72,7 +126,9 @@
 
                                 @forelse ($courses as $course)
                                     <tr class="course-search-row"
-                                        data-search="{{ strtolower(implode(' ', [$course->code, $course->name, $course->description ?? '', $course->credit_hours, $course->is_active ? 'active' : 'inactive'])) }}">
+                                        data-search="{{ strtolower(implode(' ', [$course->code, $course->name, $course->description ?? '', $course->credit_hours, $course->is_active ? 'active' : 'inactive'])) }}"
+                                        data-credits="{{ number_format((float) $course->credit_hours, 1) }}"
+                                        data-status="{{ $course->is_active ? 'active' : 'inactive' }}">
 
                                         <th scope="row" class="row-serial">
                                             {{ $loop->iteration }}

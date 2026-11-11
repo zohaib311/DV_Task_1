@@ -37,6 +37,65 @@
 
                 </div>
 
+                <!-- Teacher Filter Toolbar -->
+                <div class="table-filter-toolbar">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-5">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text border-end-0"><i class="bi bi-building"></i></span>
+                                <select id="teacher-filter-department" class="form-select form-select-sm border-start-0" aria-label="Filter by department">
+                                    <option value="">All Departments</option>
+                                    @foreach ($departments as $department)
+                                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text border-end-0"><i class="bi bi-person-badge"></i></span>
+                                <select id="teacher-filter-account" class="form-select form-select-sm border-start-0" aria-label="Filter by portal account">
+                                    <option value="">All Login Accounts</option>
+                                    <option value="linked">Linked (Portal Access)</option>
+                                    <option value="unlinked">Not Linked</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <button id="teacher-filter-reset" type="button" class="btn btn-filter-reset w-100 d-inline-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                <span>Reset Filters</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Filter Pills -->
+                    <div class="filter-pills-wrap">
+                        <span class="filter-pill-label">Quick filter:</span>
+                        <button type="button" class="filter-pill-btn is-active teacher-filter-pill" data-filter-type="all">
+                            <span>All</span>
+                            <span class="pill-count">{{ $teachers->count() }}</span>
+                        </button>
+                        @foreach ($departments as $department)
+                            @php($deptTCount = $teachers->filter(fn($t) => $t->offerings->pluck('department_id')->contains($department->id))->count())
+                            @if ($deptTCount > 0)
+                                <button type="button" class="filter-pill-btn teacher-filter-pill" data-filter-type="department" data-filter-value="{{ $department->id }}">
+                                    <i class="bi bi-building"></i>
+                                    <span>{{ $department->name }}</span>
+                                    <span class="pill-count">{{ $deptTCount }}</span>
+                                </button>
+                            @endif
+                        @endforeach
+                        <button type="button" class="filter-pill-btn teacher-filter-pill" data-filter-type="account" data-filter-value="linked">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <span>Portal Linked</span>
+                            <span class="pill-count">{{ $teachers->whereNotNull('user_id')->count() }}</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="card-body">
 
                     @if (session('success'))
@@ -70,7 +129,16 @@
 
                                 @forelse ($teachers as $teacher)
                                     <tr class="teacher-search-row"
-                                        data-search="{{ strtolower(implode(' ', [$teacher->name, $teacher->email, $teacher->phone, $teacher->course ?? ''])) }}">
+                                        data-search="{{ strtolower(implode(' ', [
+                                            $teacher->name,
+                                            $teacher->email,
+                                            $teacher->phone,
+                                            $teacher->course ?? '',
+                                            $teacher->offerings->pluck('department.name')->implode(' '),
+                                            $teacher->user_id ? 'linked' : 'unlinked'
+                                        ])) }}"
+                                        data-account="{{ $teacher->user_id ? 'linked' : 'unlinked' }}"
+                                        data-departments="{{ $teacher->offerings->pluck('department_id')->implode(',') }}">
 
                                         <th scope="row" class="row-serial">
                                             {{ $loop->iteration }}
@@ -95,9 +163,14 @@
 
                                         <td>
                                             <span class="badge bg-primary">
-                                                {{ $teacher->course }}
+                                                {{ $teacher->course ?? 'General Faculty' }}
                                             </span>
-
+                                            @php($deptNames = $teacher->offerings->pluck('department.name')->unique()->filter())
+                                            @if ($deptNames->isNotEmpty())
+                                                <small class="text-muted d-block mt-1">
+                                                    <i class="bi bi-building me-1"></i> {{ $deptNames->implode(', ') }}
+                                                </small>
+                                            @endif
                                         </td>
 
                                         <td>
@@ -216,37 +289,91 @@
             const search = document.getElementById('teacher-live-search');
             const clear = document.getElementById('teacher-search-clear');
             const count = document.getElementById('teacher-search-count');
+            const deptFilter = document.getElementById('teacher-filter-department');
+            const accountFilter = document.getElementById('teacher-filter-account');
+            const resetBtn = document.getElementById('teacher-filter-reset');
+            const pillBtns = Array.from(document.querySelectorAll('.teacher-filter-pill'));
             const rows = Array.from(document.querySelectorAll('.teacher-search-row'));
             const emptyState = document.getElementById('teachers-empty-state');
             const noResults = document.getElementById('teachers-no-search-results');
 
-            if (!search || !count || !noResults) return;
+            if (!rows.length) return;
 
             const filterTeachers = function () {
-                const query = search.value.trim().toLowerCase();
+                const query = search ? search.value.trim().toLowerCase() : '';
+                const selectedDept = deptFilter ? deptFilter.value : '';
+                const selectedAccount = accountFilter ? accountFilter.value : '';
                 let matches = 0;
 
                 rows.forEach(function (row) {
                     const matchesSearch = !query || (row.dataset.search || '').includes(query);
-                    row.hidden = !matchesSearch;
-                    if (matchesSearch) {
+                    const depts = (row.dataset.departments || '').split(',').map(s => s.trim());
+                    const matchesDept = !selectedDept || depts.includes(selectedDept);
+                    const matchesAccount = !selectedAccount || row.dataset.account === selectedAccount;
+
+                    const isVisible = matchesSearch && matchesDept && matchesAccount;
+                    row.hidden = !isVisible;
+                    if (isVisible) {
                         matches++;
                         const serialCell = row.querySelector('.row-serial');
                         if (serialCell) serialCell.textContent = matches;
                     }
                 });
 
-                noResults.hidden = rows.length === 0 || matches > 0;
-                if (emptyState) emptyState.hidden = Boolean(query);
+                if (noResults) noResults.hidden = rows.length === 0 || matches > 0;
+                if (emptyState) emptyState.hidden = Boolean(query || selectedDept || selectedAccount);
                 if (clear) clear.hidden = !query;
-                count.textContent = query ? `${matches} of ${rows.length} teachers` : `${rows.length} teachers`;
+
+                const isFiltered = Boolean(query || selectedDept || selectedAccount);
+                if (count) {
+                    count.textContent = isFiltered ? `${matches} of ${rows.length} teachers` : `${rows.length} teachers`;
+                }
+
+                // Update active state on pills
+                pillBtns.forEach(pill => {
+                    const type = pill.dataset.filterType;
+                    const val = pill.dataset.filterValue;
+                    if (type === 'all') {
+                        pill.classList.toggle('is-active', !selectedDept && !selectedAccount);
+                    } else if (type === 'department') {
+                        pill.classList.toggle('is-active', selectedDept === val);
+                    } else if (type === 'account') {
+                        pill.classList.toggle('is-active', selectedAccount === val);
+                    }
+                });
             };
 
-            search.addEventListener('input', filterTeachers);
+            search?.addEventListener('input', filterTeachers);
             clear?.addEventListener('click', function () {
                 search.value = '';
                 filterTeachers();
                 search.focus();
+            });
+
+            deptFilter?.addEventListener('change', filterTeachers);
+            accountFilter?.addEventListener('change', filterTeachers);
+
+            pillBtns.forEach(pill => {
+                pill.addEventListener('click', function () {
+                    const type = this.dataset.filterType;
+                    const val = this.dataset.filterValue;
+                    if (type === 'all') {
+                        if (deptFilter) deptFilter.value = '';
+                        if (accountFilter) accountFilter.value = '';
+                    } else if (type === 'department') {
+                        if (deptFilter) deptFilter.value = (deptFilter.value === val ? '' : val);
+                    } else if (type === 'account') {
+                        if (accountFilter) accountFilter.value = (accountFilter.value === val ? '' : val);
+                    }
+                    filterTeachers();
+                });
+            });
+
+            resetBtn?.addEventListener('click', function () {
+                if (search) search.value = '';
+                if (deptFilter) deptFilter.value = '';
+                if (accountFilter) accountFilter.value = '';
+                filterTeachers();
             });
 
             setTimeout(function () {

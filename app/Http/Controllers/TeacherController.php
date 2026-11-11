@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\User;
+use App\Models\Department\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -21,10 +22,12 @@ class TeacherController extends Controller
 
     function allTeachers()
     {
-        $teachers = Teacher::with('user')->get();
+        $teachers = Teacher::with(['user', 'offerings.department'])->get();
+        $departments = Department::orderBy('name')->get();
 
         return view('teachers.teachers', [
-            'teachers' => $teachers
+            'teachers' => $teachers,
+            'departments' => $departments,
         ]);
     }
 

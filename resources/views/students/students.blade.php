@@ -32,6 +32,81 @@
                     </div>
                 </div>
 
+                <!-- Table Filter Toolbar -->
+                <div class="table-filter-toolbar">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text border-end-0"><i class="bi bi-building"></i></span>
+                                <select id="student-filter-department" class="form-select form-select-sm border-start-0" aria-label="Filter by department">
+                                    <option value="">All Departments</option>
+                                    @foreach ($departments as $department)
+                                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-6">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text border-end-0"><i class="bi bi-calendar3"></i></span>
+                                <select id="student-filter-semester" class="form-select form-select-sm border-start-0" aria-label="Filter by semester">
+                                    <option value="">All Semesters</option>
+                                    @for ($s = 1; $s <= 8; $s++)
+                                        <option value="Semester {{ $s }}">Semester {{ $s }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-6">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text border-end-0"><i class="bi bi-mortarboard"></i></span>
+                                <select id="student-filter-admission" class="form-select form-select-sm border-start-0" aria-label="Filter by admission mode">
+                                    <option value="">All Admission Types</option>
+                                    <option value="regular">Regular Entry (Sem 1)</option>
+                                    <option value="lateral_adp">ADP Lateral Entry (Sem 5)</option>
+                                    <option value="migration">Transfer / Migration</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-2 col-md-6">
+                            <button id="student-filter-reset" type="button" class="btn btn-filter-reset w-100 d-inline-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                <span>Reset Filters</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Filter Pills -->
+                    <div class="filter-pills-wrap">
+                        <span class="filter-pill-label">Quick filter:</span>
+                        <button type="button" class="filter-pill-btn is-active student-filter-pill" data-filter-type="all">
+                            <span>All</span>
+                            <span class="pill-count">{{ $students->count() }}</span>
+                        </button>
+                        @foreach ($departments as $department)
+                            @php($deptCount = $students->where('department_id', $department->id)->count())
+                            @if ($deptCount > 0)
+                                <button type="button" class="filter-pill-btn student-filter-pill" data-filter-type="department" data-filter-value="{{ $department->id }}">
+                                    <i class="bi bi-building"></i>
+                                    <span>{{ $department->name }}</span>
+                                    <span class="pill-count">{{ $deptCount }}</span>
+                                </button>
+                            @endif
+                        @endforeach
+                        @php($lateralCount = $students->where('admission_type', 'lateral_adp')->count())
+                        @if ($lateralCount > 0)
+                            <button type="button" class="filter-pill-btn student-filter-pill" data-filter-type="admission" data-filter-value="lateral_adp">
+                                <i class="bi bi-award text-warning"></i>
+                                <span>ADP Lateral</span>
+                                <span class="pill-count">{{ $lateralCount }}</span>
+                            </button>
+                        @endif
+                    </div>
+                </div>
+
                 <div class="card-body">
                     @if (session('success'))
                         <div class="alert alert-success m-3 mb-0" id="success-message">
@@ -45,10 +120,11 @@
                         <table class="table table-hover table-bordered align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th scope="col">#</th>
+                                    <th scope="col" style="width: 45px;">#</th>
                                     <th scope="col">Reg No</th>
                                     <th scope="col">Image</th>
                                     <th scope="col">Name</th>
+                                    <th scope="col">Department & Program</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Phone</th>
                                     <th scope="col">Enrollment</th>
@@ -58,7 +134,21 @@
                             <tbody id="students-table-body">
                                 @forelse ($students as $student)
                                     <tr class="student-search-row"
-                                        data-search="{{ strtolower(implode(' ', [$student->registration_no ?? '', $student->name, $student->email, $student->phone])) }}">
+                                        data-search="{{ strtolower(implode(' ', [
+                                            $student->registration_no ?? '',
+                                            $student->name,
+                                            $student->email,
+                                            $student->phone,
+                                            $student->department?->name ?? '',
+                                            $student->program?->name ?? '',
+                                            $student->program?->code ?? '',
+                                            $student->section?->name ?? '',
+                                            $student->activeSemesterEnrollment?->semester ?? $student->semester ?? '',
+                                            $student->admission_type ?? 'regular'
+                                        ])) }}"
+                                        data-department-id="{{ $student->department_id }}"
+                                        data-semester="{{ $student->activeSemesterEnrollment?->semester ?? $student->semester ?? '' }}"
+                                        data-admission-type="{{ $student->admission_type ?? 'regular' }}">
                                         <th scope="row" class="row-serial">{{ $loop->iteration }}</th>
                                         <td>
                                             <span class="badge bg-secondary text-wrap reg-no-badge">
@@ -79,6 +169,15 @@
                                                 alt="{{ $student->name }}" class="user-image">
                                         </td>
                                         <td class="fw-semibold">{{ $student->name }}</td>
+                                        <td>
+                                            <div class="fw-semibold text-dark">{{ $student->department->name ?? 'N/A' }}</div>
+                                            <small class="text-muted d-block">
+                                                <i class="bi bi-mortarboard me-1"></i> Program: {{ $student->program->name ?? ($student->program->code ?? 'N/A') }}
+                                                @if($student->section)
+                                                    · Sec {{ $student->section->name }}
+                                                @endif
+                                            </small>
+                                        </td>
                                         <td>{{ $student->email }}</td>
                                         <td>{{ $student->phone }}</td>
                                         <td>
@@ -375,37 +474,96 @@
             const search = document.getElementById('student-live-search');
             const clear = document.getElementById('student-search-clear');
             const count = document.getElementById('student-search-count');
+            const deptFilter = document.getElementById('student-filter-department');
+            const semFilter = document.getElementById('student-filter-semester');
+            const admFilter = document.getElementById('student-filter-admission');
+            const resetBtn = document.getElementById('student-filter-reset');
+            const pillBtns = Array.from(document.querySelectorAll('.student-filter-pill'));
             const rows = Array.from(document.querySelectorAll('.student-search-row'));
             const emptyState = document.getElementById('students-empty-state');
             const noResults = document.getElementById('students-no-search-results');
 
-            if (!search || !count || !noResults) return;
+            if (!rows.length) return;
 
             const filterStudents = function () {
-                const query = search.value.trim().toLowerCase();
+                const query = search ? search.value.trim().toLowerCase() : '';
+                const selectedDept = deptFilter ? deptFilter.value : '';
+                const selectedSem = semFilter ? semFilter.value : '';
+                const selectedAdm = admFilter ? admFilter.value : '';
                 let matches = 0;
 
                 rows.forEach(function (row) {
                     const matchesSearch = !query || (row.dataset.search || '').includes(query);
-                    row.hidden = !matchesSearch;
-                    if (matchesSearch) {
+                    const matchesDept = !selectedDept || row.dataset.departmentId === selectedDept;
+                    const matchesSem = !selectedSem || row.dataset.semester === selectedSem;
+                    const matchesAdm = !selectedAdm || row.dataset.admissionType === selectedAdm;
+
+                    const isVisible = matchesSearch && matchesDept && matchesSem && matchesAdm;
+                    row.hidden = !isVisible;
+                    if (isVisible) {
                         matches++;
                         const serialCell = row.querySelector('.row-serial');
                         if (serialCell) serialCell.textContent = matches;
                     }
                 });
 
-                noResults.hidden = rows.length === 0 || matches > 0;
-                if (emptyState) emptyState.hidden = Boolean(query);
+                if (noResults) noResults.hidden = rows.length === 0 || matches > 0;
+                if (emptyState) emptyState.hidden = Boolean(query || selectedDept || selectedSem || selectedAdm);
                 if (clear) clear.hidden = !query;
-                count.textContent = query ? `${matches} of ${rows.length} students` : `${rows.length} students`;
+
+                const isFiltered = Boolean(query || selectedDept || selectedSem || selectedAdm);
+                if (count) {
+                    count.textContent = isFiltered ? `${matches} of ${rows.length} students` : `${rows.length} students`;
+                }
+
+                // Update active state on pills
+                pillBtns.forEach(pill => {
+                    const type = pill.dataset.filterType;
+                    const val = pill.dataset.filterValue;
+                    if (type === 'all') {
+                        pill.classList.toggle('is-active', !selectedDept && !selectedSem && !selectedAdm);
+                    } else if (type === 'department') {
+                        pill.classList.toggle('is-active', selectedDept === val);
+                    } else if (type === 'admission') {
+                        pill.classList.toggle('is-active', selectedAdm === val);
+                    }
+                });
             };
 
-            search.addEventListener('input', filterStudents);
+            search?.addEventListener('input', filterStudents);
             clear?.addEventListener('click', function () {
                 search.value = '';
                 filterStudents();
                 search.focus();
+            });
+
+            deptFilter?.addEventListener('change', filterStudents);
+            semFilter?.addEventListener('change', filterStudents);
+            admFilter?.addEventListener('change', filterStudents);
+
+            pillBtns.forEach(pill => {
+                pill.addEventListener('click', function () {
+                    const type = this.dataset.filterType;
+                    const val = this.dataset.filterValue;
+                    if (type === 'all') {
+                        if (deptFilter) deptFilter.value = '';
+                        if (semFilter) semFilter.value = '';
+                        if (admFilter) admFilter.value = '';
+                    } else if (type === 'department') {
+                        if (deptFilter) deptFilter.value = (deptFilter.value === val ? '' : val);
+                    } else if (type === 'admission') {
+                        if (admFilter) admFilter.value = (admFilter.value === val ? '' : val);
+                    }
+                    filterStudents();
+                });
+            });
+
+            resetBtn?.addEventListener('click', function () {
+                if (search) search.value = '';
+                if (deptFilter) deptFilter.value = '';
+                if (semFilter) semFilter.value = '';
+                if (admFilter) admFilter.value = '';
+                filterStudents();
             });
         });
     </script>

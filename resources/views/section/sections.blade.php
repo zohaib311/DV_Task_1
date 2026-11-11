@@ -39,6 +39,49 @@
 
                 </div>
 
+                <!-- Section Filter Toolbar -->
+                <div class="table-filter-toolbar">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-9">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text border-end-0"><i class="bi bi-building"></i></span>
+                                <select class="form-select form-select-sm border-start-0" data-filter-field="departmentId" aria-label="Filter by department">
+                                    <option value="">All Departments</option>
+                                    @foreach ($departments as $department)
+                                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <button type="button" data-filter-reset class="btn btn-filter-reset w-100 d-inline-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                <span>Reset Filters</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Filter Pills -->
+                    <div class="filter-pills-wrap">
+                        <span class="filter-pill-label">Quick filter:</span>
+                        <button type="button" class="filter-pill-btn is-active" data-pill-field="departmentId" data-pill-value="">
+                            <span>All</span>
+                            <span class="pill-count">{{ $sections->count() }}</span>
+                        </button>
+                        @foreach ($departments as $department)
+                            @php($deptSecCount = $sections->where('department_id', $department->id)->count())
+                            @if ($deptSecCount > 0)
+                                <button type="button" class="filter-pill-btn" data-pill-field="departmentId" data-pill-value="{{ $department->id }}">
+                                    <i class="bi bi-building"></i>
+                                    <span>{{ $department->name }}</span>
+                                    <span class="pill-count">{{ $deptSecCount }}</span>
+                                </button>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+
                 <div class="card-body">
 
                     @if (session('success'))
@@ -64,7 +107,8 @@
 
                                 @forelse ($sections as $section)
                                     <tr class="section-search-row"
-                                        data-search="{{ strtolower(implode(' ', [$section->name, $section->department?->name ?? ''])) }}">
+                                        data-search="{{ strtolower(implode(' ', [$section->name, $section->department?->name ?? ''])) }}"
+                                        data-department-id="{{ $section->department_id }}">
 
                                         <th scope="row" class="row-serial">
                                             {{ $loop->iteration }}
