@@ -59,7 +59,7 @@
                                 @forelse ($students as $student)
                                     <tr class="student-search-row"
                                         data-search="{{ strtolower(implode(' ', [$student->registration_no ?? '', $student->name, $student->email, $student->phone])) }}">
-                                        <th scope="row">{{ $student->id }}</th>
+                                        <th scope="row" class="row-serial">{{ $loop->iteration }}</th>
                                         <td>
                                             <span class="badge bg-secondary text-wrap reg-no-badge">
                                                 {{ $student->registration_no ?? 'N/A' }}
@@ -388,7 +388,11 @@
                 rows.forEach(function (row) {
                     const matchesSearch = !query || (row.dataset.search || '').includes(query);
                     row.hidden = !matchesSearch;
-                    if (matchesSearch) matches++;
+                    if (matchesSearch) {
+                        matches++;
+                        const serialCell = row.querySelector('.row-serial');
+                        if (serialCell) serialCell.textContent = matches;
+                    }
                 });
 
                 noResults.hidden = rows.length === 0 || matches > 0;

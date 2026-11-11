@@ -53,7 +53,7 @@
                             <tbody>
                                 @forelse ($departments as $department)
                                     <tr class="department-search-row" data-search="{{ strtolower($department->name) }}">
-                                        <th>{{ $department->id }}</th>
+                                        <th scope="row" class="row-serial">{{ $loop->iteration }}</th>
                                         <td class="fw-semibold">{{ $department->name }}</td>
                                         <td>
                                             <div class="action__buttons">

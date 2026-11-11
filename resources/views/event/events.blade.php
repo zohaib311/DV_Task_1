@@ -70,8 +70,8 @@
                                     <tr class="event-search-row"
                                         data-search="{{ strtolower(implode(' ', [$event->event_name, $event->day, $event->date, $event->description ?? ''])) }}">
 
-                                        <th>
-                                            {{ $event->id }}
+                                        <th scope="row" class="row-serial">
+                                            {{ $loop->iteration }}
                                         </th>
 
                                         <td class="fw-semibold">

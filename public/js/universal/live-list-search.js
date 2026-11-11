@@ -17,7 +17,11 @@ document.addEventListener('DOMContentLoaded', function () {
             rows.forEach(function (row) {
                 const isMatch = !query || (row.dataset.search || '').includes(query);
                 row.hidden = !isMatch;
-                if (isMatch) matches++;
+                if (isMatch) {
+                    matches++;
+                    const serialCell = row.querySelector('.row-serial');
+                    if (serialCell) serialCell.textContent = matches;
+                }
             });
 
             noResults.hidden = rows.length === 0 || matches > 0;

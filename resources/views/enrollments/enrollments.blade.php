@@ -47,6 +47,7 @@
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
+                                    <th style="width: 50px;">#</th>
                                     <th>Reg. No.</th>
                                     <th>Student</th>
                                     <th>Academic Year / Term</th>
@@ -73,6 +74,7 @@
                                             $enrollment->section?->name ?? '',
                                             $enrollment->status ?? '',
                                         ])) }}">
+                                        <th scope="row" class="row-serial">{{ $loop->iteration }}</th>
                                         <td><span class="enrollment-registration">{{ $enrollment->student->registration_no ?? 'N/A' }}</span></td>
                                         <td>
                                             <div class="fw-semibold">{{ $enrollment->student->name }}</div>
@@ -116,14 +118,14 @@
                                     </tr>
                                 @empty
                                     <tr id="enrollments-empty-state">
-                                        <td colspan="10" class="text-center py-5 text-muted">
+                                        <td colspan="11" class="text-center py-5 text-muted">
                                             <i class="bi bi-journal-x d-block fs-3 mb-2"></i>
                                             No semester enrollments created yet.
                                         </td>
                                     </tr>
                                 @endforelse
                                 <tr id="enrollments-no-search-results" hidden>
-                                    <td colspan="10" class="text-center py-5 text-muted">
+                                    <td colspan="11" class="text-center py-5 text-muted">
                                         <i class="bi bi-search d-block fs-4 mb-2"></i>
                                         No enrollment matches your search.
                                     </td>
@@ -156,7 +158,11 @@
                 rows.forEach(function (row) {
                     const matchesSearch = !query || (row.dataset.search || '').includes(query);
                     row.hidden = !matchesSearch;
-                    if (matchesSearch) matches++;
+                    if (matchesSearch) {
+                        matches++;
+                        const serialCell = row.querySelector('.row-serial');
+                        if (serialCell) serialCell.textContent = matches;
+                    }
                 });
 
                 noResults.hidden = rows.length === 0 || matches > 0;

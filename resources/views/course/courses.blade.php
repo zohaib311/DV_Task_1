@@ -74,8 +74,8 @@
                                     <tr class="course-search-row"
                                         data-search="{{ strtolower(implode(' ', [$course->code, $course->name, $course->description ?? '', $course->credit_hours, $course->is_active ? 'active' : 'inactive'])) }}">
 
-                                        <th>
-                                            {{ $course->id }}
+                                        <th scope="row" class="row-serial">
+                                            {{ $loop->iteration }}
                                         </th>
 
                                         <td>

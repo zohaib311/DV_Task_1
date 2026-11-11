@@ -66,8 +66,8 @@
                                     <tr class="section-search-row"
                                         data-search="{{ strtolower(implode(' ', [$section->name, $section->department?->name ?? ''])) }}">
 
-                                        <th>
-                                            {{ $section->id }}
+                                        <th scope="row" class="row-serial">
+                                            {{ $loop->iteration }}
                                         </th>
 
                                         <td class="fw-semibold">

@@ -65,8 +65,8 @@
                                 @forelse ($users as $user)
                                     <tr>
 
-                                        <th>
-                                            {{ $user->id }}
+                                        <th scope="row" class="row-serial">
+                                            {{ $loop->iteration }}
                                         </th>
 
                                         <td class="user__image">

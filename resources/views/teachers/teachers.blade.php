@@ -72,8 +72,8 @@
                                     <tr class="teacher-search-row"
                                         data-search="{{ strtolower(implode(' ', [$teacher->name, $teacher->email, $teacher->phone, $teacher->course ?? ''])) }}">
 
-                                        <th>
-                                            {{ $teacher->id }}
+                                        <th scope="row" class="row-serial">
+                                            {{ $loop->iteration }}
                                         </th>
 
                                         <td class="user__image">
@@ -229,7 +229,11 @@
                 rows.forEach(function (row) {
                     const matchesSearch = !query || (row.dataset.search || '').includes(query);
                     row.hidden = !matchesSearch;
-                    if (matchesSearch) matches++;
+                    if (matchesSearch) {
+                        matches++;
+                        const serialCell = row.querySelector('.row-serial');
+                        if (serialCell) serialCell.textContent = matches;
+                    }
                 });
 
                 noResults.hidden = rows.length === 0 || matches > 0;
