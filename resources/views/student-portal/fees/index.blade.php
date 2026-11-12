@@ -18,6 +18,17 @@
         <div class="table-responsive"><table class="table academic-table fee-structure-student-table"><thead><tr><th>Applicable term</th><th>Admission</th><th>Registration</th><th>Security</th><th>Processing</th><th>Enrollment</th><th>Tuition / credit</th><th>Exam</th><th>Convocation</th></tr></thead><tbody>@forelse($structures as $structure)<tr><td><strong>{{ $structure->name }}</strong><small>{{ $structure->term ? $structure->term->name.' · '.$structure->term->academicYear->name : 'All future terms' }}</small></td><td>PKR {{ number_format($structure->admission_fee, 0) }}</td><td>PKR {{ number_format($structure->registration_fee, 0) }}</td><td>PKR {{ number_format($structure->security_fee, 0) }}</td><td>PKR {{ number_format($structure->processing_fee, 0) }}</td><td>PKR {{ number_format($structure->enrollment_fee, 0) }}</td><td>PKR {{ number_format($structure->tuition_per_credit_hour, 0) }}</td><td>PKR {{ number_format($structure->exam_fee, 0) }}</td><td>PKR {{ number_format($structure->convocation_fee, 0) }}</td></tr>@empty<tr><td colspan="9">No active fee structure has been configured for your program yet.</td></tr>@endforelse</tbody></table></div>
     </section>
 
+    @php($studentUser = auth()->user()?->student ?? $invoices->first()?->student)
+    @if($studentUser && $studentUser->hasActiveScholarship())
+        <div class="alert alert-success d-flex align-items-center gap-3 mb-4 p-3 rounded-3 shadow-sm border border-success bg-success-subtle">
+            <i class="bi bi-award-fill fs-2 text-success"></i>
+            <div>
+                <strong class="d-block text-success fs-6">Active Scholarship Awarded: {{ $studentUser->scholarship_name }}</strong>
+                <span class="small text-muted">You are awarded a <strong>{{ $studentUser->scholarship_percentage }}% tuition fee waiver</strong>. The discount is automatically deducted on your registered credit hours.</span>
+            </div>
+        </div>
+    @endif
+
     <section class="fee-invoice-list">
         @forelse($invoices as $invoice)
             @php($canSubmit = in_array($invoice->status, ['unpaid', 'rejected'], true))
@@ -34,8 +45,33 @@
                     <span @class(['fee-status', 'is-approved' => $invoice->status === 'approved', 'is-submitted' => $invoice->status === 'submitted', 'is-rejected' => $invoice->status === 'rejected'])>{{ ucfirst($invoice->status) }}</span>
                 </header>
                 <div class="fee-invoice-body">
-                    <div class="fee-breakdown"><h3>Fee breakdown</h3>@foreach($invoice->line_items as $item)<div><span>{{ $item['label'] }}</span><strong>PKR {{ number_format((float) $item['amount'], 0) }}</strong></div>@endforeach</div>
-                    <div class="fee-total"><span>Total payable</span><strong>PKR {{ number_format((float) $invoice->total_amount, 0) }}</strong><small>Paid: PKR {{ number_format((float) $invoice->amount_paid, 0) }}</small></div>
+                    <div class="fee-breakdown">
+                        <h3>Fee breakdown</h3>
+                        @foreach($invoice->line_items as $item)
+                            @php($isDiscount = ($item['amount'] ?? 0) < 0 || ($item['is_discount'] ?? false))
+                            <div @class(['text-success fw-semibold' => $isDiscount])>
+                                <span>
+                                    @if($isDiscount)<i class="bi bi-gift-fill me-1 text-success"></i>@endif
+                                    {{ $item['label'] }}
+                                </span>
+                                <strong @class(['text-success' => $isDiscount])>
+                                    @if($isDiscount)
+                                        - PKR {{ number_format(abs((float) $item['amount']), 0) }}
+                                    @else
+                                        PKR {{ number_format((float) $item['amount'], 0) }}
+                                    @endif
+                                </strong>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="fee-total">
+                        <span>Total payable</span>
+                        <strong>PKR {{ number_format((float) $invoice->total_amount, 0) }}</strong>
+                        @if((float) $invoice->discount_amount > 0)
+                            <small class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Saved PKR {{ number_format((float) $invoice->discount_amount, 0) }} via Scholarship</small>
+                        @endif
+                        <small>Paid: PKR {{ number_format((float) $invoice->amount_paid, 0) }}</small>
+                    </div>
                 </div>
                 @if($invoice->payments->isNotEmpty())<div class="fee-payment-history">@foreach($invoice->payments as $payment)<div><i class="bi bi-receipt" aria-hidden="true"></i><span>{{ ucfirst($payment->status) }} payment · PKR {{ number_format((float) $payment->amount, 0) }} · {{ $payment->paid_at->format('d M Y') }}</span>@if($payment->review_note)<small>{{ $payment->review_note }}</small>@endif @if($payment->proof_path)<a href="{{ route('student.fees.payments.proof', [$invoice, $payment]) }}">View proof</a>@endif</div>@endforeach</div>@endif
                 @if($canSubmit)

@@ -6,7 +6,7 @@
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.2-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com)
 [![Vite](https://img.shields.io/badge/Vite-7.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
 [![Reverb](https://img.shields.io/badge/Laravel_Reverb-WebSockets-F05340?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com/docs/reverb)
-[![Tests](https://img.shields.io/badge/Tests-181%20Passed-success?style=for-the-badge&logo=checkmarx&logoColor=white)]()
+[![Tests](https://img.shields.io/badge/Tests-183%20Passed-success?style=for-the-badge&logo=checkmarx&logoColor=white)]()
 
 A comprehensive, enterprise-ready **University Management System (UMS)**, **Student Information System (SIS)**, and **Learning Management System (LMS)** built with Laravel 12.
 
@@ -26,6 +26,7 @@ The platform manages the complete academic lifecycle: institutional hierarchy se
     - [Student Portal](#c-student-portal)
     - [ADP / 5th-Semester Lateral Entry System](#d-adp--5th-semester-lateral-entry-system)
     - [Dynamic Filtering & Row Serialization](#e-dynamic-filtering--row-serialization)
+    - [Merit Scholarship & Tuition Fee Concession](#f-merit-scholarship--tuition-fee-concession)
 - [4. Local Installation & Setup Guide (Laragon / Windows)](#4-local-installation--setup-guide-laragon--windows)
 - [5. Demo Credentials](#5-demo-credentials)
 - [6. Automated Testing](#6-automated-testing)
@@ -229,6 +230,21 @@ flowchart TD
     - All lists (Students, Teachers, Enrollments, Courses, Sections) feature a 1-based sequential number column.
     - Recalculates dynamically (`1, 2, 3...`) whenever search or filters are applied, preventing fragmented database ID display.
 
+### F. Merit Scholarship & Tuition Fee Concession
+* **Candidate Academic Qualification & Identity:**
+    - Collects CNIC / Form-B (`35201-XXXXXXX-X`), Intermediate Degree/Group, Board, Roll Number, Total Marks, and Obtained Marks.
+    - Real-time client-side percentage computation (`%`) with manual unlock support.
+* **Merit-Based Scholarship Slabs:**
+    - $\ge 85\%$ Marks $\rightarrow$ **Merit Gold (50% Tuition Fee Waiver)**
+    - $75\% - 84.9\%$ Marks $\rightarrow$ **Merit Silver (30% Tuition Fee Waiver)**
+    - $65\% - 74.9\%$ Marks $\rightarrow$ **Merit Bronze (15% Tuition Fee Waiver)**
+    - Special Quotas supported: Need-Based Aid (25% / 50%), Kinship (20%), Sports Quota (30%), Faculty Ward (50%).
+* **Tuition-Only Discount Engine:**
+    - Per university policy, the scholarship discount is applied **strictly to the Tuition Fee** component (Credit Hours $\times$ Rate).
+    - Fixed non-tuition fees (Admission, Registration, Examination, Security) remain at standard rates.
+    - Transparent itemized invoices and official PDF Bank Challans display positive gross fees and negative concession lines (e.g. `- PKR 22,500`), recalculating net payable totals automatically.
+    - Student Portal displays active awarded scholarship banners and savings summaries.
+
 ---
 
 ## 4. Local Installation & Setup Guide (Laragon / Windows)
@@ -354,6 +370,8 @@ The database seeders configure ready-to-test accounts for every role:
 | **Teacher 2**           | Teacher Ayesha | `demo.teacher2@example.test` | `UniDemo@2026!` | Assigned to Mathematics & Computing Lab         |
 | **Regular Student**     | Student Dawood | `dawood@gmail.com`           | `1234`          | 4-Year BS Student (Semester 1 to 3 History)     |
 | **ADP Lateral Student** | Zubair Ahmed   | `adp.student@gmail.com`      | `1234`          | 5th-Semester Direct Entry (60 Credits Exempted) |
+| **Merit Gold Student**  | Sara Ahmed     | `sara.merit@example.test`    | `1234`          | 50% Tuition Fee Waiver (88% in Inter F.Sc)      |
+| **Merit Silver Student**| Bilal Hassan   | `bilal.merit@example.test`   | `1234`          | 30% Tuition Fee Waiver (78% in Inter ICS)       |
 
 ---
 
@@ -370,7 +388,7 @@ php artisan test
 ### Test Suite Status:
 
 ```text
-  Tests:    181 passed (1225 assertions)
+  Tests:    183 passed (1236 assertions)
   Duration: ~140s
   Status:   100% Passing (0 failures)
 ```

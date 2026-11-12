@@ -24,12 +24,22 @@ class Student extends Model
         'name',
         'email',
         'phone',
+        'cnic',
         'department_id',
         'program_id',
         'section_id',
         'admission_type',
         'admitted_semester',
         'semester',
+        'inter_degree',
+        'inter_board',
+        'inter_roll_no',
+        'inter_total_marks',
+        'inter_obtained_marks',
+        'inter_percentage',
+        'scholarship_name',
+        'scholarship_percentage',
+        'scholarship_status',
         'course_ids',
         'image',
         'user_id',
@@ -50,7 +60,25 @@ class Student extends Model
     // Array Cast for Multiple Courses JSON Column
     protected $casts = [
         'course_ids' => 'array',
+        'inter_total_marks' => 'decimal:2',
+        'inter_obtained_marks' => 'decimal:2',
+        'inter_percentage' => 'decimal:2',
+        'scholarship_percentage' => 'decimal:2',
     ];
+
+    public function hasActiveScholarship(): bool
+    {
+        return (float) $this->scholarship_percentage > 0 && in_array($this->scholarship_status, ['active', 'granted'], true);
+    }
+
+    public function getScholarshipBadgeClass(): string
+    {
+        $pct = (float) $this->scholarship_percentage;
+        if ($pct >= 50) return 'bg-success';
+        if ($pct >= 30) return 'bg-primary';
+        if ($pct > 0) return 'bg-info text-dark';
+        return 'bg-secondary';
+    }
 
     // Department Relationship
     public function department()

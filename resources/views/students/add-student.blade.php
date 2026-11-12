@@ -234,7 +234,7 @@
                             @error('user_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-person"></i></span>
@@ -243,7 +243,7 @@
                             @error('name')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-envelope"></i></span>
@@ -252,7 +252,7 @@
                             @error('email')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-telephone"></i></span>
@@ -261,7 +261,16 @@
                             @error('phone')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-3">
+                            <label for="cnic" class="form-label">CNIC / B-Form <small class="text-muted fw-normal">(Optional)</small></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
+                                <input type="text" name="cnic" id="cnic" value="{{ old('cnic') }}" class="form-control @error('cnic') is-invalid @enderror" placeholder="35201-1234567-1" maxlength="25">
+                            </div>
+                            @error('cnic')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-12">
                             <label for="image" class="form-label">Profile Image <small class="text-muted fw-normal">(Optional)</small></label>
                             <input type="file" name="image" id="image" class="form-control @error('image') is-invalid @enderror" accept="image/png,image/jpeg">
                             <small class="text-muted">JPG or PNG, max 2 MB</small>
@@ -296,11 +305,157 @@
                 </div>
             </div>
 
-            <!-- STEP 3: Academic Placement -->
+            <!-- STEP 3: Previous Academic Record & Merit Scholarship -->
+            <div class="card admission-card mb-4 shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="step-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">3</span>
+                            <div>
+                                <h5 class="card-title mb-0 fw-bold d-flex align-items-center gap-2">
+                                    <span>Previous Academic Record & Merit Scholarship</span>
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-award-fill me-1"></i> Fee Concession</span>
+                                </h5>
+                                <small class="text-muted">Enter Intermediate/12th grade marks to automatically calculate percentage and award tuition fee scholarship.</small>
+                            </div>
+                        </div>
+                        <div id="scholarship_status_badge">
+                            <span class="badge bg-secondary-subtle text-secondary px-3 py-2 fs-6">No Scholarship Selected</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4 bg-light-subtle">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="inter_degree" class="form-label">Intermediate Degree / Group</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-book"></i></span>
+                                <select name="inter_degree" id="inter_degree" class="form-select @error('inter_degree') is-invalid @enderror">
+                                    <option value="">Select Qualification</option>
+                                    <option value="F.Sc Pre-Engineering" @selected(old('inter_degree') === 'F.Sc Pre-Engineering')>F.Sc Pre-Engineering</option>
+                                    <option value="F.Sc Pre-Medical" @selected(old('inter_degree') === 'F.Sc Pre-Medical')>F.Sc Pre-Medical</option>
+                                    <option value="ICS (Computer Science)" @selected(old('inter_degree') === 'ICS (Computer Science)')>ICS (Computer Science)</option>
+                                    <option value="I.Com (Commerce)" @selected(old('inter_degree') === 'I.Com (Commerce)')>I.Com (Commerce)</option>
+                                    <option value="FA (Humanities)" @selected(old('inter_degree') === 'FA (Humanities)')>FA (Humanities)</option>
+                                    <option value="DAE (3-Year Diploma)" @selected(old('inter_degree') === 'DAE (3-Year Diploma)')>DAE (3-Year Diploma)</option>
+                                    <option value="A-Levels (Cambridge)" @selected(old('inter_degree') === 'A-Levels (Cambridge)')>A-Levels (Cambridge)</option>
+                                    <option value="Other Equivalent" @selected(old('inter_degree') === 'Other Equivalent')>Other Equivalent</option>
+                                </select>
+                            </div>
+                            @error('inter_degree')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="inter_board" class="form-label">Examination Board / Institute</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-bank"></i></span>
+                                <input type="text" name="inter_board" id="inter_board" value="{{ old('inter_board') }}" class="form-control @error('inter_board') is-invalid @enderror" placeholder="e.g. BISE Lahore / Federal Board Islamabad">
+                            </div>
+                            @error('inter_board')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="inter_roll_no" class="form-label">Inter Roll Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                <input type="text" name="inter_roll_no" id="inter_roll_no" value="{{ old('inter_roll_no') }}" class="form-control @error('inter_roll_no') is-invalid @enderror" placeholder="e.g. 543219">
+                            </div>
+                            @error('inter_roll_no')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="inter_total_marks" class="form-label">Total Marks</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-123"></i></span>
+                                <input type="number" step="1" min="1" max="5000" name="inter_total_marks" id="inter_total_marks" value="{{ old('inter_total_marks', 1100) }}" class="form-control @error('inter_total_marks') is-invalid @enderror" placeholder="1100">
+                            </div>
+                            @error('inter_total_marks')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="inter_obtained_marks" class="form-label">Obtained Marks</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-check2-circle"></i></span>
+                                <input type="number" step="1" min="0" max="5000" name="inter_obtained_marks" id="inter_obtained_marks" value="{{ old('inter_obtained_marks') }}" class="form-control @error('inter_obtained_marks') is-invalid @enderror" placeholder="e.g. 935">
+                            </div>
+                            @error('inter_obtained_marks')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="inter_percentage" class="form-label">Result Percentage</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white fw-bold">%</span>
+                                <input type="number" step="0.01" min="0" max="100" name="inter_percentage" id="inter_percentage" value="{{ old('inter_percentage') }}" class="form-control fw-bold bg-white @error('inter_percentage') is-invalid @enderror" placeholder="0.00" readonly>
+                                <button class="btn btn-outline-secondary" type="button" id="btn_toggle_manual_pct" title="Unlock to enter manually"><i class="bi bi-pencil"></i></button>
+                            </div>
+                            <small class="text-muted">Auto-computed from obtained / total marks.</small>
+                            @error('inter_percentage')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-7">
+                            <label for="scholarship_select" class="form-label fw-semibold">
+                                Offered Scholarship / Fee Concession
+                                <span class="badge bg-primary-subtle text-primary ms-1">Auto-Suggests on %</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-gift-fill text-warning"></i></span>
+                                <select id="scholarship_select" class="form-select fw-medium">
+                                    <option value="0" data-name="" data-pct="0">Standard Intake (No Scholarship — 0% Discount)</option>
+                                    <optgroup label="🌟 Merit Scholarship Slabs (Inter Marks Based)">
+                                        <option value="50" data-name="Merit Scholarship (Gold - 50% Tuition Waiver)" data-pct="50" data-min="85">
+                                            Merit Scholarship Gold (50% Tuition Waiver) [≥ 85% Marks]
+                                        </option>
+                                        <option value="30" data-name="Merit Scholarship (Silver - 30% Tuition Waiver)" data-pct="30" data-min="75">
+                                            Merit Scholarship Silver (30% Tuition Waiver) [75% – 84.9% Marks]
+                                        </option>
+                                        <option value="15" data-name="Merit Scholarship (Bronze - 15% Tuition Waiver)" data-pct="15" data-min="65">
+                                            Merit Scholarship Bronze (15% Tuition Waiver) [65% – 74.9% Marks]
+                                        </option>
+                                    </optgroup>
+                                    <optgroup label="🤝 Special Quotas & Financial Aid">
+                                        <option value="50" data-name="Need-Based Financial Aid (50% Tuition Waiver)" data-pct="50">
+                                            Need-Based Financial Aid (50% Tuition Waiver)
+                                        </option>
+                                        <option value="25" data-name="Need-Based Financial Aid (25% Tuition Waiver)" data-pct="25">
+                                            Need-Based Financial Aid (25% Tuition Waiver)
+                                        </option>
+                                        <option value="20" data-name="Kinship / Sibling Concession (20% Tuition Waiver)" data-pct="20">
+                                            Kinship / Sibling Concession (20% Tuition Waiver)
+                                        </option>
+                                        <option value="30" data-name="Sports & Talent Quota (30% Tuition Waiver)" data-pct="30">
+                                            Sports & Talent Quota (30% Tuition Waiver)
+                                        </option>
+                                        <option value="50" data-name="Faculty & Staff Ward Concession (50% Tuition Waiver)" data-pct="50">
+                                            Faculty & Staff Ward Concession (50% Tuition Waiver)
+                                        </option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <!-- Hidden inputs for backend binding -->
+                            <input type="hidden" name="scholarship_name" id="scholarship_name" value="{{ old('scholarship_name') }}">
+                            <input type="hidden" name="scholarship_percentage" id="scholarship_percentage" value="{{ old('scholarship_percentage', 0) }}">
+                            <input type="hidden" name="scholarship_status" id="scholarship_status" value="{{ old('scholarship_status', 'none') }}">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">Tuition Discount Effect</label>
+                            <div id="scholarship_summary_card" class="p-2 px-3 rounded-2 border bg-white d-flex align-items-center gap-2">
+                                <i class="bi bi-info-circle-fill text-muted fs-4" id="scholarship_icon"></i>
+                                <div>
+                                    <div class="fw-bold small" id="scholarship_summary_title">No concession applied</div>
+                                    <small class="text-muted" id="scholarship_summary_desc">Standard tuition fee rates will apply to semester invoices.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: Academic Placement -->
             <div class="card admission-card mb-4 shadow-sm">
                 <div class="card-header bg-white py-3">
                     <div class="d-flex align-items-center gap-2">
-                        <span class="step-badge">3</span>
+                        <span class="step-badge">4</span>
                         <div>
                             <h5 class="card-title mb-0 fw-bold">Academic Placement</h5>
                             <small class="text-muted">Assign department, academic degree program, and initial section.</small>
@@ -388,5 +543,135 @@
                 }
             });
         });
+
+        // Inter Marks & Scholarship Automation
+        const totalMarksInput = document.getElementById('inter_total_marks');
+        const obtainedMarksInput = document.getElementById('inter_obtained_marks');
+        const percentageInput = document.getElementById('inter_percentage');
+        const toggleManualBtn = document.getElementById('btn_toggle_manual_pct');
+        const scholarshipSelect = document.getElementById('scholarship_select');
+        const scholarshipNameHidden = document.getElementById('scholarship_name');
+        const scholarshipPctHidden = document.getElementById('scholarship_percentage');
+        const scholarshipStatusHidden = document.getElementById('scholarship_status');
+        const scholarshipStatusBadge = document.getElementById('scholarship_status_badge');
+        const summaryCard = document.getElementById('scholarship_summary_card');
+        const summaryTitle = document.getElementById('scholarship_summary_title');
+        const summaryDesc = document.getElementById('scholarship_summary_desc');
+        const summaryIcon = document.getElementById('scholarship_icon');
+
+        let isManualPct = false;
+        let userManuallyChangedScholarship = false;
+
+        if (toggleManualBtn) {
+            toggleManualBtn.addEventListener('click', () => {
+                isManualPct = !isManualPct;
+                percentageInput.readOnly = !isManualPct;
+                toggleManualBtn.classList.toggle('btn-primary', isManualPct);
+                toggleManualBtn.classList.toggle('btn-outline-secondary', !isManualPct);
+                if (isManualPct) percentageInput.focus();
+            });
+        }
+
+        function calculatePercentageAndScholarship() {
+            const total = parseFloat(totalMarksInput.value) || 0;
+            const obtained = parseFloat(obtainedMarksInput.value);
+
+            if (!isManualPct && total > 0 && !isNaN(obtained)) {
+                const pct = Math.min(100, Math.max(0, (obtained / total) * 100));
+                percentageInput.value = pct.toFixed(2);
+                if (!userManuallyChangedScholarship) {
+                    autoSelectScholarship(pct);
+                }
+            } else if (!isManualPct && isNaN(obtained)) {
+                percentageInput.value = '';
+                if (!userManuallyChangedScholarship) {
+                    resetScholarship();
+                }
+            }
+            updateSummaryUI();
+        }
+
+        function autoSelectScholarship(pct) {
+            if (pct >= 85) {
+                setSelectByValue(50, 'Merit Scholarship (Gold - 50% Tuition Waiver)');
+            } else if (pct >= 75) {
+                setSelectByValue(30, 'Merit Scholarship (Silver - 30% Tuition Waiver)');
+            } else if (pct >= 65) {
+                setSelectByValue(15, 'Merit Scholarship (Bronze - 15% Tuition Waiver)');
+            } else {
+                resetScholarship();
+            }
+        }
+
+        function setSelectByValue(pct, name) {
+            for (let option of scholarshipSelect.options) {
+                if (parseFloat(option.value) === pct && (option.dataset.name === name || !option.dataset.name)) {
+                    scholarshipSelect.value = option.value;
+                    scholarshipNameHidden.value = option.dataset.name || name;
+                    scholarshipPctHidden.value = pct;
+                    scholarshipStatusHidden.value = 'active';
+                    break;
+                }
+            }
+        }
+
+        function resetScholarship() {
+            scholarshipSelect.value = '0';
+            scholarshipNameHidden.value = '';
+            scholarshipPctHidden.value = '0';
+            scholarshipStatusHidden.value = 'none';
+        }
+
+        function updateSummaryUI() {
+            const selectedOpt = scholarshipSelect.options[scholarshipSelect.selectedIndex];
+            const pct = parseFloat(selectedOpt?.value) || 0;
+            const name = selectedOpt?.dataset.name || (pct > 0 ? selectedOpt.text : '');
+
+            scholarshipPctHidden.value = pct;
+            scholarshipNameHidden.value = name;
+            scholarshipStatusHidden.value = pct > 0 ? 'active' : 'none';
+
+            if (pct > 0) {
+                scholarshipStatusBadge.innerHTML = `<span class="badge bg-success px-3 py-2 fs-6"><i class="bi bi-check-circle-fill me-1"></i> ${pct}% Tuition Waiver Active</span>`;
+                summaryTitle.textContent = name;
+                summaryTitle.className = 'fw-bold small text-success';
+                summaryDesc.textContent = `${pct}% will be automatically deducted from Tuition Fee in every Semester Fee Invoice.`;
+                summaryIcon.className = 'bi bi-award-fill text-success fs-3';
+                summaryCard.className = 'p-2 px-3 rounded-2 border border-success bg-success-subtle d-flex align-items-center gap-2';
+            } else {
+                scholarshipStatusBadge.innerHTML = `<span class="badge bg-secondary-subtle text-secondary px-3 py-2 fs-6">No Scholarship Selected</span>`;
+                summaryTitle.textContent = 'Standard Intake';
+                summaryTitle.className = 'fw-bold small text-dark';
+                summaryDesc.textContent = 'Standard tuition fee rates will apply to semester invoices.';
+                summaryIcon.className = 'bi bi-info-circle-fill text-muted fs-4';
+                summaryCard.className = 'p-2 px-3 rounded-2 border bg-white d-flex align-items-center gap-2';
+            }
+        }
+
+        if (totalMarksInput && obtainedMarksInput) {
+            totalMarksInput.addEventListener('input', calculatePercentageAndScholarship);
+            obtainedMarksInput.addEventListener('input', calculatePercentageAndScholarship);
+        }
+
+        if (percentageInput) {
+            percentageInput.addEventListener('input', () => {
+                const pct = parseFloat(percentageInput.value);
+                if (!isNaN(pct) && !userManuallyChangedScholarship) {
+                    autoSelectScholarship(pct);
+                }
+                updateSummaryUI();
+            });
+        }
+
+        if (scholarshipSelect) {
+            scholarshipSelect.addEventListener('change', () => {
+                userManuallyChangedScholarship = true;
+                updateSummaryUI();
+            });
+        }
+
+        if (obtainedMarksInput && obtainedMarksInput.value) {
+            calculatePercentageAndScholarship();
+        }
     </script>
 @endsection

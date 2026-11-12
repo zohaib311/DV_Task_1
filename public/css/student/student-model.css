@@ -4,126 +4,181 @@
     overflow: hidden;
     background: #ffffff;
     box-shadow: 0 25px 70px rgba(15, 23, 42, 0.25);
-    margin-top: 50px;
 }
 
 .student-modal-header {
-    padding: 18px 25px;
+    padding: 16px 24px;
     color: #ffffff;
     border: 0;
-    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
 }
 
 .student-modal-header .modal-title {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
 }
 
 .student-modal-header i {
-    font-size: 20px;
+    font-size: 19px;
 }
 
 .student-modal-body {
-    padding: 25px;
+    padding: 22px;
     background: #f8fafc;
+    max-height: calc(85vh - 70px);
+    overflow-y: auto;
 }
 
 .student-modal-layout {
     display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 22px;
-    align-items: stretch;
+    grid-template-columns: 290px 1fr;
+    gap: 20px;
+    align-items: flex-start;
 }
 
 .student-profile-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-height: 100%;
-    padding: 30px 22px;
+    justify-content: flex-start;
+    padding: 24px 18px;
     border: 1px solid #e2e8f0;
     border-radius: 16px;
     background: #ffffff;
-    box-shadow: 0 5px 18px rgba(15, 23, 42, 0.05);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
     text-align: center;
+    position: sticky;
+    top: 0;
 }
 
 .student-profile-image {
-    margin-bottom: 20px;
+    margin-bottom: 14px;
 }
 
 .student-modal-avatar {
-    width: 125px;
-    height: 125px;
+    width: 110px;
+    height: 110px;
     object-fit: cover;
-    border: 5px solid #dbeafe;
+    border: 4px solid #e0e7ff;
     border-radius: 50%;
     background: #ffffff;
-    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 6px 18px rgba(79, 70, 229, 0.16);
+}
+
+.student-profile-info {
+    width: 100%;
 }
 
 .student-profile-info h3 {
-    margin: 0 0 18px;
+    margin: 0 0 10px;
     color: #0f172a;
-    font-size: 23px;
+    font-size: 19px;
     font-weight: 700;
     line-height: 1.3;
 }
 
-.student-profile-item {
+.student-profile-pills {
     display: flex;
+    flex-direction: column;
+    gap: 6px;
     align-items: center;
-    justify-content: center;
-    gap: 9px;
-    margin-bottom: 10px;
-    color: #64748b;
-    font-size: 13px;
-    word-break: break-word;
+    margin-bottom: 16px;
 }
 
-.student-profile-item:last-child {
-    margin-bottom: 0;
+.student-profile-contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    width: 100%;
+    text-align: left;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.student-profile-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    color: #475569;
+    font-size: 12.5px;
+    word-break: break-word;
 }
 
 .student-profile-item i {
     flex-shrink: 0;
     width: 18px;
-    color: #2563eb;
-    font-size: 15px;
+    color: #4f46e5;
+    font-size: 14px;
+    margin-top: 1px;
+}
+
+.student-details-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .student-details-box {
     overflow: hidden;
     border: 1px solid #e2e8f0;
-    border-radius: 16px;
+    border-radius: 14px;
     background: #ffffff;
-    box-shadow: 0 5px 18px rgba(15, 23, 42, 0.05);
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
 }
 
 .student-details-heading {
     display: flex;
     align-items: center;
-    gap: 9px;
-    padding: 15px 18px;
-    color: #1e3a8a;
-    background: #eff6ff;
-    border-bottom: 1px solid #dbeafe;
-    font-size: 14px;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 18px;
+    font-size: 13.5px;
     font-weight: 700;
+    border-bottom: 1px solid #e2e8f0;
 }
 
-.student-details-heading i {
-    color: #2563eb;
-    font-size: 16px;
+.student-details-heading.heading-personal {
+    color: #1e40af;
+    background: #eff6ff;
+    border-bottom-color: #dbeafe;
+}
+
+.student-details-heading.heading-academic {
+    color: #4338ca;
+    background: #eef2ff;
+    border-bottom-color: #e0e7ff;
+}
+
+.student-details-heading.heading-merit {
+    color: #065f46;
+    background: #ecfdf5;
+    border-bottom-color: #a7f3d0;
+}
+
+.student-details-heading.heading-lateral {
+    color: #92400e;
+    background: #fffbeb;
+    border-bottom-color: #fde68a;
+}
+
+.student-details-heading.heading-courses {
+    color: #5b21b6;
+    background: #f5f3ff;
+    border-bottom-color: #ddd6fe;
+}
+
+.student-details-heading.heading-fee {
+    color: #1e293b;
+    background: #f1f5f9;
+    border-bottom-color: #e2e8f0;
 }
 
 .student-detail-row {
     display: grid;
-    grid-template-columns: 38% 62%;
+    grid-template-columns: 32% 68%;
     align-items: center;
-    min-height: 50px;
-    border-bottom: 1px solid #e2e8f0;
+    min-height: 44px;
+    border-bottom: 1px solid #f1f5f9;
 }
 
 .student-detail-row:last-child {
@@ -133,24 +188,24 @@
 .student-detail-label {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
     height: 100%;
-    padding: 12px 17px;
-    color: #475569;
+    padding: 10px 16px;
+    color: #64748b;
     background: #f8fafc;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 12.5px;
+    font-weight: 600;
 }
 
 .student-detail-label i {
-    width: 17px;
+    width: 16px;
     flex-shrink: 0;
-    color: #2563eb;
+    color: #4f46e5;
     text-align: center;
 }
 
 .student-detail-value {
-    padding: 12px 17px;
+    padding: 10px 16px;
     color: #1e293b;
     font-size: 13px;
     overflow-wrap: anywhere;
@@ -165,26 +220,62 @@
 .student-course-badge {
     display: inline-flex;
     align-items: center;
-    padding: 6px 11px;
+    padding: 5px 11px;
     border-radius: 20px;
-    color: #1d4ed8;
-    background: #dbeafe;
+    color: #4338ca;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
     font-size: 12px;
+    font-weight: 600;
+}
+
+.modal-courses-table {
+    width: 100%;
+    margin-bottom: 0;
+    font-size: 12.5px;
+}
+
+.modal-courses-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-size: 11.5px;
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 9px 14px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-courses-table td {
+    padding: 9px 14px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+}
+
+.modal-courses-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.modal-courses-table tfoot td {
+    background: #f8fafc;
+    font-weight: 700;
+    padding: 9px 14px;
+    border-top: 1px solid #e2e8f0;
 }
 
 .student-modal-footer {
     justify-content: flex-end;
-    padding: 15px 25px;
+    padding: 13px 22px;
     border-top: 1px solid #e2e8f0;
     background: #ffffff;
 }
 
 .student-close-btn {
-    min-width: 95px;
-    padding: 9px 20px;
+    min-width: 90px;
+    padding: 8px 18px;
     border: 0;
-    border-radius: 9px;
+    border-radius: 8px;
     color: #ffffff;
     background: #475569;
     font-size: 13px;
@@ -205,22 +296,24 @@
     }
 
     .student-profile-card {
-        padding: 25px 15px;
+        padding: 20px 14px;
+        position: static;
     }
 
     .student-modal-avatar {
-        width: 105px;
-        height: 105px;
+        width: 95px;
+        height: 95px;
     }
 
     .student-profile-info h3 {
-        font-size: 20px;
+        font-size: 18px;
     }
 }
 
 @media (max-width: 767px) {
     .student-modal-body {
-        padding: 15px;
+        padding: 14px;
+        max-height: calc(88vh - 60px);
     }
 
     .student-modal-layout {
@@ -228,35 +321,25 @@
     }
 
     .student-profile-card {
-        min-height: auto;
-        padding: 25px 20px;
-    }
-
-    .student-modal-avatar {
-        width: 110px;
-        height: 110px;
+        padding: 20px 16px;
     }
 
     .student-detail-row {
-        grid-template-columns: 40% 60%;
+        grid-template-columns: 38% 62%;
     }
 }
 
 @media (max-width: 576px) {
     .student-modal-header {
-        padding: 15px 18px;
+        padding: 14px 16px;
     }
 
     .student-modal-body {
-        padding: 12px;
+        padding: 10px;
     }
 
     .student-modal-layout {
         gap: 12px;
-    }
-
-    .student-profile-card {
-        padding: 22px 15px;
     }
 
     .student-detail-row {
@@ -265,16 +348,16 @@
 
     .student-detail-label {
         height: auto;
-        padding: 10px 14px;
+        padding: 8px 12px;
     }
 
     .student-detail-value {
         display: block;
-        padding: 10px 14px 13px;
+        padding: 8px 12px 10px;
     }
 
     .student-modal-footer {
-        padding: 12px 15px;
+        padding: 10px 14px;
     }
 
     .student-close-btn {

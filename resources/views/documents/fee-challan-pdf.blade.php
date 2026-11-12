@@ -48,6 +48,12 @@
                             <td class="info-label">Reg. Number:</td>
                             <td class="info-val">{{ $student->registration_no ?: 'N/A' }}</td>
                         </tr>
+                        @if($student->cnic)
+                            <tr>
+                                <td class="info-label">CNIC / Form-B:</td>
+                                <td class="info-val">{{ $student->cnic }}</td>
+                            </tr>
+                        @endif
                         <tr>
                             <td class="info-label">Program:</td>
                             <td class="info-val">
@@ -69,9 +75,16 @@
                         </thead>
                         <tbody>
                             @forelse($invoice->line_items ?? [] as $item)
-                                <tr>
+                                @php($isDiscount = ($item['amount'] ?? 0) < 0 || ($item['is_discount'] ?? false))
+                                <tr @if($isDiscount) style="color: #047857; font-weight: bold; background-color: #ecfdf5;" @endif>
                                     <td>{{ $item['label'] }}</td>
-                                    <td class="text-right">{{ number_format((float) $item['amount'], 0) }}</td>
+                                    <td class="text-right">
+                                        @if($isDiscount)
+                                            - {{ number_format(abs((float) $item['amount']), 0) }}
+                                        @else
+                                            {{ number_format((float) $item['amount'], 0) }}
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>

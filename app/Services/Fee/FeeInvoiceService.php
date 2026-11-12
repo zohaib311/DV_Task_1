@@ -32,9 +32,10 @@ class FeeInvoiceService
             $isFirstEnrollment = ! StudentFeeInvoice::where('student_id', $enrollment->student_id)
                 ->where('student_semester_enrollment_id', '!=', $enrollment->id)->exists();
             $isFinalSemester = $enrollment->program && $enrollment->semester === 'Semester '.$enrollment->program->total_semesters;
+            $tuitionAmount = $credits * (float) $structure->tuition_per_credit_hour;
             $items = collect([
                 ['label' => 'Enrollment fee', 'amount' => (float) $structure->enrollment_fee],
-                ['label' => 'Tuition fee ('.number_format($credits, 1).' credit hours × '.number_format((float) $structure->tuition_per_credit_hour, 2).')', 'amount' => $credits * (float) $structure->tuition_per_credit_hour],
+                ['label' => 'Tuition fee ('.number_format($credits, 1).' credit hours × '.number_format((float) $structure->tuition_per_credit_hour, 2).')', 'amount' => $tuitionAmount],
                 ['label' => 'Examination fee', 'amount' => (float) $structure->exam_fee],
             ]);
             if ($isFirstEnrollment) {
@@ -49,9 +50,36 @@ class FeeInvoiceService
                 $items->push(['label' => 'Convocation fee', 'amount' => (float) $structure->convocation_fee]);
             }
             $subtotal = (float) $items->sum('amount');
-            $attributes = ['fee_structure_id' => $structure->id, 'status' => 'unpaid', 'credit_hours' => $credits,
-                'line_items' => $items->values()->all(), 'subtotal' => $subtotal, 'discount_amount' => 0, 'late_fee_amount' => 0,
-                'total_amount' => $subtotal, 'amount_paid' => 0, 'due_date' => now()->addDays($structure->due_days), 'generated_at' => now()];
+
+            // Apply scholarship discount strictly on Tuition Fee:
+            $student = $enrollment->student;
+            $discountAmount = 0.0;
+            if ($student && $student->hasActiveScholarship()) {
+                $discountPercent = (float) $student->scholarship_percentage;
+                $discountAmount = round(($tuitionAmount * $discountPercent) / 100.0, 2);
+                $scholarshipTitle = $student->scholarship_name ?: "Scholarship ({$discountPercent}% on Tuition Fee)";
+                $items->push([
+                    'label' => "{$scholarshipTitle} (-{$discountPercent}% on Tuition Fee)",
+                    'amount' => -$discountAmount,
+                    'is_discount' => true,
+                ]);
+            }
+
+            $totalAmount = max(0.0, round($subtotal - $discountAmount, 2));
+
+            $attributes = [
+                'fee_structure_id' => $structure->id,
+                'status' => 'unpaid',
+                'credit_hours' => $credits,
+                'line_items' => $items->values()->all(),
+                'subtotal' => $subtotal,
+                'discount_amount' => $discountAmount,
+                'late_fee_amount' => 0,
+                'total_amount' => $totalAmount,
+                'amount_paid' => 0,
+                'due_date' => now()->addDays($structure->due_days),
+                'generated_at' => now(),
+            ];
             if ($invoice) {
                 $invoice->update($attributes);
                 return $invoice->fresh();

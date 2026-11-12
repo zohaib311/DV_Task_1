@@ -19,4 +19,34 @@ return [
         'minimum_attendance_percentage' => 75.0,
         'examination_hall' => 'Central Examination Hall - Block A',
     ],
+    'scholarships' => [
+        'applies_to' => 'tuition_only', // Discount is applied strictly on tuition fee
+        'merit_slabs' => [
+            [
+                'min_percentage' => 85.0,
+                'name' => 'Merit Scholarship (Gold - 50% Tuition Waiver)',
+                'discount_percentage' => 50.0,
+                'tier' => 'gold',
+            ],
+            [
+                'min_percentage' => 75.0,
+                'name' => 'Merit Scholarship (Silver - 30% Tuition Waiver)',
+                'discount_percentage' => 30.0,
+                'tier' => 'silver',
+            ],
+            [
+                'min_percentage' => 65.0,
+                'name' => 'Merit Scholarship (Bronze - 15% Tuition Waiver)',
+                'discount_percentage' => 15.0,
+                'tier' => 'bronze',
+            ],
+        ],
+        'special_quotas' => [
+            ['name' => 'Need-Based Financial Aid (50% Tuition Waiver)', 'discount_percentage' => 50.0],
+            ['name' => 'Need-Based Financial Aid (25% Tuition Waiver)', 'discount_percentage' => 25.0],
+            ['name' => 'Kinship / Sibling Concession (20% Tuition Waiver)', 'discount_percentage' => 20.0],
+            ['name' => 'Sports & Talent Quota (30% Tuition Waiver)', 'discount_percentage' => 30.0],
+            ['name' => 'Faculty & Staff Ward Concession (50% Tuition Waiver)', 'discount_percentage' => 50.0],
+        ],
+    ],
 ];

@@ -26,21 +26,32 @@ class StudentController extends Controller
         $users = $this->availableUsers();
         $defaultLateralCredits = config('academic.lateral_entry.default_transferred_credits', 64.0);
         $defaultAdmittedSemester = config('academic.lateral_entry.default_admitted_semester', 5);
+        $scholarships = config('fees.scholarships');
 
-        return view('students.add-student', compact('departments', 'programs', 'sections', 'users', 'defaultLateralCredits', 'defaultAdmittedSemester'));
+        return view('students.add-student', compact('departments', 'programs', 'sections', 'users', 'defaultLateralCredits', 'defaultAdmittedSemester', 'scholarships'));
     }
 
     function allstudents(Request $request)
     {
-        $students    = Student::with(['department', 'program', 'section', 'user', 'creditTransfer', 'activeSemesterEnrollment.courses.course'])->get();
+        $students    = Student::with([
+            'department',
+            'program',
+            'section',
+            'user',
+            'creditTransfer',
+            'activeSemesterEnrollment.courses.course',
+            'activeSemesterEnrollment.term',
+            'activeSemesterEnrollment.feeInvoice',
+        ])->get();
         $departments = Department::all();
         $programs    = Program::with('department')->where('is_active', true)->orderBy('name')->get();
         $sections    = Section::with('department')->get();
         $users       = $this->availableUsers();
         $defaultLateralCredits = config('academic.lateral_entry.default_transferred_credits', 64.0);
         $defaultAdmittedSemester = config('academic.lateral_entry.default_admitted_semester', 5);
+        $scholarships = config('fees.scholarships');
 
-        return view('students.students', compact('students', 'departments', 'programs', 'sections', 'users', 'defaultLateralCredits', 'defaultAdmittedSemester'));
+        return view('students.students', compact('students', 'departments', 'programs', 'sections', 'users', 'defaultLateralCredits', 'defaultAdmittedSemester', 'scholarships'));
     }
 
     function addStudent(Request $request)
@@ -53,6 +64,7 @@ class StudentController extends Controller
             'name'          => 'required|string|max:255',
             'email'         => 'required|email|unique:students,email',
             'phone'         => 'required|digits:11',
+            'cnic'          => 'nullable|string|max:30',
             'department_id' => 'required|exists:departments,id',
             'program_id'    => 'nullable|exists:academic_programs,id',
             'section_id'    => 'required|exists:sections,id',
@@ -61,6 +73,15 @@ class StudentController extends Controller
             'account_password' => [$createsPortalAccount ? 'required' : 'nullable', 'string', 'min:8', 'confirmed'],
             'image'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'admission_type'=> ['nullable', 'string', Rule::in(['regular', 'lateral_adp', 'migration'])],
+            'inter_degree'  => ['nullable', 'string', 'max:100'],
+            'inter_board'   => ['nullable', 'string', 'max:150'],
+            'inter_roll_no' => ['nullable', 'string', 'max:50'],
+            'inter_total_marks' => ['nullable', 'numeric', 'min:0', 'max:5000'],
+            'inter_obtained_marks' => ['nullable', 'numeric', 'min:0', 'max:5000'],
+            'inter_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'scholarship_name' => ['nullable', 'string', 'max:120'],
+            'scholarship_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'scholarship_status' => ['nullable', 'string', Rule::in(['none', 'active', 'revoked'])],
             'previous_institution' => [$isLateral ? 'required' : 'nullable', 'string', 'max:150'],
             'previous_degree'      => [$isLateral ? 'required' : 'nullable', 'string', 'max:150'],
             'previous_cgpa'        => ['nullable', 'string', 'max:20'],
@@ -102,11 +123,31 @@ class StudentController extends Controller
                 ? 'Semester ' . ($validated['admitted_to_semester'] ?? config('academic.lateral_entry.default_admitted_semester', 5))
                 : null;
 
-            $studentData = collect($validated)->only(['name', 'email', 'phone', 'department_id', 'program_id', 'section_id', 'user_id'])->all() + [
+            $interTotal = ! empty($validated['inter_total_marks']) ? (float) $validated['inter_total_marks'] : null;
+            $interObtained = ! empty($validated['inter_obtained_marks']) ? (float) $validated['inter_obtained_marks'] : null;
+            $interPercentage = ! empty($validated['inter_percentage']) ? (float) $validated['inter_percentage'] : null;
+            if ($interPercentage === null && $interTotal && $interTotal > 0 && $interObtained !== null) {
+                $interPercentage = round(($interObtained / $interTotal) * 100, 2);
+            }
+
+            $scholarshipPct = ! empty($validated['scholarship_percentage']) ? (float) $validated['scholarship_percentage'] : 0.0;
+            $scholarshipStatus = $validated['scholarship_status'] ?? ($scholarshipPct > 0 ? 'active' : 'none');
+            $scholarshipName = $validated['scholarship_name'] ?? null;
+
+            $studentData = collect($validated)->only([
+                'name', 'email', 'phone', 'cnic', 'department_id', 'program_id', 'section_id', 'user_id',
+                'inter_degree', 'inter_board', 'inter_roll_no',
+            ])->all() + [
                 'image' => $fileName,
                 'admission_type' => $admissionType,
                 'admitted_semester' => $admittedSemester,
                 'semester' => $admittedSemester,
+                'inter_total_marks' => $interTotal,
+                'inter_obtained_marks' => $interObtained,
+                'inter_percentage' => $interPercentage,
+                'scholarship_name' => $scholarshipName,
+                'scholarship_percentage' => $scholarshipPct,
+                'scholarship_status' => $scholarshipStatus,
             ];
 
             $createdStudent = Student::create($studentData);
@@ -162,8 +203,9 @@ class StudentController extends Controller
         $users = $this->availableUsers($student->user_id);
         $defaultLateralCredits = config('academic.lateral_entry.default_transferred_credits', 64.0);
         $defaultAdmittedSemester = config('academic.lateral_entry.default_admitted_semester', 5);
+        $scholarships = config('fees.scholarships');
 
-        return view('students.edit-student', compact('student', 'departments', 'programs', 'sections', 'activeEnrollment', 'users', 'defaultLateralCredits', 'defaultAdmittedSemester'));
+        return view('students.edit-student', compact('student', 'departments', 'programs', 'sections', 'activeEnrollment', 'users', 'defaultLateralCredits', 'defaultAdmittedSemester', 'scholarships'));
     }
 
     function updateStudent(Request $request, $id)
@@ -177,12 +219,22 @@ class StudentController extends Controller
             'name'          => 'required|string|max:255',
             'email'         => 'required|email|unique:students,email,' . $student->id,
             'phone'         => 'required|digits:11',
+            'cnic'          => 'nullable|string|max:30',
             'department_id' => 'required|exists:departments,id',
             'program_id'    => 'nullable|exists:academic_programs,id',
             'section_id'    => 'required|exists:sections,id',
             'user_id'       => ['nullable', 'exists:users,id', Rule::unique('students', 'user_id')->ignore($student->id)],
             'image'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'admission_type'=> ['nullable', 'string', Rule::in(['regular', 'lateral_adp', 'migration'])],
+            'inter_degree'  => ['nullable', 'string', 'max:100'],
+            'inter_board'   => ['nullable', 'string', 'max:150'],
+            'inter_roll_no' => ['nullable', 'string', 'max:50'],
+            'inter_total_marks' => ['nullable', 'numeric', 'min:0', 'max:5000'],
+            'inter_obtained_marks' => ['nullable', 'numeric', 'min:0', 'max:5000'],
+            'inter_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'scholarship_name' => ['nullable', 'string', 'max:120'],
+            'scholarship_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'scholarship_status' => ['nullable', 'string', Rule::in(['none', 'active', 'revoked'])],
             'previous_institution' => [$isLateral ? 'required' : 'nullable', 'string', 'max:150'],
             'previous_degree'      => [$isLateral ? 'required' : 'nullable', 'string', 'max:150'],
             'previous_cgpa'        => ['nullable', 'string', 'max:20'],
@@ -203,7 +255,28 @@ class StudentController extends Controller
             $validated['image'] = basename($path);
         }
 
-        $studentUpdateData = collect($validated)->only(['name', 'email', 'phone', 'department_id', 'program_id', 'section_id', 'user_id', 'image'])->all();
+        $interTotal = ! empty($validated['inter_total_marks']) ? (float) $validated['inter_total_marks'] : null;
+        $interObtained = ! empty($validated['inter_obtained_marks']) ? (float) $validated['inter_obtained_marks'] : null;
+        $interPercentage = ! empty($validated['inter_percentage']) ? (float) $validated['inter_percentage'] : null;
+        if ($interPercentage === null && $interTotal && $interTotal > 0 && $interObtained !== null) {
+            $interPercentage = round(($interObtained / $interTotal) * 100, 2);
+        }
+
+        $scholarshipPct = ! empty($validated['scholarship_percentage']) ? (float) $validated['scholarship_percentage'] : 0.0;
+        $scholarshipStatus = $validated['scholarship_status'] ?? ($scholarshipPct > 0 ? 'active' : 'none');
+        $scholarshipName = $validated['scholarship_name'] ?? null;
+
+        $studentUpdateData = collect($validated)->only([
+            'name', 'email', 'phone', 'cnic', 'department_id', 'program_id', 'section_id', 'user_id', 'image',
+            'inter_degree', 'inter_board', 'inter_roll_no',
+        ])->all() + [
+            'inter_total_marks' => $interTotal,
+            'inter_obtained_marks' => $interObtained,
+            'inter_percentage' => $interPercentage,
+            'scholarship_name' => $scholarshipName,
+            'scholarship_percentage' => $scholarshipPct,
+            'scholarship_status' => $scholarshipStatus,
+        ];
         if (isset($validated['admission_type'])) {
             $studentUpdateData['admission_type'] = $validated['admission_type'];
             if ($isLateral && ! $student->admitted_semester) {
