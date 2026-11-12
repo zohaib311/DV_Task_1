@@ -232,3 +232,43 @@ body.sidebar-open {
     margin: 0 auto;
     width: 100%;
 }
+
+/* ===================================================
+   GLOBAL BOOTSTRAP MODAL ENHANCEMENTS
+   Permanently fixes navbar / sidebar overlap across all modals
+=================================================== */
+
+/* Dark backdrop dims everything including the fixed navbar (1060) and desktop sidebar (1040) */
+.modal-backdrop {
+    z-index: 1070 !important;
+}
+
+/* Modal window is always on top of both backdrop and navbar */
+.modal {
+    z-index: 1075 !important;
+}
+
+/* Safe margin from the top edge of screen so modal headers and close buttons are never clipped */
+.modal-dialog {
+    margin-top: clamp(24px, 4vh, 40px) !important;
+    margin-bottom: clamp(24px, 4vh, 40px) !important;
+}
+
+.modal-dialog-centered {
+    min-height: calc(100% - clamp(48px, 8vh, 80px)) !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.modal-dialog-scrollable {
+    height: calc(100% - clamp(48px, 8vh, 80px)) !important;
+}
+
+.modal-dialog-scrollable .modal-content {
+    max-height: 100% !important;
+    overflow: hidden !important;
+}
+
+.modal-dialog-scrollable .modal-body {
+    overflow-y: auto !important;
+}

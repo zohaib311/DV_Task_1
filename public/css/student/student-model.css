@@ -1,9 +1,19 @@
+.student-detail-modal {
+    z-index: 1075 !important;
+}
+
+.student-detail-modal .modal-dialog {
+    margin-top: clamp(24px, 4vh, 40px) !important;
+    margin-bottom: clamp(24px, 4vh, 40px) !important;
+}
+
 .student-detail-modal .modal-content {
     border: 0;
     border-radius: 20px;
     overflow: hidden;
     background: #ffffff;
-    box-shadow: 0 25px 70px rgba(15, 23, 42, 0.25);
+    box-shadow: 0 25px 70px rgba(15, 23, 42, 0.30);
+    max-height: calc(100vh - clamp(48px, 8vh, 80px));
 }
 
 .student-modal-header {
