@@ -17,7 +17,7 @@ class FeeController extends Controller
     {
         $student = $workspace->student($request->user());
         $student->semesterEnrollments()->where('status', 'active')->get()->each(fn ($enrollment) => $service->generate($enrollment));
-        $invoices = StudentFeeInvoice::with(['enrollment', 'payments' => fn ($query) => $query->latest()])
+        $invoices = StudentFeeInvoice::with(['enrollment', 'payments' => fn ($query) => $query->latest(), 'student'])
             ->where('student_id', $student->id)->latest('id')->get();
         $structures = FeeStructure::with(['program', 'term.academicYear'])->where('program_id', $student->program_id)
             ->where('is_active', true)->latest('id')->get();

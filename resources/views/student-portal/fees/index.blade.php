@@ -4,12 +4,48 @@
 @section('description', 'Review semester invoices, fee breakdowns, and submit a payment proof for verification.')
 
 @section('student-content')
-    <section class="portal-summary-grid fee-summary-grid">
-        <div class="portal-summary-card"><span>Invoices</span><strong>{{ $invoices->count() }}</strong><small>Generated semester records</small></div>
-        <div class="portal-summary-card"><span>Pending payment</span><strong>PKR {{ number_format((float) $invoices->whereIn('status', ['unpaid', 'rejected'])->sum('total_amount'), 0) }}</strong><small>Awaiting a payment submission</small></div>
-        <div class="portal-summary-card"><span>Under review</span><strong>{{ $invoices->where('status', 'submitted')->count() }}</strong><small>Payment proof submitted</small></div>
-        <div class="portal-summary-card"><span>Approved</span><strong>{{ $invoices->where('status', 'approved')->count() }}</strong><small>Cleared semester invoices</small></div>
-    </section>
+    <div class="row g-3 mb-4 fee-summary-grid">
+        <div class="col-sm-6 col-lg-3">
+            <div class="portal-stat-card h-100">
+                <span class="portal-stat-icon" style="color: #4f46e5; background: rgba(79, 70, 229, 0.1);"><i class="bi bi-receipt" aria-hidden="true"></i></span>
+                <div class="portal-stat-content">
+                    <small>Invoices</small>
+                    <strong>{{ $invoices->count() }}</strong>
+                    <span class="text-muted" style="font-size: 0.72rem;">Generated records</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="portal-stat-card h-100">
+                <span class="portal-stat-icon" style="color: #ea580c; background: rgba(234, 88, 12, 0.1);"><i class="bi bi-clock-history" aria-hidden="true"></i></span>
+                <div class="portal-stat-content">
+                    <small>Pending payment</small>
+                    <strong class="text-danger">PKR {{ number_format((float) $invoices->whereIn('status', ['unpaid', 'rejected'])->sum('total_amount'), 0) }}</strong>
+                    <span class="text-muted" style="font-size: 0.72rem;">Awaiting submission</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="portal-stat-card h-100">
+                <span class="portal-stat-icon" style="color: #0284c7; background: rgba(2, 132, 199, 0.1);"><i class="bi bi-hourglass-split" aria-hidden="true"></i></span>
+                <div class="portal-stat-content">
+                    <small>Under review</small>
+                    <strong>{{ $invoices->where('status', 'submitted')->count() }}</strong>
+                    <span class="text-muted" style="font-size: 0.72rem;">Proof submitted</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="portal-stat-card h-100">
+                <span class="portal-stat-icon" style="color: #16a34a; background: rgba(22, 163, 74, 0.1);"><i class="bi bi-check-circle" aria-hidden="true"></i></span>
+                <div class="portal-stat-content">
+                    <small>Approved</small>
+                    <strong class="text-success">{{ $invoices->where('status', 'approved')->count() }}</strong>
+                    <span class="text-muted" style="font-size: 0.72rem;">Cleared invoices</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="academic-note portal-note-with-icon fee-note"><i class="bi bi-shield-check" aria-hidden="true"></i><span>Your invoice is calculated from your registered credit hours. Upload a clear JPG, PNG, or PDF payment proof for administrative verification.</span></div>
 
@@ -18,7 +54,7 @@
         <div class="table-responsive"><table class="table academic-table fee-structure-student-table"><thead><tr><th>Applicable term</th><th>Admission</th><th>Registration</th><th>Security</th><th>Processing</th><th>Enrollment</th><th>Tuition / credit</th><th>Exam</th><th>Convocation</th></tr></thead><tbody>@forelse($structures as $structure)<tr><td><strong>{{ $structure->name }}</strong><small>{{ $structure->term ? $structure->term->name.' · '.$structure->term->academicYear->name : 'All future terms' }}</small></td><td>PKR {{ number_format($structure->admission_fee, 0) }}</td><td>PKR {{ number_format($structure->registration_fee, 0) }}</td><td>PKR {{ number_format($structure->security_fee, 0) }}</td><td>PKR {{ number_format($structure->processing_fee, 0) }}</td><td>PKR {{ number_format($structure->enrollment_fee, 0) }}</td><td>PKR {{ number_format($structure->tuition_per_credit_hour, 0) }}</td><td>PKR {{ number_format($structure->exam_fee, 0) }}</td><td>PKR {{ number_format($structure->convocation_fee, 0) }}</td></tr>@empty<tr><td colspan="9">No active fee structure has been configured for your program yet.</td></tr>@endforelse</tbody></table></div>
     </section>
 
-    @php($studentUser = auth()->user()?->student ?? $invoices->first()?->student)
+    @php($studentUser = $student)
     @if($studentUser && $studentUser->hasActiveScholarship())
         <div class="alert alert-success d-flex align-items-center gap-3 mb-4 p-3 rounded-3 shadow-sm border border-success bg-success-subtle">
             <i class="bi bi-award-fill fs-2 text-success"></i>
@@ -73,7 +109,7 @@
                         <small>Paid: PKR {{ number_format((float) $invoice->amount_paid, 0) }}</small>
                     </div>
                 </div>
-                @if($invoice->payments->isNotEmpty())<div class="fee-payment-history">@foreach($invoice->payments as $payment)<div><i class="bi bi-receipt" aria-hidden="true"></i><span>{{ ucfirst($payment->status) }} payment · PKR {{ number_format((float) $payment->amount, 0) }} · {{ $payment->paid_at->format('d M Y') }}</span>@if($payment->review_note)<small>{{ $payment->review_note }}</small>@endif @if($payment->proof_path)<a href="{{ route('student.fees.payments.proof', [$invoice, $payment]) }}">View proof</a>@endif</div>@endforeach</div>@endif
+                @if($invoice->payments->isNotEmpty())<div class="fee-payment-history">@foreach($invoice->payments as $payment)<div><i class="bi bi-receipt" aria-hidden="true"></i><span>{{ ucfirst($payment->status) }} payment · PKR {{ number_format((float) $payment->amount, 0) }} · {{ $payment->paid_at->format('d M Y') }}</span>@if($payment->review_note)<small>{{ $payment->review_note }}</small>@endif @if($payment->proof_path)<a class="portal-action-link ms-auto" href="{{ route('student.fees.payments.proof', [$invoice, $payment]) }}"><i class="bi bi-file-earmark-arrow-down me-1"></i> View proof</a>@endif</div>@endforeach</div>@endif
                 @if($canSubmit)
                     <details class="fee-submit-panel" @if($invoice->status === 'rejected') open @endif><summary><i class="bi bi-cloud-arrow-up" aria-hidden="true"></i> Submit payment proof</summary>
                         <form method="POST" enctype="multipart/form-data" action="{{ route('student.fees.payments.submit', $invoice) }}" class="fee-payment-form">@csrf

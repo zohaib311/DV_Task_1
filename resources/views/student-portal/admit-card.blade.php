@@ -13,40 +13,55 @@
 @endsection
 
 @section('student-content')
-    <section class="portal-summary-grid fee-summary-grid">
-        <div class="portal-summary-card">
-            <span>Fee clearance</span>
-            @if ($eligibility['fee_cleared'])
-                <strong style="color: #059669;">Cleared</strong>
-                <small>Semester invoice paid</small>
-            @else
-                <strong style="color: #dc2626;">Pending</strong>
-                <small>Unpaid invoice dues</small>
-            @endif
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="portal-stat-card h-100">
+                <span class="portal-stat-icon" style="color: {{ $eligibility['fee_cleared'] ? '#16a34a' : '#dc2626' }}; background: {{ $eligibility['fee_cleared'] ? 'rgba(22, 163, 74, 0.1)' : 'rgba(220, 38, 38, 0.1)' }};">
+                    <i class="bi {{ $eligibility['fee_cleared'] ? 'bi-wallet-fill' : 'bi-exclamation-triangle-fill' }}" aria-hidden="true"></i>
+                </span>
+                <div class="portal-stat-content">
+                    <small>Fee clearance</small>
+                    <strong style="color: {{ $eligibility['fee_cleared'] ? '#16a34a' : '#dc2626' }};">
+                        {{ $eligibility['fee_cleared'] ? 'Cleared' : 'Pending' }}
+                    </strong>
+                    <span class="text-muted" style="font-size: 0.72rem;">{{ $eligibility['fee_cleared'] ? 'Semester invoice paid' : 'Unpaid invoice dues' }}</span>
+                </div>
+            </div>
         </div>
-        <div class="portal-summary-card">
-            <span>Overall attendance</span>
-            @if ($eligibility['attendance_percentage'] !== null)
-                <strong style="color: {{ $eligibility['attendance_percentage'] >= 75 ? '#059669' : '#dc2626' }};">
-                    {{ $eligibility['attendance_percentage'] }}%
-                </strong>
-                <small>Minimum 75.0% required</small>
-            @else
-                <strong>N/A</strong>
-                <small>No sessions recorded</small>
-            @endif
+        <div class="col-md-4">
+            <div class="portal-stat-card h-100">
+                <span class="portal-stat-icon" style="color: {{ ($eligibility['attendance_percentage'] ?? 0) >= 75 ? '#16a34a' : '#dc2626' }}; background: {{ ($eligibility['attendance_percentage'] ?? 0) >= 75 ? 'rgba(22, 163, 74, 0.1)' : 'rgba(220, 38, 38, 0.1)' }};">
+                    <i class="bi bi-percent" aria-hidden="true"></i>
+                </span>
+                <div class="portal-stat-content">
+                    <small>Overall attendance</small>
+                    @if ($eligibility['attendance_percentage'] !== null)
+                        <strong style="color: {{ $eligibility['attendance_percentage'] >= 75 ? '#16a34a' : '#dc2626' }};">
+                            {{ $eligibility['attendance_percentage'] }}%
+                        </strong>
+                        <span class="text-muted" style="font-size: 0.72rem;">Minimum 75.0% required</span>
+                    @else
+                        <strong>N/A</strong>
+                        <span class="text-muted" style="font-size: 0.72rem;">No sessions recorded</span>
+                    @endif
+                </div>
+            </div>
         </div>
-        <div class="portal-summary-card">
-            <span>Examination status</span>
-            @if ($eligibility['eligible'])
-                <strong style="color: #059669;">Eligible</strong>
-                <small>Cleared to sit for exams</small>
-            @else
-                <strong style="color: #dc2626;">Blocked</strong>
-                <small>Clearance requirements pending</small>
-            @endif
+        <div class="col-md-4">
+            <div class="portal-stat-card h-100">
+                <span class="portal-stat-icon" style="color: {{ $eligibility['eligible'] ? '#16a34a' : '#dc2626' }}; background: {{ $eligibility['eligible'] ? 'rgba(22, 163, 74, 0.1)' : 'rgba(220, 38, 38, 0.1)' }};">
+                    <i class="bi {{ $eligibility['eligible'] ? 'bi-patch-check-fill' : 'bi-shield-x' }}" aria-hidden="true"></i>
+                </span>
+                <div class="portal-stat-content">
+                    <small>Examination status</small>
+                    <strong style="color: {{ $eligibility['eligible'] ? '#16a34a' : '#dc2626' }};">
+                        {{ $eligibility['eligible'] ? 'Eligible' : 'Blocked' }}
+                    </strong>
+                    <span class="text-muted" style="font-size: 0.72rem;">{{ $eligibility['eligible'] ? 'Cleared to sit for exams' : 'Requirements pending' }}</span>
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
 
     @if (!$eligibility['eligible'])
         <div class="academic-note portal-note-with-icon fee-note"

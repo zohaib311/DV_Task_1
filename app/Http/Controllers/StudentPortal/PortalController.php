@@ -12,7 +12,7 @@ class PortalController extends Controller
 {
     public function dashboard(Request $request, StudentWorkspace $workspace)
     {
-        $student = $workspace->student($request->user())->load(['department', 'section', 'activeSemesterEnrollment.term', 'activeSemesterEnrollment.section']);
+        $student = $workspace->student($request->user())->load(['department', 'program', 'section', 'activeSemesterEnrollment.term', 'activeSemesterEnrollment.section']);
         $enrollment = $student->activeSemesterEnrollment;
         $courseCount = $enrollment?->courses()->count() ?? 0;
         $latestResult = $request->user()->can('student.result.view-own') ? $workspace->results($request->user())->with('enrollment')->get()

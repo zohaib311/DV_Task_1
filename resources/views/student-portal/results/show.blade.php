@@ -1,9 +1,9 @@
 @extends('student-portal.layout')
-@section('heading', $result->enrollment->semester.' — Published result')
+@section('heading', ($result->enrollment?->semester ?? 'Semester').' — Published result')
 @section('description', 'Your official published course grades, assessment totals, SGPA, and cumulative GPA.')
 @section('header-actions')<a class="btn academic-header-btn" href="{{ route('student.results.index') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Result history</a>@endsection
 @section('student-content')
-    <div class="portal-card portal-result-card mb-3"><span class="portal-stat-icon"><i class="bi bi-person-vcard" aria-hidden="true"></i></span><div class="portal-result-main"><strong>{{ $student->name }}</strong><small>{{ $student->registration_no }} · {{ $result->enrollment->academic_year }}</small></div><span class="portal-badge {{ $result->status === 'Pass' ? 'is-success' : 'is-danger' }}">{{ $result->status }}</span></div>
+    <div class="portal-card portal-result-card mb-3"><span class="portal-stat-icon"><i class="bi bi-person-vcard" aria-hidden="true"></i></span><div class="portal-result-main"><strong>{{ $student->name }}</strong><small>{{ $student->registration_no }} · {{ $result->enrollment?->academic_year ?? 'Academic Year' }}</small></div><span class="portal-badge {{ $result->status === 'Pass' ? 'is-success' : 'is-danger' }}">{{ $result->status }}</span></div>
     <div class="portal-result-summary">
         <div><small>Published</small><strong>{{ $result->published_at->format('d M Y') }}</strong></div>
         <div><small>Percentage</small><strong>{{ $result->semester_percentage }}%</strong></div>
