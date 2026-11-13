@@ -6,7 +6,7 @@
     --color-light: #f8fafc;
     --gradient-primary: linear-gradient(135deg, #6c63ff 0%, #8b5cf6 100%);
     --navbar-height: 64px;
-    --sidebar-width: 260px;
+    --sidebar-width: 270px;
 }
 
 * {

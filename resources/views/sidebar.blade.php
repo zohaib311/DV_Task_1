@@ -62,7 +62,33 @@
         @endcan
 
         @canany(['fees.manage', 'fees.review'])
-            <li class="nav-item"><details class="sidebar-group" @if(request()->is('fees*')) open @endif><summary class="sidebar-link"><i class="bi bi-wallet2 me-2 fs-5"></i><span>Fees</span><i class="bi bi-chevron-down sidebar-group-arrow"></i></summary><div class="sidebar-submenu">@can('fees.manage')<a href="{{ route('fees.structures.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('fees.structures.*')])>Fee Structures</a>@endcan @can('fees.review')<a href="{{ route('fees.payments.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('fees.payments.*')])>Payment Review</a>@endcan</div></details></li>
+            <li class="nav-item">
+                <details class="sidebar-group" @if(request()->is('fees*')) open @endif>
+                    <summary class="sidebar-link">
+                        <i class="bi bi-wallet2 me-2 fs-5"></i>
+                        <span>Fees</span>
+                        <i class="bi bi-chevron-down sidebar-group-arrow"></i>
+                    </summary>
+                    <ul class="sidebar-submenu">
+                        @can('fees.manage')
+                            <li>
+                                <a href="{{ route('fees.structures.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('fees.structures.*')])>
+                                    <i class="bi bi-credit-card-2-front" aria-hidden="true"></i>
+                                    <span>Fee Structures</span>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('fees.review')
+                            <li>
+                                <a href="{{ route('fees.payments.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('fees.payments.*')])>
+                                    <i class="bi bi-receipt-cutoff" aria-hidden="true"></i>
+                                    <span>Payment Review</span>
+                                </a>
+                            </li>
+                        @endcan
+                    </ul>
+                </details>
+            </li>
         @endcanany
 
         @can('teachers.manage')
@@ -120,18 +146,30 @@
         @can('results.view-all')
             <li class="nav-item">
                 <details class="sidebar-group" @if (request()->is('result*')) open @endif>
-                    <summary class="sidebar-link"><i class="bi bi-window-stack me-2 fs-5"></i><span>Results</span><i
-                            class="bi bi-chevron-down sidebar-group-arrow"></i></summary>
+                    <summary class="sidebar-link">
+                        <i class="bi bi-window-stack me-2 fs-5"></i>
+                        <span>Results</span>
+                        <i class="bi bi-chevron-down sidebar-group-arrow"></i>
+                    </summary>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('allResults') }}" @class([
-                            'sidebar-sublink',
-                            'active' => request()->routeIs('allResults'),
-                        ])>Student Results</a></li>
-                        <li><a href="{{ route('results.moderation.index') }}" @class([
-                            'sidebar-sublink',
-                            'active' => request()->routeIs('results.moderation.*'),
-                        ])>Moderation &amp;
-                                Publication</a></li>
+                        <li>
+                            <a href="{{ route('allResults') }}" @class([
+                                'sidebar-sublink',
+                                'active' => request()->routeIs('allResults'),
+                            ])>
+                                <i class="bi bi-table" aria-hidden="true"></i>
+                                <span>Student Results</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('results.moderation.index') }}" @class([
+                                'sidebar-sublink',
+                                'active' => request()->routeIs('results.moderation.*'),
+                            ])>
+                                <i class="bi bi-award" aria-hidden="true"></i>
+                                <span>Moderation &amp; Publication</span>
+                            </a>
+                        </li>
                     </ul>
                 </details>
             </li>
