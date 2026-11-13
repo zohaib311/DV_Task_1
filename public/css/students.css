@@ -205,16 +205,42 @@
 
 .user__image {
     text-align: center;
-    width: 60px;
+    vertical-align: middle !important;
+    width: 68px;
+    padding: 8px !important;
+}
+
+.user-avatar-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    vertical-align: middle;
 }
 
 .user-image {
     width: 44px;
     height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     object-fit: cover;
     border-radius: 50%;
-    border: 2px solid var(--color-outline, #e2e8f0);
-    padding: 1px;
+    border: 2px solid #e0e7ff;
+    background-color: #f8fafc;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.14);
+    display: block;
+    margin: 0 auto;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.user-avatar-wrap:hover .user-image,
+.user-image:hover {
+    transform: scale(1.1);
+    border-color: #6366f1;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.28);
 }
 
 .table__content .badge {
@@ -284,9 +310,21 @@
         font-size: 13px;
     }
 
+    .user__image {
+        width: 56px;
+        padding: 6px !important;
+    }
+
+    .user-avatar-wrap {
+        width: 38px;
+        height: 38px;
+    }
+
     .user-image {
         width: 38px;
         height: 38px;
+        min-width: 38px;
+        min-height: 38px;
     }
 
     .table__content .student-list-header {

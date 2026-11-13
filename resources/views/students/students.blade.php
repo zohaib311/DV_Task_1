@@ -181,8 +181,11 @@
                                             @endif
                                         </td>
                                         <td class="user__image">
-                                            <img src="{{ asset('storage/images/' . $student->image) }}"
-                                                alt="{{ $student->name }}" class="user-image">
+                                            <div class="user-avatar-wrap">
+                                                <img src="{{ asset('storage/images/' . ($student->image ?: 'default-user.png')) }}"
+                                                    alt="{{ $student->name }}" class="user-image"
+                                                    onerror="this.onerror=null;this.src='{{ asset('storage/images/default-user.png') }}';">
+                                            </div>
                                         </td>
                                         <td class="fw-semibold">{{ $student->name }}</td>
                                         <td>

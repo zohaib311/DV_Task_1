@@ -1,7 +1,7 @@
 @extends('welcome')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/students.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/students.css') }}?v={{ filemtime(public_path('css/students.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/universal/action-buttons.css') }}">
 @endsection
 
@@ -145,8 +145,11 @@
                                         </th>
 
                                         <td class="user__image">
-                                            <img src="{{ asset('storage/images/' . $teacher->image) }}"
-                                                alt="{{ $teacher->name }}" class="user-image">
+                                            <div class="user-avatar-wrap">
+                                                <img src="{{ asset('storage/images/' . ($teacher->image ?: 'default-user.png')) }}"
+                                                    alt="{{ $teacher->name }}" class="user-image"
+                                                    onerror="this.onerror=null;this.src='{{ asset('storage/images/default-user.png') }}';">
+                                            </div>
                                         </td>
 
                                         <td class="fw-semibold">
