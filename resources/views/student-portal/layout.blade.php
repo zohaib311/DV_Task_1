@@ -2,7 +2,7 @@
 @section('title', 'Student Portal')
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/academic/academic.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/student-portal/portal.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/student-portal/portal.css') }}?v={{ filemtime(public_path('css/student-portal/portal.css')) }}">
 @endsection
 @section('content')
     <div class="container py-4 py-lg-5 academic-page student-portal-page">

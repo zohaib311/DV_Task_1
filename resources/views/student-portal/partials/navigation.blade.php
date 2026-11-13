@@ -1,32 +1,92 @@
 @can('student.profile.view-own')
-    <a href="{{ route('student.dashboard') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.dashboard')])><span class="student-nav-icon is-profile"><i class="bi bi-person-vcard" aria-hidden="true"></i></span><span>My Dashboard &amp; Profile</span></a>
+    <li>
+        <a href="{{ route('student.dashboard') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.dashboard')])>
+            <i class="bi bi-speedometer2" aria-hidden="true"></i>
+            <span>My Dashboard &amp; Profile</span>
+        </a>
+    </li>
 @endcan
 @can('student.courses.view-own')
-    <a href="{{ route('student.courses') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.courses')])><span class="student-nav-icon is-courses"><i class="bi bi-journal-richtext" aria-hidden="true"></i></span><span>My Courses</span></a>
-    <a href="{{ route('student.timetable.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.timetable.*')])><span class="student-nav-icon is-courses"><i class="bi bi-calendar-week" aria-hidden="true"></i></span><span>My Timetable</span></a>
+    <li>
+        <a href="{{ route('student.courses') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.courses')])>
+            <i class="bi bi-journal-bookmark" aria-hidden="true"></i>
+            <span>My Courses</span>
+        </a>
+    </li>
+    <li>
+        <a href="{{ route('student.timetable.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.timetable.*')])>
+            <i class="bi bi-calendar-week" aria-hidden="true"></i>
+            <span>My Timetable</span>
+        </a>
+    </li>
 @endcan
 @can('student.registration.manage-own')
-    <a href="{{ route('student.registration.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.registration.*')])><span class="student-nav-icon is-registration"><i class="bi bi-pencil-square" aria-hidden="true"></i></span><span>Course Registration</span></a>
+    <li>
+        <a href="{{ route('student.registration.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.registration.*')])>
+            <i class="bi bi-pencil-square" aria-hidden="true"></i>
+            <span>Course Registration</span>
+        </a>
+    </li>
 @endcan
 @can('student.leaves.manage-own')
-    <a href="{{ route('student.leaves.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.leaves.*')])><span class="student-nav-icon is-leaves"><i class="bi bi-calendar2-plus" aria-hidden="true"></i></span><span>Leave Requests</span></a>
+    <li>
+        <a href="{{ route('student.leaves.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.leaves.*')])>
+            <i class="bi bi-calendar2-plus" aria-hidden="true"></i>
+            <span>Leave Requests</span>
+        </a>
+    </li>
 @endcan
 @can('student.attendance.view-own')
-    <a href="{{ route('student.attendance.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.attendance.*')])><span class="student-nav-icon is-attendance"><i class="bi bi-calendar2-check" aria-hidden="true"></i></span><span>My Attendance</span></a>
+    <li>
+        <a href="{{ route('student.attendance.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.attendance.*')])>
+            <i class="bi bi-calendar2-check" aria-hidden="true"></i>
+            <span>My Attendance</span>
+        </a>
+    </li>
 @endcan
 @can('student.assessments.view-own')
-    <a href="{{ route('student.assessments.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.assessments.*') || request()->routeIs('student.assessment-submissions.*')])><span class="student-nav-icon is-assessments"><i class="bi bi-clipboard2-check" aria-hidden="true"></i></span><span>Assessments &amp; Marks</span></a>
+    <li>
+        <a href="{{ route('student.assessments.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.assessments.*') || request()->routeIs('student.assessment-submissions.*')])>
+            <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
+            <span>Assessments &amp; Marks</span>
+        </a>
+    </li>
 @endcan
 @can('student.result.view-own')
-    <a href="{{ route('student.results.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.results.*')])><span class="student-nav-icon is-results"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span><span>Results &amp; History</span></a>
-    <a href="{{ route('student.transcript') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.transcript')])><span class="student-nav-icon is-transcript"><i class="bi bi-file-earmark-medical" aria-hidden="true"></i></span><span>My Transcript</span></a>
+    <li>
+        <a href="{{ route('student.results.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.results.*')])>
+            <i class="bi bi-bar-chart-line" aria-hidden="true"></i>
+            <span>Results &amp; History</span>
+        </a>
+    </li>
+    <li>
+        <a href="{{ route('student.transcript') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.transcript')])>
+            <i class="bi bi-file-earmark-medical" aria-hidden="true"></i>
+            <span>My Transcript</span>
+        </a>
+    </li>
 @endcan
 @can('student.fees.view-own')
-    <a href="{{ route('student.fees.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.fees.*')])><span class="student-nav-icon is-fees"><i class="bi bi-wallet2" aria-hidden="true"></i></span><span>Fees &amp; Payments</span></a>
+    <li>
+        <a href="{{ route('student.fees.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.fees.*')])>
+            <i class="bi bi-wallet2" aria-hidden="true"></i>
+            <span>Fees &amp; Payments</span>
+        </a>
+    </li>
 @endcan
 @can('student.admit-card.view-own')
-    <a href="{{ route('student.admit-card.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.admit-card.*')])><span class="student-nav-icon is-admit"><i class="bi bi-card-checklist" aria-hidden="true"></i></span><span>Admit Card</span></a>
+    <li>
+        <a href="{{ route('student.admit-card.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.admit-card.*')])>
+            <i class="bi bi-card-checklist" aria-hidden="true"></i>
+            <span>Admit Card</span>
+        </a>
+    </li>
 @endcan
 @can('notifications.view-own')
-    <a href="{{ route('student.notifications.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.notifications.*')])><span class="student-nav-icon is-notifications"><i class="bi bi-bell" aria-hidden="true"></i></span><span>Notifications</span></a>
+    <li>
+        <a href="{{ route('student.notifications.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('student.notifications.*')])>
+            <i class="bi bi-bell" aria-hidden="true"></i>
+            <span>Notifications</span>
+        </a>
+    </li>
 @endcan

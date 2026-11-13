@@ -3,9 +3,9 @@
     <div class="sidebar-header d-flex align-items-center justify-content-between">
         <div class="d-flex align-items-center gap-2">
             <div class="sidebar-logo-icon">
-                <i class="bi bi-grid-1x2-fill"></i>
+                <i class="bi {{ auth()->user()->studentProfile && !auth()->user()->can('dashboard.view') ? 'bi-mortarboard-fill' : (auth()->user()->teacherProfile && !auth()->user()->can('offerings.manage') ? 'bi-person-workspace' : 'bi-grid-1x2-fill') }}"></i>
             </div>
-            <h4 class="mb-0">Dashboard</h4>
+            <h4 class="mb-0">{{ auth()->user()->studentProfile && !auth()->user()->can('dashboard.view') ? 'Student Portal' : (auth()->user()->teacherProfile && !auth()->user()->can('offerings.manage') ? 'Teacher Panel' : 'Dashboard') }}</h4>
         </div>
 
         <button type="button" class="btn-close-sidebar d-lg-none" id="sidebarCloseBtn" aria-label="Close sidebar">
@@ -33,9 +33,14 @@
                 'student.assessments.view-own', 'student.result.view-own', 'student.fees.view-own', 'notifications.view-own'])
                 <li class="nav-item">
                     <details class="sidebar-group" @if (request()->is('student-portal*')) open @endif>
-                        <summary class="sidebar-link"><i class="bi bi-mortarboard me-2" aria-hidden="true"></i> Student
-                            Portal <i class="bi bi-chevron-down sidebar-group-arrow" aria-hidden="true"></i></summary>
-                        <div class="sidebar-submenu">@include('student-portal.partials.navigation')</div>
+                        <summary class="sidebar-link">
+                            <i class="bi bi-mortarboard me-2 fs-5" aria-hidden="true"></i>
+                            <span>Student Portal</span>
+                            <i class="bi bi-chevron-down sidebar-group-arrow" aria-hidden="true"></i>
+                        </summary>
+                        <ul class="sidebar-submenu">
+                            @include('student-portal.partials.navigation')
+                        </ul>
                     </details>
                 </li>
             @endcanany
