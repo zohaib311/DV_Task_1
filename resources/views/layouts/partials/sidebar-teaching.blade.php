@@ -1,5 +1,5 @@
 @can('offerings.view-assigned')
-@if(auth()->user()->teacherProfile)
+@if(auth()->user()->teacherProfile && !auth()->user()->can('offerings.manage'))
     <li class="nav-item">
         <details class="sidebar-group" @if(request()->routeIs('teaching.*')) open @endif>
             <summary class="sidebar-link">
