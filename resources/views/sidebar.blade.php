@@ -200,6 +200,14 @@
             </li>
         @endcan
 
+        <li class="nav-item pt-2 border-top">
+            <a href="{{ url('/') }}" target="_blank" class="sidebar-link nav-link">
+                <i class="bi bi-globe me-2 fs-5 text-primary"></i>
+                <span>University Website</span>
+                <i class="bi bi-box-arrow-up-right ms-auto small text-muted"></i>
+            </a>
+        </li>
+
     </ul>
 
     <div class="sidebar-footer mt-auto p-3 ">

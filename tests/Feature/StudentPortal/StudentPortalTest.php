@@ -57,7 +57,7 @@ class StudentPortalTest extends TestCase
         $this->get(route('student.assessments.index'))->assertOk()->assertViewHas('courses', fn ($courses) => $courses->total() === 3);
         $this->get(route('student.results.index'))->assertOk()->assertSee('No published semester results');
         $this->get(route('dashboardView'))->assertRedirect(route('student.dashboard'));
-        $this->get('/')->assertRedirect(route('student.dashboard'));
+        $this->get('/')->assertOk()->assertSee('My Form Task University');
         $this->post(route('student.dashboard'), ['student_id' => 99])->assertMethodNotAllowed();
     }
 

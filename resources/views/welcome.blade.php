@@ -71,6 +71,13 @@
                             </li>
 
                             <li>
+                                <a href="{{ url('/') }}" target="_blank" class="dropdown-item">
+                                    <i class="bi bi-globe text-primary"></i>
+                                    University Website
+                                </a>
+                            </li>
+
+                            <li>
                                 <hr class="dropdown-divider">
                             </li>
 

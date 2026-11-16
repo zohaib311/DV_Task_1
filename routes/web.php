@@ -30,12 +30,10 @@ require __DIR__.'/fees.php';
 
 Route::get('/verify/document/{type}/{hash}', [\App\Http\Controllers\Documents\DocumentPdfController::class, 'verifyDocument'])->name('verify.document');
 
-Route::get('/', function () {
-    if (Auth::check()) {
-        return redirect()->route(app(\App\Services\StudentPortal\StudentWorkspace::class)->landing(Auth::user()) ?? 'dashboardView');
-    }
-    return redirect()->route('signup');
-});
+use App\Http\Controllers\UniversityWebsiteController;
+
+Route::get('/', [UniversityWebsiteController::class, 'index'])->name('home');
+Route::post('/inquiry', [UniversityWebsiteController::class, 'submitInquiry'])->name('website.inquiry');
 
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
