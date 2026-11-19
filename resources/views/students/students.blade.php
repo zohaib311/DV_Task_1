@@ -24,8 +24,16 @@
                             <i class="bi bi-x-lg" aria-hidden="true"></i>
                         </button>
                     </div>
-                    <div class="add__user__btn">
-                        <a href="{{ route('addStudentForm') }}" class="btn text-white d-inline-flex align-items-center gap-2 border-0 px-3 py-2 rounded-3 shadow-sm" style="background: rgba(255, 255, 255, 0.25);">
+                    <div class="add__user__btn d-flex align-items-center gap-2">
+                        <a href="{{ route('students.export') }}" class="btn text-white d-inline-flex align-items-center gap-1.5 border-0 px-3 py-2 rounded-3 shadow-sm" style="background: rgba(255, 255, 255, 0.20);" title="Export all students to CSV spreadsheet">
+                            <i class="bi bi-file-earmark-arrow-down-fill"></i>
+                            <span>Export CSV</span>
+                        </a>
+                        <button type="button" class="btn text-white d-inline-flex align-items-center gap-1.5 border-0 px-3 py-2 rounded-3 shadow-sm" style="background: rgba(255, 255, 255, 0.20);" data-bs-toggle="modal" data-bs-target="#importStudentsModal" title="Import students from CSV file">
+                            <i class="bi bi-file-earmark-arrow-up-fill"></i>
+                            <span>Import CSV</span>
+                        </button>
+                        <a href="{{ route('addStudentForm') }}" class="btn text-white d-inline-flex align-items-center gap-2 border-0 px-3 py-2 rounded-3 shadow-sm" style="background: rgba(255, 255, 255, 0.28);">
                             <i class="bi bi-person-plus-fill"></i>
                             <span>Add Student</span>
                         </a>
@@ -118,11 +126,26 @@
                 <div class="card-body">
                     @if (session('success'))
                         <div class="alert alert-success m-3 mb-0" id="success-message">
-                            {{ session('success') }}
+                            <i class="bi bi-check-circle-fill me-1"></i> {{ session('success') }}
                         </div>
                     @endif
                     @if (session('error'))
-                        <div class="alert alert-danger m-3 mb-0" role="alert">{{ session('error') }}</div>
+                        <div class="alert alert-danger m-3 mb-0" role="alert">
+                            <i class="bi bi-exclamation-octagon-fill me-1"></i> {{ session('error') }}
+                        </div>
+                    @endif
+                    @if (session('import_errors') && count(session('import_errors')) > 0)
+                        <div class="alert alert-warning m-3 mb-0" role="alert">
+                            <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i> Import Notes / Skipped Rows:</div>
+                            <ul class="mb-0 small ps-3">
+                                @foreach (array_slice(session('import_errors'), 0, 5) as $err)
+                                    <li>{{ $err }}</li>
+                                @endforeach
+                                @if (count(session('import_errors')) > 5)
+                                    <li><em>...and {{ count(session('import_errors')) - 5 }} more skipped rows.</em></li>
+                                @endif
+                            </ul>
+                        </div>
                     @endif
                     <div class="table-responsive">
                         <table class="table table-hover table-bordered align-middle mb-0">
@@ -251,6 +274,66 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Bulk Import Students Modal --}}
+    <div class="modal fade" id="importStudentsModal" tabindex="-1" aria-labelledby="importStudentsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header text-white px-4 py-3" style="background: linear-gradient(135deg, #4f46e5, #6366f1);">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-file-earmark-arrow-up-fill fs-5"></i>
+                        <h5 class="modal-title mb-0 fw-bold" id="importStudentsModalLabel">Bulk Import Students from CSV</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form action="{{ route('students.import') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body p-4 bg-light">
+                        <!-- Guidance Alert -->
+                        <div class="p-3 mb-3 rounded-3 bg-white border d-flex gap-3 align-items-start shadow-sm">
+                            <div class="p-2 rounded-3 bg-primary-subtle text-primary fs-4">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <div class="small text-secondary">
+                                <strong class="d-block text-dark mb-1">Safe &amp; Flexible Import:</strong>
+                                <span>Required fields are <strong>Student Name</strong> and <strong>Email Address</strong>. Optional fields (Phone, CNIC, Department, Program, Section, Semester, Admission Type, Scholarship) will automatically use smart defaults if omitted or empty.</span>
+                            </div>
+                        </div>
+
+                        <!-- Template Download Box -->
+                        <div class="p-3 mb-4 rounded-3 bg-white border d-flex flex-wrap align-items-center justify-content-between gap-2 shadow-sm">
+                            <div>
+                                <strong class="d-block text-dark small"><i class="bi bi-filetype-csv text-success me-1"></i> Pre-formatted Sample Template</strong>
+                                <span class="text-muted small">Download our sample spreadsheet with standard column headers.</span>
+                            </div>
+                            <a href="{{ route('students.template') }}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 rounded-3">
+                                <i class="bi bi-download"></i>
+                                <span>Download Template (.csv)</span>
+                            </a>
+                        </div>
+
+                        <!-- File Input -->
+                        <div class="mb-3">
+                            <label for="student_csv_file" class="form-label fw-bold text-dark small">
+                                Select CSV File <span class="text-danger">*</span>
+                            </label>
+                            <input type="file" name="csv_file" id="student_csv_file" class="form-control rounded-3" accept=".csv,text/csv,text/plain" required>
+                            <div class="form-text small text-muted">Supports <code>.csv</code> files up to 5MB. Duplicates will be safely reported.</div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer px-4 py-3 bg-white border-top">
+                        <button type="button" class="btn btn-light border px-4 rounded-3" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary px-4 rounded-3 d-inline-flex align-items-center gap-2 shadow-sm">
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                            <span>Upload &amp; Import</span>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

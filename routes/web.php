@@ -78,6 +78,9 @@ Route::prefix('student')->controller(StudentController::class)->middleware(['aut
     Route::delete('/delete/{id}', 'deleteStudent')->name('deleteStudent');
 
     Route::get('/show', 'allStudents')->name('allStudents');
+    Route::get('/export', 'exportStudents')->name('students.export');
+    Route::get('/template', 'downloadTemplate')->name('students.template');
+    Route::post('/import', 'importStudents')->name('students.import');
     Route::get('/{student}/transfer-document', 'downloadTransferDocument')->name('students.transfer-document');
 });
 
@@ -109,6 +112,14 @@ Route::prefix('teacher')->controller(TeacherController::class)->middleware(['aut
     Route::delete('/delete/{id}', 'deleteTeacher')->name('deleteTeacher');
 
     Route::get('/show', 'allTeachers')->name('allTeachers');
+
+    Route::get('/view/{id}', 'viewTeacher')->name('viewTeacher');
+
+    Route::get('/export', 'exportTeachers')->name('teachers.export');
+
+    Route::get('/template', 'downloadTemplate')->name('teachers.template');
+
+    Route::post('/import', 'importTeachers')->name('teachers.import');
 });
 
 Route::prefix('course')->controller(CourseController::class)->middleware(['auth', 'permission:courses.manage'])->group(function () {

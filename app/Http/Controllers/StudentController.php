@@ -403,4 +403,37 @@ class StudentController extends Controller
             throw ValidationException::withMessages(['program_id' => 'Select an active program and section from the chosen department.']);
         }
     }
+
+    public function exportStudents(\App\Services\CsvImportExportService $csvService)
+    {
+        return $csvService->exportStudents();
+    }
+
+    public function downloadTemplate(\App\Services\CsvImportExportService $csvService)
+    {
+        return $csvService->downloadStudentsTemplate();
+    }
+
+    public function importStudents(Request $request, \App\Services\CsvImportExportService $csvService)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:5120',
+        ], [
+            'csv_file.required' => 'Please choose a CSV file to import.',
+            'csv_file.mimes' => 'The uploaded file must be a valid CSV file.',
+            'csv_file.max' => 'The CSV file cannot exceed 5MB in size.',
+        ]);
+
+        $result = $csvService->importStudents($request->file('csv_file'));
+
+        if ($result['imported_count'] > 0) {
+            return redirect()->route('allStudents')
+                ->with('success', $result['message'])
+                ->with('import_errors', $result['errors']);
+        }
+
+        return redirect()->route('allStudents')
+            ->with('error', 'No students were imported. ' . implode(' ', array_slice($result['errors'], 0, 3)))
+            ->with('import_errors', $result['errors']);
+    }
 }
