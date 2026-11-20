@@ -1,0 +1,291 @@
+/* ==========================================================================
+   University Online Admissions Portal Stylesheet
+   ========================================================================== */
+
+.admissions-hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #2563eb 100%);
+    color: #ffffff;
+    padding: 60px 0 45px;
+    position: relative;
+    overflow: hidden;
+}
+
+.admissions-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.admissions-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 15px 45px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+}
+
+.admissions-card-header {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 22px 30px;
+}
+
+.admissions-step-indicator {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.admissions-step-indicator::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 40px;
+    right: 40px;
+    height: 3px;
+    background: #e2e8f0;
+    z-index: 1;
+}
+
+.admissions-step {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    flex: 1;
+}
+
+.admissions-step-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 3px solid #cbd5e1;
+    color: #64748b;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.admissions-step.active .admissions-step-circle {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+
+.admissions-step-title {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.admissions-step.active .admissions-step-title {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.admissions-form-section {
+    padding: 24px 30px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.admissions-form-section:last-child {
+    border-bottom: none;
+}
+
+.admissions-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admissions-section-title i {
+    color: #2563eb;
+    font-size: 18px;
+}
+
+.admissions-receipt-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 2px dashed #cbd5e1;
+    padding: 35px;
+    box-shadow: 0 15px 40px rgba(15, 23, 42, 0.06);
+}
+
+.application-status-timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.application-status-timeline::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    left: 10px;
+    width: 2px;
+    background: #e2e8f0;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -26px;
+    top: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 2px #cbd5e1;
+}
+
+.timeline-item.done .timeline-dot {
+    background: #10b981;
+    box-shadow: 0 0 0 2px #10b981;
+}
+
+.timeline-item.active .timeline-dot {
+    background: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+}
+
+@media print {
+    .uni-topbar, .uni-navbar, .uni-footer, .no-print, .back-to-top {
+        display: none !important;
+    }
+    .admissions-receipt-card {
+        border: 1px solid #000;
+        box-shadow: none;
+        padding: 20px;
+    }
+}
+
+/* ==========================================================================
+   Admin Admissions Management Styles
+   ========================================================================== */
+.admission-header-card {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+    border-radius: 16px;
+    color: #ffffff;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 25px rgba(49, 46, 129, 0.15);
+}
+
+.admission-kpi-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    transition: all 0.25s ease;
+    text-decoration: none !important;
+    color: inherit;
+    display: block;
+    height: 100%;
+}
+
+.admission-kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.admission-kpi-card.is-active {
+    border-color: #6366f1;
+    background: #f5f3ff;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+}
+
+.admission-kpi-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.admission-filter-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+    margin-bottom: 24px;
+}
+
+.admission-table-card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    overflow: hidden;
+}
+
+.admission-table-card .table th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.admission-table-card .table td {
+    padding: 14px 16px;
+    vertical-align: middle;
+    font-size: 14px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.admission-table-card .table tr:hover td {
+    background-color: #fbfcfe;
+}
+
+.admission-detail-block {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid #edf2f7;
+    margin-bottom: 12px;
+}
+
+.admission-detail-label {
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.admission-detail-val {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+    word-break: break-word;
+}
+

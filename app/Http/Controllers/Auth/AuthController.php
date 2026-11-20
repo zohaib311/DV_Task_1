@@ -73,19 +73,31 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+            $user = $request->user();
 
-            if (! $request->user()->roles()->exists()) {
+            // 1. Enrolled Student Profile
+            if ($user->studentProfile && $user->hasRole('Student')) {
+                $landingRoute = app(\App\Services\StudentPortal\StudentWorkspace::class)->landing($user) ?? 'student.dashboard';
+                return redirect()->intended(route($landingRoute))->with('success', 'Logged in to Student Portal!');
+            }
+
+            // 2. Admission Applicant (Prior to final enrollment)
+            if ($user->hasRole('Applicant') || $user->admissionApplications()->exists()) {
+                return redirect()->intended(route('admissions.applicant.dashboard'))->with('success', 'Welcome to your Admission Workspace!');
+            }
+
+            if (! $user->roles()->exists()) {
                 return redirect()->route('profile.settings.form')->with(
                     'success',
                     'Your account is pending role assignment. Please contact a system administrator.'
                 );
             }
 
-            $landingRoute = $request->user()->can('offerings.view-assigned') && ! $request->user()->can('offerings.manage')
+            $landingRoute = $user->can('offerings.view-assigned') && ! $user->can('offerings.manage')
                 ? 'teaching.dashboard'
                 : 'dashboardView';
 
-            $landingRoute = app(\App\Services\StudentPortal\StudentWorkspace::class)->landing($request->user()) ?? $landingRoute;
+            $landingRoute = app(\App\Services\StudentPortal\StudentWorkspace::class)->landing($user) ?? $landingRoute;
             return redirect()->intended(route($landingRoute))->with('success', 'Logged in successfully!');
         }
 

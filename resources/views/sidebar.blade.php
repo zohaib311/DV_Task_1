@@ -47,6 +47,39 @@
         @endif
 
         @can('students.manage')
+            @php
+                $pendingAdmissionsCount = \App\Models\Admission\AdmissionApplication::where('status', 'pending')->count();
+            @endphp
+            <li class="nav-item">
+                <details class="sidebar-group" @if (request()->is('dashboard/admissions*')) open @endif>
+                    <summary class="sidebar-link">
+                        <i class="bi bi-person-lines-fill me-2 fs-5"></i>
+                        <span>Admissions</span>
+                        @if($pendingAdmissionsCount > 0)
+                            <span class="badge rounded-pill bg-danger ms-auto me-1" style="font-size: 0.72rem;">{{ $pendingAdmissionsCount }}</span>
+                        @endif
+                        <i class="bi bi-chevron-down sidebar-group-arrow"></i>
+                    </summary>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="{{ route('admissions.admin.index') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('admissions.admin.index')])>
+                                <i class="bi bi-card-checklist" aria-hidden="true"></i>
+                                <span>Applications</span>
+                                @if($pendingAdmissionsCount > 0)
+                                    <span class="badge rounded-pill bg-danger ms-auto" style="font-size: 0.68rem;">{{ $pendingAdmissionsCount }}</span>
+                                @endif
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admissions.admin.inquiries') }}" @class(['sidebar-sublink', 'active' => request()->routeIs('admissions.admin.inquiries')])>
+                                <i class="bi bi-chat-left-dots" aria-hidden="true"></i>
+                                <span>Inquiries</span>
+                            </a>
+                        </li>
+                    </ul>
+                </details>
+            </li>
+
             <li class="nav-item">
                 <a href="{{ route('allStudents') }}"
                     class="sidebar-link nav-link {{ request()->is('student', 'student/*', 'students', 'students/*') ? 'active' : '' }}">

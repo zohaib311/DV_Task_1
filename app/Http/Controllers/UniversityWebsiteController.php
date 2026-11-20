@@ -72,6 +72,14 @@ class UniversityWebsiteController extends Controller
             'message' => 'required|string|max:1000',
         ]);
 
+        try {
+            if (Schema::hasTable('admission_inquiries')) {
+                \App\Models\Admission\AdmissionInquiry::create($validated);
+            }
+        } catch (\Throwable $e) {
+            // Gracefully ignore if database migration is pending
+        }
+
         return back()->with('inquiry_success', 'Thank you, ' . $validated['name'] . '! Your admission inquiry has been received. Our Admissions Office will contact you shortly at ' . $validated['email'] . '.');
     }
 }

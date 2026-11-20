@@ -28,7 +28,7 @@
                         <a href="#programs" class="btn btn-primary px-4 py-3 fw-bold rounded-3 shadow-sm d-inline-flex align-items-center gap-2" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none;">
                             <i class="bi bi-mortarboard-fill"></i> Explore Academic Programs
                         </a>
-                        <a href="#inquiry" class="btn btn-warning px-4 py-3 fw-bold rounded-3 shadow-sm text-dark d-inline-flex align-items-center gap-2" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: #ffffff !important;">
+                        <a href="{{ route('admissions.portal') }}" class="btn btn-warning px-4 py-3 fw-bold rounded-3 shadow-sm text-dark d-inline-flex align-items-center gap-2" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: #ffffff !important;">
                             <i class="bi bi-send-fill"></i> Apply for Fall 2026
                         </a>
                         <a href="{{ route('login') }}" class="btn btn-outline-light px-4 py-3 fw-bold rounded-3 d-inline-flex align-items-center gap-2">
@@ -990,6 +990,27 @@
                 <!-- Admissions Inquiry Form -->
                 <div class="col-lg-7" id="inquiry">
                     <div class="inquiry-card h-100">
+                        <!-- Direct Online Application Prompt Banner -->
+                        <div class="p-3 mb-4 rounded-3 d-flex flex-wrap align-items-center justify-content-between gap-3 shadow-sm" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #bfdbfe;">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="p-2 rounded-circle bg-primary text-white fs-5">
+                                    <i class="bi bi-mortarboard-fill"></i>
+                                </div>
+                                <div>
+                                    <strong class="text-primary d-block">Ready to Apply for Fall 2026?</strong>
+                                    <small class="text-secondary">Submit your formal admission application in our online portal.</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="{{ route('admissions.portal') }}" class="btn btn-primary btn-sm fw-bold px-3 py-2 rounded-3 shadow-sm">
+                                    <i class="bi bi-pencil-fill me-1"></i> Apply Online Now
+                                </a>
+                                <a href="{{ route('admissions.status') }}" class="btn btn-outline-primary btn-sm fw-bold px-3 py-2 rounded-3">
+                                    <i class="bi bi-search me-1"></i> Track Status
+                                </a>
+                            </div>
+                        </div>
+
                         <span class="section-eyebrow"><i class="bi bi-send-fill"></i> Admissions 2026-2027</span>
                         <h3 class="fw-bold text-dark mb-2">Request Admission Info &amp; Prospectus</h3>
                         <p class="text-muted small mb-4">Leave your details and our academic counseling team will reach out with complete curriculum and scholarship guides.</p>

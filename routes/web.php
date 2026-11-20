@@ -31,9 +31,33 @@ require __DIR__.'/fees.php';
 Route::get('/verify/document/{type}/{hash}', [\App\Http\Controllers\Documents\DocumentPdfController::class, 'verifyDocument'])->name('verify.document');
 
 use App\Http\Controllers\UniversityWebsiteController;
+use App\Http\Controllers\Admission\PublicAdmissionController;
+use App\Http\Controllers\Admission\AdminAdmissionController;
 
 Route::get('/', [UniversityWebsiteController::class, 'index'])->name('home');
 Route::post('/inquiry', [UniversityWebsiteController::class, 'submitInquiry'])->name('website.inquiry');
+
+// Online Admissions & Applicant Lifecycle Flow
+Route::controller(PublicAdmissionController::class)->group(function () {
+    Route::get('/admissions/portal', 'portalLanding')->name('admissions.portal');
+    Route::get('/admissions/login', 'showApplicantLogin')->name('admissions.login');
+    Route::post('/admissions/login', 'applicantLoginSubmit')->name('admissions.login.submit');
+    Route::post('/admissions/register', 'applicantRegisterSubmit')->name('admissions.register.submit');
+    Route::get('/admissions/my-application', 'applicantDashboard')->middleware('auth')->name('admissions.applicant.dashboard');
+    Route::get('/admissions/apply', 'showApplyForm')->name('admissions.apply');
+    Route::post('/admissions/apply', 'submitApplication')->name('admissions.apply.submit');
+    Route::get('/admissions/confirmation/{application_no}', 'showConfirmation')->name('admissions.confirmation');
+    Route::get('/admissions/status', 'showStatusLookup')->name('admissions.status');
+});
+
+// Admin Admissions & Online Application Processing
+Route::prefix('dashboard/admissions')->controller(AdminAdmissionController::class)->middleware(['auth', 'permission:students.manage'])->group(function () {
+    Route::get('/', 'index')->name('admissions.admin.index');
+    Route::match(['post', 'patch'], '/{id}/status', 'updateStatus')->name('admissions.admin.status');
+    Route::post('/{id}/enroll', 'enrollStudent')->name('admissions.admin.enroll');
+    Route::get('/inquiries', 'inquiries')->name('admissions.admin.inquiries');
+    Route::match(['post', 'patch'], '/inquiries/{id}/status', 'updateInquiryStatus')->name('admissions.admin.inquiry-status');
+});
 
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')

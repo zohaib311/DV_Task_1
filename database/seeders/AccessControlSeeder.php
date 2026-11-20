@@ -41,6 +41,7 @@ class AccessControlSeeder extends Seeder
             'student.registration.manage-own', 'student.assessments.submit-own', 'student.leaves.manage-own',
             'student.fees.view-own', 'student.fees.submit-own', 'student.admit-card.view-own', 'student.lms.view-own',
         ],
+        'Applicant' => [],
     ];
 
     /** @var array<int, string> */

@@ -46,4 +46,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(\App\Models\Leave\StudentLeaveRequest::class, 'reviewed_by');
     }
+
+    public function admissionApplications()
+    {
+        return $this->hasMany(\App\Models\Admission\AdmissionApplication::class);
+    }
+
+    public function admissionApplication()
+    {
+        return $this->hasOne(\App\Models\Admission\AdmissionApplication::class)->latestOfMany();
+    }
 }

@@ -19,6 +19,7 @@
 
     <!-- University Website Custom Stylesheet -->
     <link rel="stylesheet" href="{{ asset('css/university-website.css') }}?v={{ file_exists(public_path('css/university-website.css')) ? filemtime(public_path('css/university-website.css')) : time() }}">
+    <link rel="stylesheet" href="{{ asset('css/admissions.css') }}?v={{ file_exists(public_path('css/admissions.css')) ? filemtime(public_path('css/admissions.css')) : time() }}">
 
     @yield('styles')
 </head>
@@ -95,7 +96,7 @@
 
                 <!-- Portal Login Action Button -->
                 <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
-                    <a href="#inquiry" class="btn apply-nav-btn d-none d-xl-inline-flex align-items-center gap-1">
+                    <a href="{{ route('admissions.portal') }}" class="btn apply-nav-btn d-none d-xl-inline-flex align-items-center gap-1">
                         <i class="bi bi-pencil-fill me-1"></i> Apply Online
                     </a>
 
